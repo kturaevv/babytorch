@@ -1,0 +1,35 @@
+.cache/
+# Ignore build artifacts
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+
+# Ignore compiled binaries
+*.o
+*.a
+*.exe
+*.out
+
+# Ignore generated files
+compile_commands.json
+conanfile.txt
+conan.lock
+
+# Ignore IDE/project files
+# .vscode/
+.idea/
+*.cbp
+*.suo
+*.user
+*.sln
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore dependencies (specific to the dependency manager you're using)
+# For example, ignore folders for dependencies installed via Conan or vcpkg
+/conan/
+/vcpkg_installed/
