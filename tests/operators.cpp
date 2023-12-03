@@ -8,6 +8,7 @@
 
 #include "../src/operators.cpp"
 
+using namespace operators;
 using Catch::Approx;
 using Catch::Matchers::WithinAbs;
 

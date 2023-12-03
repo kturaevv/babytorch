@@ -5,122 +5,125 @@
 #include <ranges>
 #include <vector>
 
-const double EPS = 1e-8;
+namespace operators {
 
-double mul(const double x, const double y) {
-    return x * y;
-}
+    const double EPS = 1e-8;
 
-double id(const double x) {
-    return x;
-}
+    double mul(const double x, const double y) {
+        return x * y;
+    }
 
-double add(const double x, const double y) {
-    return x + y;
-}
+    double id(const double x) {
+        return x;
+    }
 
-double neg(const double x) {
-    return -x;
-}
+    double add(const double x, const double y) {
+        return x + y;
+    }
 
-double lt(const double x, const double y) {
-    return x < y ? 1.0 : 0.0;
-}
+    double neg(const double x) {
+        return -x;
+    }
 
-double eq(const double x, const double y) {
-    return x == y ? 1.0 : 0.0;
-}
+    double lt(const double x, const double y) {
+        return x < y ? 1.0 : 0.0;
+    }
 
-double max(const double x, const double y) {
-    return x > y ? x : y;
-}
+    double eq(const double x, const double y) {
+        return x == y ? 1.0 : 0.0;
+    }
 
-double is_close(const double x, const double y) {
-    const double EPS = 1e-2;
-    return fabs(x - y) < EPS ? 1.0 : 0.0;
-}
+    double max(const double x, const double y) {
+        return x > y ? x : y;
+    }
 
-double sigmoid(const double x) {
-    if (x >= 0)
-        return 1.0 / (1.0 + exp(-x));
-    else
-        return exp(x) / (1.0 + exp(x));
-}
+    double is_close(const double x, const double y) {
+        const double EPS = 1e-2;
+        return fabs(x - y) < EPS ? 1.0 : 0.0;
+    }
 
-double relu(const double x) {
-    return x > 0 ? x : 0;
-}
+    double sigmoid(const double x) {
+        if (x >= 0)
+            return 1.0 / (1.0 + exp(-x));
+        else
+            return exp(x) / (1.0 + exp(x));
+    }
 
-double log_func(const double x) {
-    return std::log(x + EPS);
-}
+    double relu(const double x) {
+        return x > 0 ? x : 0;
+    }
 
-double exp_func(const double x) {
-    return std::exp(x);
-}
+    double log_func(const double x) {
+        return std::log(x + EPS);
+    }
 
-double log_back(const double x, const double d) {
-    return 1.0 / (x * std::log(d + EPS) + EPS);
-}
+    double exp_func(const double x) {
+        return std::exp(x);
+    }
 
-double inv(const double x) {
-    return 1.0 / (x + EPS);
-}
+    double log_back(const double x, const double d) {
+        return 1.0 / (x * std::log(d + EPS) + EPS);
+    }
 
-double inv_back(const double x, const double d) {
-    return -1.0 / (x * x + EPS);
-}
+    double inv(const double x) {
+        return 1.0 / (x + EPS);
+    }
 
-double relu_back(const double x, const double d) {
-    return x > 0.0 ? d : 0.0;
-}
+    double inv_back(const double x, const double d) {
+        return -1.0 / (x * x + EPS);
+    }
 
-// High Order functions Definitions
+    double relu_back(const double x, const double d) {
+        return x > 0.0 ? d : 0.0;
+    }
 
-std::vector<double> map(const std::function<double(double)>& fn,
-                        const std::vector<double>& args) {
-    std::vector<double> result;
-    result.reserve(args.size());
+    // High Order functions Definitions
 
-    for (const auto& i : args)
-        result.push_back(fn(i));
+    std::vector<double> map(const std::function<double(double)>& fn,
+                            const std::vector<double>& args) {
+        std::vector<double> result;
+        result.reserve(args.size());
 
-    return result;
-}
+        for (const auto& i : args)
+            result.push_back(fn(i));
 
-std::vector<double> zipWith(const std::function<double(double, double)>& fn,
-                            const std::vector<double>& x,
-                            const std::vector<double>& y) {
-    std::vector<double> result;
+        return result;
+    }
 
-    double minSize = std::min(x.size(), y.size());
-    result.reserve(minSize);
+    std::vector<double> zipWith(const std::function<double(double, double)>& fn,
+                                const std::vector<double>& x,
+                                const std::vector<double>& y) {
+        std::vector<double> result;
 
-    for (const auto i : std::views::iota(0, minSize))
-        result.push_back(fn(x[i], y[i]));
-    return result;
-}
+        double minSize = std::min(x.size(), y.size());
+        result.reserve(minSize);
 
-double reduce(std::function<double(double, double)> fn, double start,
-              const std::vector<double>& ls) {
-    return std::accumulate(ls.begin(), ls.end(), start, fn);
-}
+        for (const auto i : std::views::iota(0, minSize))
+            result.push_back(fn(x[i], y[i]));
+        return result;
+    }
 
-// Utility functions using high order function defined above
+    double reduce(std::function<double(double, double)> fn, double start,
+                  const std::vector<double>& ls) {
+        return std::accumulate(ls.begin(), ls.end(), start, fn);
+    }
 
-double sum(const std::vector<double>& ls) {
-    return std::accumulate(ls.begin(), ls.end(), 0);
-}
+    // Utility functions using high order function defined above
 
-double prod(const std::vector<double>& ls) {
-    return reduce(std::multiplies<double>(), 1.0, ls);
-}
+    double sum(const std::vector<double>& ls) {
+        return std::accumulate(ls.begin(), ls.end(), 0);
+    }
 
-std::vector<double> addLists(const std::vector<double>& ls1,
-                             const std::vector<double>& ls2) {
-    return zipWith(add, ls1, ls2);
-}
+    double prod(const std::vector<double>& ls) {
+        return reduce(std::multiplies<double>(), 1.0, ls);
+    }
 
-std::vector<double> negList(const std::vector<double>& ls) {
-    return map(neg, ls);
+    std::vector<double> addLists(const std::vector<double>& ls1,
+                                 const std::vector<double>& ls2) {
+        return zipWith(add, ls1, ls2);
+    }
+
+    std::vector<double> negList(const std::vector<double>& ls) {
+        return map(neg, ls);
+    }
 }
