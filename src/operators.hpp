@@ -7,22 +7,20 @@
 
 namespace operators {
 
-    const double EPS = std::numeric_limits<double>::epsilon();
-
-    double mul(const double x, const double y);
     double id(const double x);
-    double add(const double x, const double y);
     double neg(const double x);
+    double inv(const double x);
+    double relu(const double x);
+    double sigmoid(const double x);
+    double log_func(const double x);
+    double exp_func(const double x);
+    double mul(const double x, const double y);
+    double add(const double x, const double y);
     double lt(const double x, const double y);
     double eq(const double x, const double y);
     double max(const double x, const double y);
     double is_close(const double x, const double y);
-    double sigmoid(const double x);
-    double relu(const double x);
-    double log_func(const double x);
-    double exp_func(const double x);
     double log_back(const double x, const double d);
-    double inv(const double x);
     double inv_back(const double x, const double d);
     double relu_back(const double x, const double d);
 
