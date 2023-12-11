@@ -6,7 +6,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
-#include "../src/operators.cpp"
+#include "../src/babytorch/operators.cpp"
 
 using namespace operators;
 using Catch::Approx;
