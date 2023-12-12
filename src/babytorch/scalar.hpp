@@ -64,6 +64,11 @@ namespace scalar {
         //     return *this * pow(other, -1);
         // }
 
+        friend std::ostream& operator<<(std::ostream& os, Scalar& v) {
+            os << "Scalar(data=" << v.data << ", grad=" << v.grad << ")\n";
+            return os;
+        }
+
         Scalar log() const;
         Scalar exp() const;
         Scalar sigmoid() const;
