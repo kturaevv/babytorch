@@ -1,3 +1,6 @@
+default: 
+	just -l
+
 # init the project ./build cmake
 init:
 	mkdir -p ./build && cd ./build && cmake ..

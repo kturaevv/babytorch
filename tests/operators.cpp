@@ -20,11 +20,11 @@ TEST_CASE("Multiplication Function Tests") {
     }
 
     SECTION("Multiplication with Large Values") {
-        REQUIRE(mul(1.0e100, 1.0e50) == Approx(1.0e150));
+        REQUIRE_THAT(mul(1.0e100, 1.0e50), WithinAbs(1.0e150, EPS));
     }
 
     SECTION("Multiplication with Small Values") {
-        REQUIRE(mul(1.0e-100, 1.0e-50) == Approx(1.0e-150));
+        REQUIRE_THAT(mul(1.0e-100, 1.0e-50), WithinAbs(1.0e-150, EPS));
     }
 
     SECTION("Multiplication with Zero") {
@@ -39,15 +39,15 @@ TEST_CASE("Multiplication Function Tests") {
 
 TEST_CASE("Identity Function Tests") {
     SECTION("Identity of Positive Numbers") {
-        REQUIRE(id(5.0) == Approx(5.0));
+        REQUIRE_THAT(id(5.0), WithinAbs(5.0, EPS));
     }
 
     SECTION("Identity of Negative Numbers") {
-        REQUIRE(id(-2.0) == Approx(-2.0));
+        REQUIRE_THAT(id(-2.0), WithinAbs(-2.0, EPS));
     }
 
     SECTION("Identity of Zero") {
-        REQUIRE(id(0.0) == Approx(0.0));
+        REQUIRE_THAT(id(0.0), WithinAbs(0.0, EPS));
     }
 }
 
@@ -59,11 +59,11 @@ TEST_CASE("Addition Function Tests") {
     }
 
     SECTION("Addition with Large Values") {
-        REQUIRE(add(1.0e100, 1.0e50) == Approx(1.0e100 + 1.0e50));
+        REQUIRE_THAT(add(1.0e100, 1.0e50), WithinAbs(1.0e100 + 1.0e50, EPS));
     }
 
     SECTION("Addition with Small Values") {
-        REQUIRE(add(1.0e-100, 1.0e-50) == Approx(1.0e-100 + 1.0e-50));
+        REQUIRE_THAT(add(1.0e-100, 1.0e-50), WithinAbs(1.0e-100 + 1.0e-50, EPS));
     }
 
     SECTION("Addition with Zero") {
