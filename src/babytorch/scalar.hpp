@@ -22,53 +22,81 @@ namespace scalar {
     };
 
     struct Scalar : ScalarLike {
-        //
-        double data;
-        double grad;
-        History history;
+        // using parent constructors
+        using ScalarLike::ScalarLike;
 
-        template <typename Other>
-        Scalar operator+(const Other& other) const {
-            return ScalarFunction::apply<Add>(this, other);
+        Scalar(const ScalarLike& other)
+            : ScalarLike(other) {
         }
 
-        // Scalar operator*(const Scalar& other) const {
-        //     return ScalarFunction::apply<Mul>(this, other);
-        // }
+        // basic operations
 
-        // Scalar operator^(const Scalar& power) const {
-        //     return Functions::apply<Pow>(*this, power);
-        // }
+        Scalar operator+(const Scalar& other) {
+            return ScalarFunction::apply<Add>(*this, other);
+        }
 
-        // Scalar operator-() const {
-        //     return *this * -1;
-        // }
+        friend Scalar operator+(const Scalar& self, const Scalar& other) {
+            return ScalarFunction::apply<Add>(self, other);
+        }
 
-        // Scalar operator-() const {
-        //     return *this + (-other);
-        // }
+        Scalar operator*(const Scalar& other) {
+            return ScalarFunction::apply<Mul>(*this, other);
+        }
 
-        // Scalar operator+(const Scalar& other) const {
-        //     return *this + other;
-        // }
+        friend Scalar operator*(const Scalar& self, const Scalar& other) {
+            return ScalarFunction::apply<Mul>(self, other);
+        }
 
-        // Scalar operator-(const Scalar& other) const {
-        //     return *this + (-other);
-        // }
+        // other operations, derived from basic ones
 
-        // Scalar operator*(const Scalar& other) const {
-        //     return *this * other;
-        // }
+        Scalar operator-(const Scalar& other) {
+            return *this + ScalarFunction::apply<Neg>(other);
+        }
 
-        // Scalar operator/(const Scalar& other) const {
-        //     return *this * pow(other, -1);
-        // }
+        friend Scalar operator-(const Scalar& self, const Scalar& other) {
+            return self + ScalarFunction::apply<Neg>(other);
+        }
+
+        Scalar operator/(const Scalar& other) {
+            return *this * ScalarFunction::apply<Inv>(other);
+        }
+
+        friend Scalar operator/(const Scalar& self, const Scalar& other) {
+            return self * ScalarFunction::apply<Inv>(other);
+        }
+
+        // comparisons
+
+        Scalar operator<(const Scalar& other) {
+            return ScalarFunction::apply<Lt>(*this, other);
+        }
+
+        friend Scalar operator<(const Scalar& self, const Scalar& other) {
+            return ScalarFunction::apply<Lt>(self, other);
+        }
+
+        Scalar operator>(const Scalar& other) {
+            return ScalarFunction::apply<Lt>(other, *this);
+        }
+
+        friend Scalar operator>(const Scalar& self, const Scalar& other) {
+            return ScalarFunction::apply<Lt>(other, self);
+        }
+
+        Scalar operator==(const Scalar& other) {
+            return ScalarFunction::apply<Eq>(*this, other);
+        }
+
+        friend Scalar operator==(const Scalar& self, const Scalar& other) {
+            return ScalarFunction::apply<Eq>(self, other);
+        }
 
         friend std::ostream& operator<<(std::ostream& os, Scalar& v) {
             os << "Scalar(data=" << v.data << ", grad=" << v.grad << ")\n";
             return os;
         }
 
+        // functions
         Scalar log() const;
         Scalar exp() const;
         Scalar sigmoid() const;

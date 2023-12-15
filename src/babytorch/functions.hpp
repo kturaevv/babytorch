@@ -18,10 +18,9 @@ namespace functions {
 
     struct ScalarFunction {
         template <typename F, typename... Args>
-        static ScalarLike apply(ScalarLike self, Args&&... args) {
-            // some additional logic here
-            F::forward(self.data, std::forward<Args>(args)...);
-            return ScalarLike(1., 1.);
+        static auto apply(Args&&... args) noexcept {
+            double result = F::forward(args.data...);
+            return ScalarLike(result);
         }
     };
 
