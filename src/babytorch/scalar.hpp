@@ -83,12 +83,18 @@ namespace scalar {
             return ScalarFunction::apply<Lt>(other, self);
         }
 
-        Scalar operator==(const Scalar& other) {
-            return ScalarFunction::apply<Eq>(*this, other);
-        }
-
         friend Scalar operator==(const Scalar& self, const Scalar& other) {
             return ScalarFunction::apply<Eq>(self, other);
+        }
+
+        template <typename T>
+        friend Scalar operator==(const Scalar& self, const T& other) {
+            return ScalarFunction::apply<Eq>(self, Scalar(other));
+        }
+
+        template <typename T>
+        friend Scalar operator==(const T& self, const Scalar& other) {
+            return ScalarFunction::apply<Eq>(Scalar(self), other);
         }
 
         friend std::ostream& operator<<(std::ostream& os, Scalar& v) {

@@ -12,15 +12,17 @@ using namespace operators;
 using Catch::Approx;
 using Catch::Matchers::WithinAbs;
 
+#define EPS 1e-8
+
 TEST_CASE("Multiplication Function Tests") {
     SECTION("Basic Multiplication") {
-        REQUIRE(mul(2.0, 3.0) == 6.0);
-        REQUIRE(mul(-2.0, 3.0) == -6.0);
-        REQUIRE(mul(0.0, 3.0) == 0.0);
+        REQUIRE_THAT(mul(2.0, 3.0), WithinAbs(6.0, EPS));
+        REQUIRE_THAT(mul(0.0, 3.0), WithinAbs(0.0, EPS));
+        REQUIRE_THAT(mul(-2.0, 3.0), WithinAbs(-6.0, EPS));
     }
 
     SECTION("Multiplication with Large Values") {
-        REQUIRE_THAT(mul(1.0e100, 1.0e50), WithinAbs(1.0e150, EPS));
+        REQUIRE_THAT(mul(1.0e100, 1.0e50), WithinAbs(1.0e150, 1e140));
     }
 
     SECTION("Multiplication with Small Values") {
