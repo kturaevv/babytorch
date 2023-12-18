@@ -107,13 +107,12 @@ namespace scalar {
         Scalar exp() const;
         Scalar sigmoid() const;
         Scalar relu() const;
-        Scalar tanh() const;
 
-        void accumulate_grad(double d_x);
-        bool is_leaf() const;
-        void backward();
         int id() const;
+        void backward();
+        bool is_leaf() const;
         void chain_rule(Scalar deriv);
+        void accumulate_grad(double d_x);
         std::vector<Scalar> parents() const;
     };
 

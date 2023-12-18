@@ -10,31 +10,11 @@ int main() {
     using namespace scalar;
     Scalar x{ 1.0 };
     Scalar y{ 2.0 };
-    std::cout << x << y;
+    Scalar z{ 3.0 };
 
-    std::cout << " + \n";
-    std::cout << x + y;
-    std::cout << x + int(2);
-    std::cout << x + float(3);
-    std::cout << x + double(4);
-    std::cout << float(5) + x;
-    std::cout << float(6) + x;
+    Scalar result = (x * y + z);
 
-    std::cout << " - \n";
-    std::cout << x - y;
-    std::cout << x - int(2);
-    std::cout << x - float(3);
-    std::cout << x - double(4);
-    std::cout << float(5) - x;
-    std::cout << float(6) - x;
-
-    std::cout << " / \n";
-    std::cout << x / y;
-    std::cout << x / int(2);
-    std::cout << x / float(3);
-    std::cout << x / double(4);
-    std::cout << float(5) / x;
-    std::cout << float(6) / x;
-
+    std::cout << result;
+    result.backward();
     return 0;
 }
