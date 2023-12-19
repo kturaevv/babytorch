@@ -23,6 +23,7 @@ namespace operators {
     double log_back(const double x, const double d);
     double inv_back(const double x, const double d);
     double relu_back(const double x, const double d);
+    double sigmoid_back(const double x, const double d);
 
     // High Order functions Definitions
     std::vector<double> map(const std::function<double(double)>& fn,

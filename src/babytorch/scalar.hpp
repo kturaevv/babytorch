@@ -4,6 +4,7 @@
 #include <optional>
 #include <vector>
 
+#include "autodiff.hpp"
 #include "functions.hpp"
 #include "scalarlike.hpp"
 

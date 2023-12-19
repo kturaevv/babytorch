@@ -49,6 +49,10 @@ namespace operators {
             return exp(x) / (1.0 + exp(x));
     }
 
+    double sigmoid_back(const double x, const double d) {
+        return x * (1 - x) * d;
+    }
+
     double relu(const double x) {
         return x > 0 ? x : 0;
     }
