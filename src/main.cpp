@@ -8,13 +8,12 @@ int main() {
     fmt::print("Auto-diff project!\n");
 
     using namespace scalar;
-    Scalar x{ 1.0 };
-    Scalar y{ 2.0 };
-    Scalar z{ 3.0 };
+    auto x = Scalar::create(1.0);
+    auto y = Scalar::create(2.0);
+    auto z = Scalar::create(2.0);
 
     Scalar result = (x * y + z);
 
     std::cout << result;
-    result.backward();
     return 0;
 }

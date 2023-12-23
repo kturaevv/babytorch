@@ -1,3 +1,4 @@
+# list available commands
 default: 
 	just -l
 
@@ -22,3 +23,11 @@ clean:
 
 # re-{clean,build,run}
 re: clean build run test
+
+# visualize the dependency graph
+deps:
+	python ./tools/deps.py
+
+# check setup
+check:
+	./tools/check_setup.sh

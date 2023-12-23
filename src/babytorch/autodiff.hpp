@@ -1,18 +1,24 @@
 #pragma once
 
 #include <any>
+#include <memory>
 #include <unordered_set>
 #include <vector>
 
-#include "scalarlike.hpp"
+namespace scalar {
+    struct Scalar;
+}
 
 namespace autodiff {
-    std::vector<ScalarLike> topological_sort(const ScalarLike& v);
-    std::vector<ScalarLike> topological_sort(const ScalarLike& v,
-                                             std::unordered_set<int>& visited);
 
-    void backpropagate(const ScalarLike& variable);
-    void backpropagate(const ScalarLike& variable, double deriv);
+    using namespace scalar;
+
+    std::vector<Scalar> topological_sort(std::shared_ptr<Scalar> v);
+    std::vector<Scalar> topological_sort(std::shared_ptr<Scalar> v,
+                                         std::unordered_set<int>& visited);
+
+    void backpropagate(std::shared_ptr<Scalar> variable);
+    void backpropagate(std::shared_ptr<Scalar> variable, double deriv);
 
     struct Context {
         std::vector<double> saved_values;
