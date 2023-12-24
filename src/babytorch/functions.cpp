@@ -8,38 +8,21 @@
 #include "autodiff.hpp"
 #include "functions.hpp"
 #include "operators.hpp"
-#include "scalar.hpp"
 
 namespace functions {
 
     using namespace autodiff;
 
-    template <typename F = Func>
-    std::shared_ptr<Scalar> ScalarFunction::apply(
-        std::shared_ptr<Scalar> self, std::shared_ptr<Scalar> other) {
+    template <typename F = Func, typename... Args>
+    std::shared_ptr<Scalar> ScalarFunction::apply(Args&&... args) {
         Context ctx;
 
-        double result = F::forward(ctx, self->data, other->data);
+        double result = F::forward(ctx, args->data...);
 
         History history;
         history.ctx = std::move(ctx);
         history.backward = F::backward;
-        history.inputs.emplace_back(self);
-        history.inputs.emplace_back(other);
-
-        return Scalar::create(history, result);
-    }
-
-    template <typename F = Func>
-    std::shared_ptr<Scalar> ScalarFunction::apply(std::shared_ptr<Scalar> self) {
-        Context ctx;
-
-        double result = F::forward(ctx, self->data);
-
-        History history;
-        history.ctx = std::move(ctx);
-        history.backward = F::backward;
-        history.inputs.emplace_back(self);
+        (history.inputs.emplace_back(args), ...);
 
         return Scalar::create(history, result);
     }

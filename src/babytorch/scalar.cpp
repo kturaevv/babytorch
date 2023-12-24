@@ -25,19 +25,19 @@ namespace scalar {
 
     std::shared_ptr<Scalar> Scalar::exp() {
         return ScalarFunction::apply<Exp>(std::make_shared<Scalar>(this));
-    };
+    }
 
     std::shared_ptr<Scalar> Scalar::sigmoid() {
         return ScalarFunction::apply<Sigmoid>(std::make_shared<Scalar>(this));
-    };
+    }
 
     std::shared_ptr<Scalar> Scalar::relu() {
         return ScalarFunction::apply<Relu>(std::make_shared<Scalar>(this));
-    };
+    }
 
     std::vector<std::shared_ptr<Scalar>> Scalar::parents() {
         return history.inputs;
-    };
+    }
 
     bool Scalar::is_leaf() {
         return parents().empty();

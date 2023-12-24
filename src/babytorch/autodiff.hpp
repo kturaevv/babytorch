@@ -13,9 +13,8 @@ namespace autodiff {
 
     using namespace scalar;
 
-    std::vector<Scalar> topological_sort(std::shared_ptr<Scalar> v);
-    std::vector<Scalar> topological_sort(std::shared_ptr<Scalar> v,
-                                         std::unordered_set<int>& visited);
+    std::vector<std::shared_ptr<Scalar>> topological_sort(
+        std::shared_ptr<Scalar> v);
 
     void backpropagate(std::shared_ptr<Scalar> variable);
     void backpropagate(std::shared_ptr<Scalar> variable, double deriv);

@@ -16,12 +16,8 @@ namespace functions {
     };
 
     struct ScalarFunction {
-        template <typename F>
-        static std::shared_ptr<Scalar> apply(std::shared_ptr<Scalar> self);
-
-        template <typename F>
-        static std::shared_ptr<Scalar> apply(std::shared_ptr<Scalar> self,
-                                             std::shared_ptr<Scalar> other);
+        template <typename F, typename... Args>
+        static std::shared_ptr<Scalar> apply(Args&&... args);
     };
 
     struct Id;
