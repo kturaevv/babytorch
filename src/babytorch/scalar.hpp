@@ -13,10 +13,16 @@
 
 namespace scalar {
 
-    using autodiff::Context;
+    // using autodiff::Context;
+    using namespace autodiff;
     using namespace functions;
 
     struct Scalar;
+
+    struct ScalarFunction {
+        template <typename F, typename... Args>
+        static std::shared_ptr<Scalar> apply(Args&&... args);
+    };
 
     using backward0 = double;
     using backward1 = std::tuple<double>;
@@ -218,3 +224,18 @@ namespace scalar {
         static std::shared_ptr<Scalar> create(double data);
         static std::shared_ptr<Scalar> create(History history, double data);
     };
+
+    template <typename F = Func, typename... Args>
+    std::shared_ptr<scalar::Scalar> ScalarFunction::apply(Args&&... args) {
+        Context ctx;
+
+        double result = F::forward(ctx, args->data...);
+
+        History history;
+        history.ctx = std::move(ctx);
+        history.backward = F::backward;
+        (history.inputs.emplace_back(args), ...);
+
+        return Scalar::create(history, result);
+    }
+}
