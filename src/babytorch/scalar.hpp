@@ -47,17 +47,15 @@ namespace scalar {
 
         // constructors
 
-        template <typename T>
-        explicit Scalar(T data)
-            : data(static_cast<double>(data))
+        Scalar(double data)
+            : data(data)
             , id(next_id++)
             , grad(0) {
         }
 
-        template <typename T>
-        Scalar(History history, T data)
+        Scalar(History history, double data)
             : history(history)
-            , data(static_cast<double>(data))
+            , data(data)
             , id(next_id++)
             , grad(0) {
         }

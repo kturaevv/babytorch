@@ -5,6 +5,8 @@
 #include <ranges>
 #include <vector>
 
+#include "operators.hpp"
+
 namespace operators {
 
     const double EPS = 1e-8;

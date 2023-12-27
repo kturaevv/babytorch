@@ -5,6 +5,7 @@
 #include <optional>
 #include <vector>
 
+#include "autodiff.hpp"
 #include "functions.hpp"
 #include "scalar.hpp"
 
@@ -47,4 +48,11 @@ namespace scalar {
         this->history.backward(this->history.ctx, deriv);
         return;
     }
+
+    void Scalar::backward() {
+        autodiff::backpropagate(std::make_shared<Scalar>(this), 1.0);
+        return;
+    }
+
+    void accumulate_grad(double d_x);
 }

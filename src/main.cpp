@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include <fmt/core.h>
 
@@ -15,8 +16,10 @@ int main() {
     auto k = Scalar::create(4.0);
     auto j = Scalar::create(5.0);
 
-    auto result = (x * y + z - k / j);
+    std::shared_ptr<Scalar> result = (x * y + z - k / j);
+    std::cout << "Results: " << result << std::endl;
 
-    std::cout << result;
+    result->backward();
+
     return 0;
 }
