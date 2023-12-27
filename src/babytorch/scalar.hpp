@@ -24,7 +24,6 @@ namespace scalar {
         static std::shared_ptr<Scalar> apply(Args&&... args);
     };
 
-    using backward0 = double;
     using backward1 = std::tuple<double>;
     using backward2 = std::tuple<double, double>;
     using backward_return_type = std::variant<backward1, backward2>;
@@ -214,10 +213,9 @@ namespace scalar {
 
         bool is_leaf();
         void backward();
-        void chain_rule(double deriv);
         void accumulate_grad(double d_x);
-
         std::vector<std::shared_ptr<Scalar>> parents();
+        std::variant<backward_return_type> chain_rule(double deriv);
 
         static std::shared_ptr<Scalar> create(double data);
         static std::shared_ptr<Scalar> create(History history, double data);

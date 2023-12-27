@@ -17,7 +17,7 @@ int main() {
     auto j = Scalar::create(5.0);
 
     std::shared_ptr<Scalar> result = (x * y + z - k / j);
-    std::cout << "Results: " << result << std::endl;
+    std::cout << "Results: " << *result;
 
     result->backward();
 

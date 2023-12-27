@@ -3,10 +3,12 @@
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "autodiff.hpp"
 #include "functions.hpp"
+#include "operators.hpp"
 #include "scalar.hpp"
 
 namespace scalar {
@@ -44,9 +46,10 @@ namespace scalar {
         return parents().empty();
     }
 
-    void Scalar::chain_rule(double deriv) {
-        this->history.backward(this->history.ctx, deriv);
-        return;
+    std::variant<backward_return_type> Scalar::chain_rule(double deriv) {
+        auto history = this->history;
+        auto grads = history.backward(history.ctx, deriv);
+        return grads;
     }
 
     void Scalar::backward() {
