@@ -42,9 +42,24 @@ namespace autodiff {
     void backpropagate(std::shared_ptr<Scalar> variable, double deriv) {
         auto order = topological_sort(variable);
 
+        std::unordered_map<double, double> grads;
+        grads[variable->id] = deriv;
+
         std::cout << "Topological sort completed!\n";
-        for (auto v : order)
-            std::cout << *v;
+        for (auto v : order) {
+            double d_out = grads[v->id];
+            std::cout << v->id;
+
+            for (auto [var, grad] : v->chain_rule(d_out)) {
+                std::cout << var << "Gradient: " << grad << std::endl;
+                if (var->is_leaf())
+                    var->accumulate_grad(grad);
+                else if (grads.contains(var->id))
+                    grads[var->id] += grad;
+                else
+                    grads[var->id] = grad;
+            }
+        }
 
         return;
     }

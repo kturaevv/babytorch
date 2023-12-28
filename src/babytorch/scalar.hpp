@@ -3,6 +3,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <tuple>
 #include <variant>
@@ -24,14 +25,10 @@ namespace scalar {
         static std::shared_ptr<Scalar> apply(Args&&... args);
     };
 
-    using backward1 = std::tuple<double>;
-    using backward2 = std::tuple<double, double>;
-    using backward_return_type = std::variant<backward1, backward2>;
-
     struct History {
         Context ctx;
         std::vector<std::shared_ptr<Scalar>> inputs;
-        std::function<backward_return_type(Context&, double)> backward;
+        std::function<std::array<double, 2>(Context&, double)> backward;
     };
 
     struct Scalar {
@@ -215,7 +212,8 @@ namespace scalar {
         void backward();
         void accumulate_grad(double d_x);
         std::vector<std::shared_ptr<Scalar>> parents();
-        std::variant<backward_return_type> chain_rule(double deriv);
+        std::vector<std::tuple<std::shared_ptr<Scalar>, double>> chain_rule(
+            double deriv);
 
         static std::shared_ptr<Scalar> create(double data);
         static std::shared_ptr<Scalar> create(History history, double data);

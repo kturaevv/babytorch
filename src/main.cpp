@@ -1,12 +1,12 @@
 #include <iostream>
 #include <memory>
 
-#include <fmt/core.h>
+// #include <fmt/core.h>
 
 #include "./babytorch/scalar.hpp"
 
 int main() {
-    fmt::print("Auto-diff project!\n");
+    // fmt::print("Auto-diff project!\n");
 
     using namespace scalar;
 

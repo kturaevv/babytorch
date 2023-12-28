@@ -1,3 +1,4 @@
+#include <array>
 #include <cassert>
 #include <functional>
 #include <iostream>
@@ -46,10 +47,21 @@ namespace scalar {
         return parents().empty();
     }
 
-    std::variant<backward_return_type> Scalar::chain_rule(double deriv) {
+    void Scalar::accumulate_grad(double deriv) {
+        this->grad += deriv;
+        return;
+    }
+
+    std::vector<std::tuple<std::shared_ptr<Scalar>, double>> Scalar::chain_rule(
+        double deriv) {
         auto history = this->history;
-        auto grads = history.backward(history.ctx, deriv);
-        return grads;
+        std::array<double, 2> grads = history.backward(history.ctx, deriv);
+
+        std::vector<std::tuple<std::shared_ptr<Scalar>, double>> vals;
+        for (size_t i = 0; i < history.inputs.size() && i < 2; i++)
+            vals.emplace_back(history.inputs[i], grads[i]);
+
+        return vals;
     }
 
     void Scalar::backward() {

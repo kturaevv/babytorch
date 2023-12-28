@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include "autodiff.hpp"
@@ -10,7 +11,7 @@ namespace functions {
 
     struct Func {
         static double forward(double x, double y) noexcept;
-        static std::tuple<double> backward(double x, double y) noexcept;
+        static std::array<double, 2> backward(double x, double y) noexcept;
     };
 
     struct Id : Func {
@@ -19,8 +20,9 @@ namespace functions {
             return operators::id(self);
         }
 
-        static std::tuple<double> backward(const Context ctx, const double deriv) {
-            return 1.0;
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
+            return { 1.0 };
         }
     };
 
@@ -30,7 +32,8 @@ namespace functions {
             return operators::neg(self);
         }
 
-        static std::tuple<double> backward(const Context ctx, const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             double self = ctx.saved_values[0];
             return { 1.0 };
         }
@@ -42,7 +45,8 @@ namespace functions {
             return operators::inv(self);
         }
 
-        static std::tuple<double> backward(const Context ctx, const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             double self = ctx.saved_values[0];
             return { operators::inv_back(self, deriv) };
         }
@@ -54,7 +58,8 @@ namespace functions {
             return operators::relu(self);
         }
 
-        static std::tuple<double> backward(const Context ctx, const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             double self = ctx.saved_values[0];
             return { operators::relu_back(self, deriv) };
         }
@@ -66,7 +71,8 @@ namespace functions {
             return operators::sigmoid(self);
         }
 
-        static std::tuple<double> backward(const Context ctx, const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             double self = ctx.saved_values[0];
             return { operators::sigmoid_back(self, deriv) };
         }
@@ -78,7 +84,8 @@ namespace functions {
             return operators::log_func(self);
         }
 
-        static std::tuple<double> backward(const Context ctx, const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             double self = ctx.saved_values[0];
             return { operators::log_back(self, deriv) };
         }
@@ -90,7 +97,8 @@ namespace functions {
             return operators::exp_func(self);
         }
 
-        static std::tuple<double> backward(const Context ctx, const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             double self = ctx.saved_values[0];
             return { self * deriv };
         }
@@ -102,8 +110,8 @@ namespace functions {
             return operators::add(self, other);
         }
 
-        static std::tuple<double, double> backward(const Context ctx,
-                                                   const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             double self = ctx.saved_values[0];
             return { deriv, deriv };
         }
@@ -115,8 +123,8 @@ namespace functions {
             return operators::mul(self, other);
         }
 
-        static std::tuple<double, double> backward(const Context ctx,
-                                                   const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             double self = ctx.saved_values[0];
             double other = ctx.saved_values[1];
             return { other * deriv, self * deriv };
@@ -128,8 +136,8 @@ namespace functions {
             return operators::lt(self, other);
         }
 
-        static std::tuple<double, double> backward(const Context ctx,
-                                                   const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             return { 0.0, 0.0 };
         }
     };
@@ -139,8 +147,8 @@ namespace functions {
             return operators::eq(self, other);
         }
 
-        static std::tuple<double, double> backward(const Context ctx,
-                                                   const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             return { 0.0, 0.0 };
         }
     };
@@ -151,8 +159,8 @@ namespace functions {
             return operators::max(self, other);
         }
 
-        static std::tuple<double, double> backward(const Context ctx,
-                                                   const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             return { 0.0, 0.0 };
         }
     };
@@ -162,8 +170,8 @@ namespace functions {
             return operators::is_close(self, other);
         }
 
-        static std::tuple<double, double> backward(const Context ctx,
-                                                   const double deriv) {
+        static std::array<double, 2> backward(const Context ctx,
+                                              const double deriv) {
             return { 0.0, 0.0 };
         }
     };
