@@ -43,6 +43,12 @@ namespace scalar {
 
         // constructors
 
+        Scalar()
+            : data(0)
+            , id(next_id++)
+            , grad(0) {
+        }
+
         Scalar(double data)
             : data(data)
             , id(next_id++)
@@ -215,6 +221,7 @@ namespace scalar {
         std::vector<std::tuple<std::shared_ptr<Scalar>, double>> chain_rule(
             double deriv);
 
+        static std::shared_ptr<Scalar> create();
         static std::shared_ptr<Scalar> create(double data);
         static std::shared_ptr<Scalar> create(History history, double data);
     };

@@ -15,6 +15,10 @@
 namespace scalar {
     using namespace functions;
 
+    std::shared_ptr<Scalar> Scalar::create() {
+        return std::make_shared<Scalar>();
+    }
+
     std::shared_ptr<Scalar> Scalar::create(double data) {
         return std::make_shared<Scalar>(data);
     }
