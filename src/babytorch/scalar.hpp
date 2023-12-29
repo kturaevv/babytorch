@@ -219,7 +219,7 @@ namespace scalar {
         static std::shared_ptr<Scalar> create(History history, double data);
     };
 
-    template <typename F = Func, typename... Args>
+    template <typename F, typename... Args>
     std::shared_ptr<scalar::Scalar> ScalarFunction::apply(Args&&... args) {
         Context ctx;
 
