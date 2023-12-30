@@ -34,31 +34,32 @@ namespace scalar {
     struct Scalar {
         // members
 
+        History history;
+
         double id;
         double data;
         double grad;
-        History history;
 
         static inline double next_id = 0.0;
 
         // constructors
 
         Scalar()
-            : data(0)
-            , id(next_id++)
+            : id(next_id++)
+            , data(0)
             , grad(0) {
         }
 
         Scalar(double data)
-            : data(data)
-            , id(next_id++)
+            : id(next_id++)
+            , data(data)
             , grad(0) {
         }
 
         Scalar(History history, double data)
             : history(history)
-            , data(data)
             , id(next_id++)
+            , data(data)
             , grad(0) {
         }
 
