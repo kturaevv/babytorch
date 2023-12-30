@@ -15,9 +15,8 @@ namespace functions {
             return operators::id(self);
         }
 
-        static std::array<double, 2> backward(const Context& ctx,
-                                              const double deriv) {
-            return { 1.0 };
+        static std::array<double, 2> backward(const Context&, const double deriv) {
+            return { 1.0 * deriv };
         }
     };
 
@@ -27,10 +26,8 @@ namespace functions {
             return operators::neg(self);
         }
 
-        static std::array<double, 2> backward(const Context& ctx,
-                                              const double deriv) {
-            double self = ctx.saved_values[0];
-            return { 1.0 };
+        static std::array<double, 2> backward(const Context&, const double deriv) {
+            return { -1.0 * deriv };
         }
     };
 
@@ -106,9 +103,7 @@ namespace functions {
             return operators::add(self, other);
         }
 
-        static std::array<double, 2> backward(const Context& ctx,
-                                              const double deriv) {
-            double self = ctx.saved_values[0];
+        static std::array<double, 2> backward(const Context&, const double deriv) {
             return { deriv, deriv };
         }
     };
@@ -129,25 +124,21 @@ namespace functions {
     };
 
     struct Lt {
-        static double forward(Context& ctx, const double self,
-                              const double other) {
+        static double forward(Context&, const double self, const double other) {
             return operators::lt(self, other);
         }
 
-        static std::array<double, 2> backward(const Context& ctx,
-                                              const double deriv) {
+        static std::array<double, 2> backward(const Context&, const double) {
             return { 0.0, 0.0 };
         }
     };
 
     struct Eq {
-        static double forward(Context& ctx, const double self,
-                              const double other) {
+        static double forward(Context&, const double self, const double other) {
             return operators::eq(self, other);
         }
 
-        static std::array<double, 2> backward(const Context& ctx,
-                                              const double deriv) {
+        static std::array<double, 2> backward(const Context&, const double) {
             return { 0.0, 0.0 };
         }
     };
@@ -159,20 +150,17 @@ namespace functions {
             return operators::max(self, other);
         }
 
-        static std::array<double, 2> backward(const Context& ctx,
-                                              const double deriv) {
+        static std::array<double, 2> backward(const Context&, const double) {
             return { 0.0, 0.0 };
         }
     };
 
     struct Is_close {
-        static double forward(Context& ctx, const double self,
-                              const double other) {
+        static double forward(Context&, const double self, const double other) {
             return operators::is_close(self, other);
         }
 
-        static std::array<double, 2> backward(const Context& ctx,
-                                              const double deriv) {
+        static std::array<double, 2> backward(const Context&, const double) {
             return { 0.0, 0.0 };
         }
     };

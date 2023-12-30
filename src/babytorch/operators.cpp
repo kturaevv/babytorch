@@ -76,7 +76,7 @@ namespace operators {
     }
 
     double inv_back(const double x, const double d) {
-        return -1.0 / (x * x + EPS);
+        return -1.0 / (x * x + EPS) * d;
     }
 
     double relu_back(const double x, const double d) {
