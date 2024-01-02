@@ -1,3 +1,6 @@
+# Variable from CMakeLists
+PROJECT_NAME := `grep -oP 'set\(PROJECT_NAME \K[^\)]+' CMakeLists.txt`
+
 # list available commands
 default: 
 	just -l
@@ -12,14 +15,14 @@ build:
 
 # run generated binary
 run:
-	./build/cpp_template
+	./build/{{PROJECT_NAME}}
 
 test:
 	./build/tests
 	
 # rm generated binary
 clean:
-	rm ./build/cpp_template
+	rm ./build/{{PROJECT_NAME}}
 
 # re-{clean,build,run}
 re: clean build run test

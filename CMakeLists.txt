@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-set(PROJECT_NAME cpp_template)
+set(PROJECT_NAME engine)
 set(TEST_NAME tests)
 
 project(${PROJECT_NAME} VERSION 1.0)
@@ -31,7 +31,7 @@ list(APPEND CMAKE_MODULE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/"
 )
 
-# Set source files
+# Set source files to include
 file(GLOB_RECURSE SOURCE_FILES "src/*.[ch]pp")
 file(GLOB_RECURSE TEST_FILES "tests/*.[ch]pp")
 
@@ -42,15 +42,28 @@ find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(Catch2 3 REQUIRED)
 
+target_compile_options(
+    ${PROJECT_NAME} 
+        PUBLIC 
+            -fsanitize=address 
+            -fno-omit-frame-pointer 
+            -g
+)
+
 target_link_libraries(
     ${PROJECT_NAME}
-        PRIVATE fmt::fmt
-        PRIVATE fmt::fmt-header-only
-        PRIVATE spdlog::spdlog_header_only
+        PUBLIC
+            -fsanitize=address
+        PRIVATE 
+            fmt::fmt
+            fmt::fmt-header-only
+            spdlog::spdlog_header_only
 )
+
 target_link_libraries(
     ${TEST_NAME} 
-    PRIVATE Catch2::Catch2WithMain
+        PRIVATE 
+            Catch2::Catch2WithMain
 )
 
 # ----------- [Optional] ------------ # 
@@ -58,9 +71,6 @@ target_link_libraries(
 message(STATUS 
     "Adding cmake directory for access: "
      ${CMAKE_CURRENT_SOURCE_DIR}
-)
-list(APPEND CMAKE_MODULE_PATH
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/"
 )
 
 if (LIST_SOURCE_FILES MATCHES ON)
