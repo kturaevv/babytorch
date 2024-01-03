@@ -268,15 +268,15 @@ TEST_CASE("Inverse Function Tests") {
 // Tests for inv_back function
 TEST_CASE("Inverse Back Function Tests") {
     SECTION("Inverse Back with Positive Values") {
-        REQUIRE_THAT(inv_back(2.0, 3.0), WithinAbs(-0.25, EPS));
+        REQUIRE_THAT(inv_back(2.0, 3.0), WithinAbs(-0.75, EPS));
     }
 
     SECTION("Inverse Back with Negative Values") {
-        REQUIRE_THAT(inv_back(-2.0, 3.0), WithinAbs(-0.25, EPS));
+        REQUIRE_THAT(inv_back(-2.0, 3.0), WithinAbs(-0.75, EPS));
     }
 
     SECTION("Inverse Back with Zero") {
-        REQUIRE(inv_back(0.0, 3.0) == -100000000.0);
+        REQUIRE(inv_back(0.0, 3.0) == -300000000.0);
     }
 }
 
