@@ -40,6 +40,7 @@ add_executable(${TEST_NAME} ${TEST_FILES})
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(Boost REQUIRED)
 find_package(Catch2 3 REQUIRED)
 
 target_compile_options(

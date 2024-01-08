@@ -1,6 +1,7 @@
 {
   "dependencies": [
     "catch2",
+    "boost",
     "spdlog",
     "fmt"
   ]
