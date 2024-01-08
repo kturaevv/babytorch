@@ -16,6 +16,9 @@
     "clang-format.language.cpp.enable": true,
     "clang-format.language.cpp.style": "file",
     "clang-format.assumeFilename": ".clang-format",
+    "clangd.arguments": [
+        "-std=c++20",
+    ],
     "C_Cpp.workspaceParsingPriority": "high",
     "cmake.format.allowOptionalArgumentIndentation": true,
     "cmake.automaticReconfigure": true,
@@ -42,7 +45,7 @@
     "debug.toolBarLocation": "docked",
     "diffEditor.experimental.showMoves": true,
     "diffEditor.experimental.useVersion2": true,
-    "docsView.documentationView.updateMode": "sticky",
+    "docsView.documentationView.updateMode": "live",
     "editor.autoClosingBrackets": "beforeWhitespace",
     "editor.bracketPairColorization.enabled": false,
     "editor.codeLens": false,
