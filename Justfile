@@ -5,9 +5,9 @@ PROJECT_NAME := `grep -oP 'set\(PROJECT_NAME \K[^\)]+' CMakeLists.txt`
 default: 
 	just -l
 
-# init the project ./build cmake
+# initialize the project with cmake
 init:
-	mkdir -p ./build && cd ./build && cmake ..
+	mkdir -p ./build && cmake --preset default -S `pwd`/ -B `pwd`/build
 
 # rebuild with cmake
 build:
@@ -22,7 +22,7 @@ test:
 	
 # rm generated binary
 clean:
-	rm ./build/{{PROJECT_NAME}}
+	rm -rf ./build 
 
 # re-{clean,build,run}
 re: clean build run test
