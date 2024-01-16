@@ -63,12 +63,13 @@ check_tool ldd 0.0 false ||
 }
 
 # tools
-check_tool clang-format 15.0
+check_tool clang-format-15
 check_tool valgrind
 check_tool kcachegrind
 check_tool cppcheck
 check_tool clang-tidy
 check_tool python3
+check_tool autoconf
 
 printf "\n"
 if [ $exit_status -eq 0 ]; then
