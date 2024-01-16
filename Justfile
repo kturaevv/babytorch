@@ -20,12 +20,12 @@ run:
 test:
 	./build/tests
 	
-# rm generated binary
-clean:
+# reset the build environment to clean state
+reset:
 	rm -rf ./build 
 
-# re-{clean,build,run}
-re: clean build run test
+# re-{build,run,test}
+re: build run test
 
 # visualize the dependency graph
 deps:
