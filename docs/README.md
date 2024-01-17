@@ -17,7 +17,7 @@ Currently is a fully developed auto-differentiation engine built around scalar v
 
 An engine was built around scalars at first to prototype the architecture that would enable the project to be easily extensible, loosely coupled and highly modular. For implementation details you may look [here](../src/babytorch/scalar.hpp). 
 
-Now adding Tensors and Tensor Storage. In progress ... 
+Now adding support for Tensors, i.e. for n-dimensional arrays. In progress ... 
 
 ![28](https://geps.dev/progress/28)
 
@@ -84,18 +84,25 @@ just test
 
 ### Todo list:
 > - [x] Setup project build system and structure
-> - [x] Add Scalar auto-differention
->   - [x] Add basic operators
->   - [x] Add operators tests
->   - [x] Add basic functions
+> - [x] Add basic operators
+> - [x] Add operators tests
+> - [x] Add Scalar autograd
 >   - [x] Add Scalar
+>   - [x] Add ScalarFunction
 >   - [x] Add forward functions
 >   - [x] Add backward functions
 >   - [x] Add Scalar operator overloads
 >   - [x] Add Scalar tests
 >   - [x] Add topological sort for backpropagation
 >   - [x] Add backpropagation
-- [ ] Tensor and Tensor storage
+- [ ] Add Tensor autograd 
+    - [ ] Add Tensor
+    - [ ] Add TensorFunction
+    - [ ] Add TensorStorage
+    - [ ] Add forward functions
+    - [ ] Add backward functions
+    - [ ] Add Tensor operator overloads
+    - [ ] Add backprop
 - [ ] CPU parallelization
 - [ ] GPU parallelization
 - [ ] Python bindings
