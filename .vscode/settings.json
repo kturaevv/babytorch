@@ -17,7 +17,7 @@
     "clang-format.language.cpp.style": "file",
     "clang-format.assumeFilename": ".clang-format",
     "clangd.arguments": [
-        "-std=c++20",
+        "-std=c++20"
     ],
     "C_Cpp.workspaceParsingPriority": "high",
     "cmake.format.allowOptionalArgumentIndentation": true,
@@ -106,4 +106,9 @@
     "workbench.tree.renderIndentGuides": "always",
     "dotnet.defaultSolution": "disable",
     "svg.preview.background": "editor",
+    "search.exclude": {
+        "**/build": true,
+        "**/extern": true,
+        "**/.cache": true,
+    }
 }
