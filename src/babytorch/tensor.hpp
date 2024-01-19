@@ -1,9 +1,14 @@
 #pragma once
 
 #include <functional>
+#include <iostream>
+#include <memory>
 
 #include "autodiff.hpp"
+#include "generic_operators.hpp"
+#include "operators.hpp"
 #include "tensor_data.hpp"
+#include "utils.hpp"
 
 namespace tensor {
 
@@ -36,23 +41,33 @@ namespace tensor {
 
         Tensor(TensorData data)
             : id(next_id++)
-            , data(data) {
+            , data(std::move(data)) {
         }
 
         Tensor(History history, TensorData data)
             : id(next_id++)
-            , data(data)
+            , data(std::move(data))
             , history(history) {
         }
 
-        Tensor(Tensor* v)
-            : id(next_id++) {
-            this->data = v->data;
-            this->history = v->history;
-        }
+        // Tensor(Tensor* v)
+        //     : id(next_id++) {
+        //     this->data = v->data;
+        //     this->history = v->history;
+        // }
 
         template <typename... Args>
-        static Tensor create(Args... dims);
+        static Tensor create(Args... dims) {
+            UserShape input_shapes{};
+            (input_shapes.push_back(dims), ...);
+
+            double storage_size = generic_operators::prod(input_shapes);
+            Storage storage = utils::rand(storage_size);
+            TensorData _data(std::move(storage), input_shapes);
+
+            return Tensor(std::move(_data));
+        }
+
         static Tensor create(TensorData data);
         static Tensor create(History hist, TensorData data);
         static Tensor create(Tensor* tensor);
