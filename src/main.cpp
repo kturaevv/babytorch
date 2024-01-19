@@ -32,7 +32,7 @@ int main() {
 
     result->backward();
 
-    auto a = Tensor::create(3, 3, 5);
+    auto a = Tensor(3, 3, 5);
     std::cout << "Tensor storage: ";
     utils::print_vec(*a.data._storage);
 

@@ -50,24 +50,26 @@ namespace tensor {
             , history(history) {
         }
 
+        template <typename... Ints>
+        Tensor(Ints... dims)
+            : id(next_id++) {
+            UserShape input_shapes{};
+            (input_shapes.push_back(dims), ...);
+
+            double storage_size = generic_operators::prod(input_shapes);
+            Storage storage = utils::rand(storage_size);
+
+            data = TensorData(std::move(storage), input_shapes);
+        }
+
         // Tensor(Tensor* v)
         //     : id(next_id++) {
         //     this->data = v->data;
         //     this->history = v->history;
         // }
 
-        template <typename... Args>
-        static Tensor create(Args... dims) {
-            UserShape input_shapes{};
-            (input_shapes.push_back(dims), ...);
-
-            double storage_size = generic_operators::prod(input_shapes);
-            Storage storage = utils::rand(storage_size);
-            TensorData _data(std::move(storage), input_shapes);
-
-            return Tensor(std::move(_data));
-        }
-
+        template <typename... Ints>
+        static Tensor create(Ints... dims);
         static Tensor create(TensorData data);
         static Tensor create(History hist, TensorData data);
         static Tensor create(Tensor* tensor);
