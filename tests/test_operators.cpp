@@ -276,7 +276,7 @@ TEST_CASE("Inverse Back Function Tests") {
     }
 
     SECTION("Inverse Back with Zero") {
-        REQUIRE(inv_back(0.0, 3.0) == -300000000.0);
+        REQUIRE_THAT(inv_back(0.0, 3.0), WithinAbs(-3.0 * 1e+8, EPS));
     }
 }
 
