@@ -3,6 +3,9 @@
 #include <memory>
 #include <vector>
 
+#include "generic_operators.hpp"
+#include "utils.hpp"
+
 namespace tensor_data {
 
     // Type - aliases
@@ -30,8 +33,14 @@ namespace tensor_data {
         Strides _strides;
         UserShape shape;
         UserStrides strides;
+        size_t size;
 
         TensorData(){};
+
+        TensorData(UserShape dims) {
+            size = generic_operators::prod(dims);
+            _storage = utils::rand(size);
+        }
 
         TensorData(Storage storage, UserShape shape)
             : _storage(std::move(storage))

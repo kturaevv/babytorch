@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "autodiff.hpp"
-#include "generic_operators.hpp"
 #include "operators.hpp"
 #include "tensor_data.hpp"
 #include "utils.hpp"
@@ -19,7 +18,7 @@ namespace tensor {
 
     struct History {
         Context ctx;
-        std::vector<std::shared_ptr<Tensor>> inputs;
+        std::vector<Tensor*> inputs;
         std::function<std::array<double, 2>(Context&, double)> backward;
     };
 
@@ -55,12 +54,10 @@ namespace tensor {
             : id(next_id++) {
             UserShape input_shapes{};
             (input_shapes.push_back(dims), ...);
-
-            double storage_size = generic_operators::prod(input_shapes);
-            Storage storage = utils::rand(storage_size);
-
-            data = TensorData(std::move(storage), input_shapes);
+            data = TensorData(input_shapes);
         }
+
+        Tensor(const Tensor& other) = delete;
 
         // Tensor(Tensor* v)
         //     : id(next_id++) {
