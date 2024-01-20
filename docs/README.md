@@ -97,6 +97,7 @@ just test
 >   - [x] Add backpropagation
 - [ ] Add Tensor autograd 
     - [ ] Add Tensor
+    - [ ] Add TensorOperations
     - [ ] Add TensorFunction
     - [ ] Add TensorStorage
     - [ ] Add forward functions
