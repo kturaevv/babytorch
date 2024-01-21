@@ -54,16 +54,11 @@ namespace tensor {
             : id(next_id++) {
             UserShape input_shapes{};
             (input_shapes.push_back(dims), ...);
+
             data = TensorData(input_shapes);
         }
 
         Tensor(const Tensor& other) = delete;
-
-        // Tensor(Tensor* v)
-        //     : id(next_id++) {
-        //     this->data = v->data;
-        //     this->history = v->history;
-        // }
 
         template <typename... Ints>
         static Tensor create(Ints... dims);
