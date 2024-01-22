@@ -12,13 +12,15 @@ namespace tensor_data {
     }
 
     UserStrides strides_from_shape(UserShape shape) {
-        UserStrides layout{ 1 };
+        UserStrides strides{ 1 };
         size_t offset = 1;
-        for (auto s : shape | std::views::reverse) {
-            layout.push_back(s * offset);
+
+        for (auto s : shape | std::views::drop(1) | std::views::reverse) {
+            strides.insert(strides.begin(), s * offset);
             offset *= s;
         }
-        return layout;
+
+        return strides;
     }
 
     size_t TensorData::index(UserIndex index) {
