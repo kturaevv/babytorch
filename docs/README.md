@@ -96,14 +96,15 @@ just test
 >   - [x] Add topological sort for backpropagation
 >   - [x] Add backpropagation
 - [ ] Add Tensor autograd 
-    - [ ] Add Tensor
+    - [x] Add Tensor
+    - [x] Add TensorStorage
+    - [x] Add indexing, shape, strides
     - [ ] Add TensorOperations
-    - [ ] Add TensorFunction
-    - [ ] Add TensorStorage
+    - [ ] Add TensorFunctions
     - [ ] Add forward functions
     - [ ] Add backward functions
-    - [ ] Add Tensor operator overloads
-    - [ ] Add backprop
+    - [ ] Add operator overloads
+    - [ ] Add backpropagation
 - [ ] CPU parallelization
 - [ ] GPU parallelization
 - [ ] Python bindings
