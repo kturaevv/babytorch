@@ -5,6 +5,7 @@
 
 #include <boost/lambda/lambda.hpp>
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 
 #include "./babytorch/operators.hpp"
 #include "./babytorch/scalar.hpp"
@@ -28,13 +29,12 @@ int main() {
     auto j = Scalar::create(5.0);
 
     std::shared_ptr<Scalar> result = (x * y + z - k / j);
-    std::cout << "Results: " << *result;
+    fmt::print("Results: {}", *result);
 
     result->backward();
 
     auto a = Tensor(3, 3, 5);
-    std::cout << "Tensor storage: ";
-    utils::print_vec(*a.data._storage);
-
+    fmt::print("Tensor storage: {}\n", *a.data._storage);
+    fmt::print("Tensor strides: {}\n", a.data.strides);
     return 0;
 }

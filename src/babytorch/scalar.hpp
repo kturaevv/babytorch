@@ -9,6 +9,8 @@
 #include <variant>
 #include <vector>
 
+#include <fmt/core.h>
+
 #include "autodiff.hpp"
 #include "functions.hpp"
 
@@ -241,3 +243,17 @@ namespace scalar {
         return Scalar::create(history, result);
     }
 }  // namespace scalar
+
+template <>
+struct fmt::formatter<scalar::Scalar> {
+    template <typename ParseContext>
+    constexpr auto parse(ParseContext& ctx) {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const scalar::Scalar& s, FormatContext& ctx) {
+        return fmt::format_to(ctx.out(), "Scalar(data={}, grad={})\n", s.data,
+                              s.grad);
+    }
+};
