@@ -73,133 +73,133 @@ namespace scalar {
         // overloads
 
         // +
-        friend auto operator+(std::shared_ptr<Scalar> self,
-                              std::shared_ptr<Scalar> other) {
+        friend auto operator+(const std::shared_ptr<Scalar> self,
+                              const std::shared_ptr<Scalar> other) {
             return ScalarFunction::apply<Add>(self, other);
         }
 
         template <typename T>
-        friend auto operator+(std::shared_ptr<Scalar> self, const T& rhs) {
+        friend auto operator+(const std::shared_ptr<Scalar> self, const T& rhs) {
             auto other = Scalar::create(rhs);
             return ScalarFunction::apply<Add>(self, other);
         }
 
         template <typename T>
-        friend auto operator+(const T& lhs, std::shared_ptr<Scalar> other) {
+        friend auto operator+(const T& lhs, const std::shared_ptr<Scalar> other) {
             auto self = Scalar::create(lhs);
             return ScalarFunction::apply<Add>(self, other);
         }
 
         // *
 
-        friend auto operator*(std::shared_ptr<Scalar> self,
-                              std::shared_ptr<Scalar> other) {
+        friend auto operator*(const std::shared_ptr<Scalar> self,
+                              const std::shared_ptr<Scalar> other) {
             return ScalarFunction::apply<Mul>(self, other);
         }
 
         template <typename T>
-        friend auto operator*(std::shared_ptr<Scalar> self, const T& rhs) {
+        friend auto operator*(const std::shared_ptr<Scalar> self, const T& rhs) {
             auto other = Scalar::create(rhs);
             return ScalarFunction::apply<Mul>(self, other);
         }
 
         template <typename T>
-        friend auto operator*(const T& lhs, std::shared_ptr<Scalar> other) {
+        friend auto operator*(const T& lhs, const std::shared_ptr<Scalar> other) {
             auto self = Scalar::create(lhs);
             return ScalarFunction::apply<Mul>(self, other);
         }
 
         // -
 
-        friend auto operator-(std::shared_ptr<Scalar> self,
-                              std::shared_ptr<Scalar> other) {
+        friend auto operator-(const std::shared_ptr<Scalar> self,
+                              const std::shared_ptr<Scalar> other) {
             return self + ScalarFunction::apply<Neg>(other);
         }
 
         template <typename T>
-        friend auto operator-(std::shared_ptr<Scalar> self, const T& rhs) {
+        friend auto operator-(const std::shared_ptr<Scalar> self, const T& rhs) {
             auto other = Scalar::create(rhs);
             return self + ScalarFunction::apply<Neg>(other);
         }
 
         template <typename T>
-        friend auto operator-(const T& lhs, std::shared_ptr<Scalar> other) {
+        friend auto operator-(const T& lhs, const std::shared_ptr<Scalar> other) {
             auto self = Scalar::create(lhs);
             return self + ScalarFunction::apply<Neg>(other);
         }
 
         // /
 
-        friend auto operator/(std::shared_ptr<Scalar> self,
-                              std::shared_ptr<Scalar> other) {
+        friend auto operator/(const std::shared_ptr<Scalar> self,
+                              const std::shared_ptr<Scalar> other) {
             return self * ScalarFunction::apply<Inv>(other);
         }
 
         template <typename T>
-        friend auto operator/(std::shared_ptr<Scalar> self, const T& rhs) {
+        friend auto operator/(const std::shared_ptr<Scalar> self, const T& rhs) {
             auto other = Scalar::create(rhs);
             return self * ScalarFunction::apply<Inv>(other);
         }
 
         template <typename T>
-        friend auto operator/(const T& lhs, std::shared_ptr<Scalar> other) {
+        friend auto operator/(const T& lhs, const std::shared_ptr<Scalar> other) {
             auto self = Scalar::create(lhs);
             return self * ScalarFunction::apply<Inv>(other);
         }
 
         // <
 
-        friend auto operator<(std::shared_ptr<Scalar> self,
-                              std::shared_ptr<Scalar> other) {
+        friend auto operator<(const std::shared_ptr<Scalar> self,
+                              const std::shared_ptr<Scalar> other) {
             return ScalarFunction::apply<Lt>(self, other);
         }
 
         template <typename T>
-        friend auto operator<(std::shared_ptr<Scalar> self, const T& rhs) {
+        friend auto operator<(const std::shared_ptr<Scalar> self, const T& rhs) {
             auto other = Scalar::create(rhs);
             return ScalarFunction::apply<Lt>(self, other);
         }
 
         template <typename T>
-        friend auto operator<(const T& lhs, std::shared_ptr<Scalar> other) {
+        friend auto operator<(const T& lhs, const std::shared_ptr<Scalar> other) {
             auto self = Scalar::create(lhs);
             return ScalarFunction::apply<Lt>(self, other);
         }
 
         // >
 
-        friend auto operator>(std::shared_ptr<Scalar> self,
-                              std::shared_ptr<Scalar> other) {
+        friend auto operator>(const std::shared_ptr<Scalar> self,
+                              const std::shared_ptr<Scalar> other) {
             return ScalarFunction::apply<Lt>(other, self);
         }
 
         template <typename T>
-        friend auto operator>(std::shared_ptr<Scalar> self, const T& rhs) {
+        friend auto operator>(const std::shared_ptr<Scalar> self, const T& rhs) {
             auto other = Scalar::create(rhs);
             return ScalarFunction::apply<Lt>(other, self);
         }
 
         template <typename T>
-        friend auto operator>(const T& lhs, std::shared_ptr<Scalar> other) {
+        friend auto operator>(const T& lhs, const std::shared_ptr<Scalar> other) {
             auto self = Scalar::create(lhs);
             return ScalarFunction::apply<Lt>(other, self);
         }
 
         // ==
 
-        friend auto operator==(std::shared_ptr<Scalar> self,
-                               std::shared_ptr<Scalar> other) {
+        friend auto operator==(const std::shared_ptr<Scalar> self,
+                               const std::shared_ptr<Scalar> other) {
             return ScalarFunction::apply<Eq>(self, other);
         }
 
         template <typename T>
-        friend auto operator==(std::shared_ptr<Scalar> self, const T& rhs) {
+        friend auto operator==(const std::shared_ptr<Scalar> self, const T& rhs) {
             auto other = Scalar::create(rhs);
             return ScalarFunction::apply<Eq>(self, other);
         }
 
         template <typename T>
-        friend auto operator==(const T& lhs, std::shared_ptr<Scalar> other) {
+        friend auto operator==(const T& lhs, const std::shared_ptr<Scalar> other) {
             auto self = Scalar::create(lhs);
             return ScalarFunction::apply<Eq>(other, self);
         }
@@ -240,4 +240,4 @@ namespace scalar {
 
         return Scalar::create(history, result);
     }
-}
+}  // namespace scalar
