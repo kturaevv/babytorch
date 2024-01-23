@@ -49,26 +49,34 @@ namespace tensor {
             , history(history) {
         }
 
-        template <typename... Ints>
-        Tensor(Ints... dims)
+        template <typename... Sizes>
+        Tensor(Sizes... dims)
             : id(next_id++) {
+            utils::check_dimensions(dims...);
+
             UserShape input_shapes{};
             (input_shapes.push_back(dims), ...);
 
-            data = TensorData(input_shapes);
+            this->data = TensorData(input_shapes);
         }
 
         Tensor(const Tensor& other) = delete;
 
-        template <typename... Ints>
-        static Tensor create(Ints... dims);
+        template <typename... Sizes>
+        static Tensor create(Sizes... dims);
         static Tensor create(TensorData data);
         static Tensor create(History hist, TensorData data);
         static Tensor create(Tensor* tensor);
         static Tensor create(std::vector<double> data);
 
-        // functions
+        // overloads
 
+        // friend std::ostream& operator<<(std::ostream& os, Tensor& v) {
+        //     os << "Tensor(data=" << v.data << ", grad=" << v.grad << ")\n";
+        //     return os;
+        // }
+
+        // functions
         size_t size();
         size_t dims();
         UserShape shape();
@@ -91,4 +99,6 @@ namespace tensor {
         std::vector<Tensor> parents();
         std::vector<std::tuple<Tensor, double>> chain_rule(double deriv);
     };
+
+    // helper functions
 }  // namespace tensor

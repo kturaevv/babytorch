@@ -2,17 +2,24 @@
 
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <vector>
 
 namespace utils {
-    std::unique_ptr<std::vector<double>> rand(size_t size);
-    std::unique_ptr<std::vector<double>> rand(size_t size, int min, int max);
+    std::unique_ptr<std::vector<double>> rand(const size_t size);
+    std::unique_ptr<std::vector<double>> rand(const size_t size, const int min,
+                                              const int max);
 
-    template <typename T>
-    void print_vec(std::vector<T>& vec) {
-        std::cout << "[ ";
-        for (auto element : vec)
-            std::cout << element << " ";
-        std::cout << "]\n";
+    template <typename... Dims>
+    void check_dimensions(const Dims... dimensions) {
+        (([&]() {
+             if (dimensions < 0) {
+                 std::ostringstream oss;
+                 oss << "Dimension size cannot be negative: " << dimensions;
+                 throw std::invalid_argument(oss.str());
+             }
+         }()),
+         ...);
     }
+
 }  // namespace utils
