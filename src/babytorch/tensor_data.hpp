@@ -42,36 +42,39 @@ namespace tensor_data {
 
         TensorData(){};
 
-        TensorData(UserShape shape) {
-            size = generic_operators::prod(shape);
-            _storage = utils::rand(size);
-            strides = strides_from_shape(shape);
-            dims = strides.size();
+        TensorData(UserShape user_shape) {
+            this->size = generic_operators::prod(user_shape);
+            this->_storage = utils::rand(size);
+            this->strides = strides_from_shape(user_shape);
+            this->shape = user_shape;
+            this->dims = strides.size();
         }
 
         TensorData(Storage storage, UserShape shape)
             : _storage(std::move(storage))
             , shape(shape) {
-            strides = strides_from_shape(shape);
-            size = generic_operators::prod(shape);
-            dims = strides.size();
+            this->strides = strides_from_shape(shape);
+            this->size = generic_operators::prod(shape);
+            this->dims = strides.size();
         }
 
         TensorData(Storage storage, UserShape shape, UserStrides strides)
             : _storage(std::move(storage))
             , shape(shape)
             , strides(strides) {
-            size = generic_operators::prod(shape);
-            dims = strides.size();
+            this->size = generic_operators::prod(shape);
+            this->dims = strides.size();
         }
 
+        void info();
         bool is_contiguous();
         UserIndex sample();
-        size_t index(UserIndex index);
-        void set(UserIndex index);
-        double get(UserIndex key);
-        TensorData permute(ReOrderIndex order);
+        size_t index(const UserIndex index);
+        void set(const UserIndex index);
+        double get(const UserIndex key);
+        TensorData permute(const ReOrderIndex order);
 
-        static UserShape shape_broadcast(UserShape shape_a, UserShape shape_b);
+        static UserShape shape_broadcast(const UserShape shape_a,
+                                         const UserShape shape_b);
     };
 }  // namespace tensor_data

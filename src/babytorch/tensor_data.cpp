@@ -1,4 +1,7 @@
 #include <ranges>
+#include <sstream>
+
+#include <fmt/ranges.h>
 
 #include "tensor_data.hpp"
 
@@ -6,12 +9,12 @@ namespace tensor_data {
 
     size_t index_to_position(const Index& index, const Strides& strides) {
         size_t pos = 0;
-        for (auto i : std::ranges::views::iota(0, (int)index.size()))
+        for (auto i : std::ranges::views::iota(0ull, index.size()))
             pos += index[i] * strides[i];
         return pos;
     }
 
-    UserStrides strides_from_shape(UserShape shape) {
+    UserStrides strides_from_shape(const UserShape shape) {
         UserStrides strides{ 1 };
         size_t offset = 1;
 
@@ -23,12 +26,27 @@ namespace tensor_data {
         return strides;
     }
 
-    size_t TensorData::index(UserIndex index) {
-        std::cout << "LEN: " << index.size() << " " << strides.size();
-        return index_to_position(index, strides);
+    size_t TensorData::index(const UserIndex index) {
+        if (index.size() != this->shape.size()) {
+            fmt::print("Index {}\n", index);
+            fmt::print("Shape {}\n", shape);
+            throw std::runtime_error(
+                "IndexingError: Index must be size of shape.");
+        }
+
+        for (auto i : std::views::iota(0ull, index.size())) {
+            if (index[i] >= this->shape[i]) {
+                std::ostringstream msg;
+                msg << "IndexingError: Index " << index[i]
+                    << " is out of range for dimension " << i << ".";
+                throw std::runtime_error(msg.str());
+            }
+        }
+
+        return index_to_position(index, this->strides);
     }
 
-    double TensorData::get(UserIndex key) {
-        return (*_storage)[index(key)];
+    double TensorData::get(const UserIndex key) {
+        return (*this->_storage)[index(key)];
     }
 }  // namespace tensor_data
