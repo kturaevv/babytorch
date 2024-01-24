@@ -37,18 +37,20 @@ function check_tool() {
 }
 
 # compiler
-check_tool g++ 10.0.0 false || check_tool clang++ 11.0.0 false || {
+check_tool c++ 12.0.0 false || 
+  check_tool g++ 12.0.0 false || 
+  check_tool clang++ 15.0.0 false || {
   echo -e "${RED}No supported compiler found${NORMAL}"
   exit_status=1
 } # clang does not work for header_units exercise
 
 # build tools
 check_tool make
-check_tool cmake 3.12.0
-check_tool ccmake 3.12.0 false
+check_tool cmake 3.22.0
+check_tool ccmake 3.22.0 false
 
 # debugger
-check_tool gdb 10.0.0 false ||
+check_tool gdb 12.0.0 false ||
   check_tool lldb 11.0.0 false || {
   echo -e "${RED}No supported debugger found${NORMAL}"
   exit_status=1
@@ -56,7 +58,7 @@ check_tool gdb 10.0.0 false ||
 
 # utils
 check_tool nm
-check_tool ldd 0.0 false ||
+check_tool ldd 2.3 false ||
   check_tool otool 0.0 false || {
   echo -e "${RED}Missing ldd or otool${NORMAL}"
   exit_status=1

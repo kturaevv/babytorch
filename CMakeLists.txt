@@ -20,11 +20,13 @@ option(
 add_compile_options(-Wall -Wextra -Werror)
 
 # Set C++ standard and compile options
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 set(CMAKE_MESSAGE_LOG_LEVEL STATUS)
+
+message(STATUS "C++ compiler PATH: " ${CMAKE_CXX_COMPILER})
 
 # Include cmake module
 list(APPEND CMAKE_MODULE_PATH
