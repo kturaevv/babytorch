@@ -14,8 +14,8 @@ namespace tensor_data {
         return pos;
     }
 
-    UserStrides strides_from_shape(const UserShape shape) {
-        UserStrides strides{ 1 };
+    Strides strides_from_shape(const Shape shape) {
+        Strides strides{ 1 };
         size_t offset = 1;
 
         for (auto s : shape | std::views::drop(1) | std::views::reverse) {
@@ -26,7 +26,7 @@ namespace tensor_data {
         return strides;
     }
 
-    size_t TensorData::index(const UserIndex index) {
+    size_t TensorData::index(const Index index) {
         if (index.size() != this->shape.size()) {
             fmt::print("Index {}\n", index);
             fmt::print("Shape {}\n", shape);
@@ -46,7 +46,7 @@ namespace tensor_data {
         return index_to_position(index, this->strides);
     }
 
-    double TensorData::get(const UserIndex key) {
-        return (*this->_storage)[index(key)];
+    double TensorData::get(const Index key) {
+        return (this->_storage)[index(key)];
     }
 }  // namespace tensor_data

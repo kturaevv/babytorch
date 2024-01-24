@@ -4,6 +4,9 @@
 #include <iostream>
 #include <memory>
 
+#include <fmt/core.h>
+#include <fmt/ranges.h>
+
 #include "autodiff.hpp"
 #include "operators.hpp"
 #include "tensor_data.hpp"
@@ -31,6 +34,7 @@ namespace tensor {
         History history;
 
         static inline size_t next_id = 0;
+        Index passed_idx;
 
         // constructors
 
@@ -54,7 +58,7 @@ namespace tensor {
             : id(next_id++) {
             utils::check_dimensions(dims...);
 
-            UserShape input_shapes{};
+            Shape input_shapes{};
             (input_shapes.push_back(dims), ...);
 
             this->data = TensorData(input_shapes);
@@ -76,10 +80,22 @@ namespace tensor {
         //     return os;
         // }
 
+        template <typename... Sizes>
+        Tensor operator[](const Sizes... dims) {
+            (passed_idx.push_back(dims), ...);
+
+            fmt::print("Passed index: {}\n", passed_idx);
+            return Tensor(TensorData({ 1 }));
+        }
+
+        // Tensor operator[](const int) {
+        //     return Tensor(TensorData({ 1 }));
+        // }
+
         // functions
         size_t size();
         size_t dims();
-        UserShape shape();
+        Shape shape();
         Tensor is_close();
         Tensor sigmoid();
         Tensor relu();
@@ -91,7 +107,7 @@ namespace tensor {
         Tensor contiguous();
         Tensor view(Shape shape);
         Tensor permute(ReOrderIndex order);
-        Tensor zeros(UserShape shape);
+        Tensor zeros(Shape shape);
 
         bool is_leaf();
         void backward();
@@ -102,3 +118,11 @@ namespace tensor {
 
     // helper functions
 }  // namespace tensor
+
+template <>
+struct fmt::formatter<tensor::Tensor> : formatter<string_view> {
+    auto format(const tensor::Tensor& s, format_context& ctx) {
+        std::string tensor_view = "";
+        return fmt::format_to(ctx.out(), "Tensor(storage={})\n", s.data._storage);
+    }
+};

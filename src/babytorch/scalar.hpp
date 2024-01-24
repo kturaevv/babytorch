@@ -245,14 +245,8 @@ namespace scalar {
 }  // namespace scalar
 
 template <>
-struct fmt::formatter<scalar::Scalar> {
-    template <typename ParseContext>
-    constexpr auto parse(ParseContext& ctx) {
-        return ctx.begin();
-    }
-
-    template <typename FormatContext>
-    auto format(const scalar::Scalar& s, FormatContext& ctx) {
+struct fmt::formatter<scalar::Scalar> : formatter<string_view> {
+    auto format(const scalar::Scalar& s, format_context& ctx) {
         return fmt::format_to(ctx.out(), "Scalar(data={}, grad={})\n", s.data,
                               s.grad);
     }

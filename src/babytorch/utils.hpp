@@ -6,9 +6,8 @@
 #include <vector>
 
 namespace utils {
-    std::unique_ptr<std::vector<double>> rand(const size_t size);
-    std::unique_ptr<std::vector<double>> rand(const size_t size, const int min,
-                                              const int max);
+    std::vector<double> rand(const size_t size);
+    std::vector<double> rand(const size_t size, const int min, const int max);
 
     template <typename... Dims>
     void check_dimensions(const Dims... dimensions) {

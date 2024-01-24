@@ -34,10 +34,8 @@ int main() {
     result->backward();
 
     auto a = Tensor(3, 3, 5);
-    fmt::print("Tensor storage: {}\n", *a.data._storage);
-    fmt::print("Tensor strides: {}\n", a.data.strides);
-
-    UserIndex idx = { 0, 1, 4 };
-    fmt::print("Tensor{} = {}", idx, (*a.data._storage)[a.data.index(idx)]);
+    fmt::print("{}", a);
+    // fmt::print("{}", a[2][1][4]);
+    // fmt::print("Tensor strides: {}\n", a.data.strides);
     return 0;
 }
