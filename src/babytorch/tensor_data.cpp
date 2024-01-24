@@ -1,4 +1,5 @@
 #include <ranges>
+#include <span>
 #include <sstream>
 
 #include <fmt/ranges.h>
@@ -45,6 +46,18 @@ namespace tensor_data {
         }
 
         return index_to_position(index, this->strides);
+    }
+
+    TensorStorageView TensorData::view(Index index) {
+        size_t start_idx = index_to_position(index, this->strides);
+
+        auto slice_size = this->strides | std::views::drop(index.size() - 1) |
+                          std::views::take(1);
+
+        size_t slice_width = std::accumulate(
+            slice_size.begin(), slice_size.end(), 1, std::multiplies<double>());
+
+        return TensorStorageView(this->_storage.data() + start_idx, slice_width);
     }
 
     double TensorData::get(const Index key) {

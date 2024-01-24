@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <span>
 #include <vector>
 
 #include "generic_operators.hpp"
@@ -16,6 +17,7 @@ namespace tensor_data {
     using Shape = std::vector<size_t>;
     using Strides = std::vector<size_t>;
 
+    using TensorStorageView = std::span<double>;
     using ReOrderIndex = std::vector<size_t>;
 
     // Map n-dim pos. to 1-dim storage
@@ -71,6 +73,7 @@ namespace tensor_data {
         void set(const Index index);
         double get(const Index key);
         TensorData permute(const ReOrderIndex order);
+        TensorStorageView view(const Index index);
 
         static TensorData rand(Shape user_shape) {
             size_t new_size = generic_operators::prod(user_shape);

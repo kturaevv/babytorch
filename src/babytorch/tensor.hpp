@@ -74,22 +74,18 @@ namespace tensor {
 
         // overloads
 
-        // friend std::ostream& operator<<(std::ostream& os, Tensor& v) {
-        //     os << "Tensor(data=" << v.data << ", grad=" << v.grad << ")\n";
-        //     return os;
-        // }
-
         template <typename... size_t>
         Tensor operator[](const size_t... dims) {
+            Index passed_idx;
             (passed_idx.push_back(dims), ...);
 
-            fmt::print("Passed index: {}\n", passed_idx);
-            return Tensor(TensorData({ 1 }));
-        }
+            TensorStorageView storage_view = this->data.view(passed_idx);
 
-        // Tensor operator[](const int) {
-        //     return Tensor(TensorData({ 1 }));
-        // }
+            // Copy a view to a Tensor
+            Storage new_storage = { storage_view.begin(), storage_view.end() };
+
+            return Tensor(std::move(new_storage));
+        }
 
         // functions
         size_t size();

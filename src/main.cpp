@@ -34,8 +34,8 @@ int main() {
     result->backward();
 
     auto a = Tensor(3, 3, 5);
-    fmt::print("{}", a);
-    // fmt::print("{}", a[2][1][4]);
-    // fmt::print("Tensor strides: {}\n", a.data.strides);
+    fmt::print("Tensor[1] = {}\n", a[1]);
+    fmt::print("Tensor[1,2] = {}\n", a[1, 2]);
+    fmt::print("Tensor[1,2,3] = {}\n", a[1, 2, 3]);
     return 0;
 }
