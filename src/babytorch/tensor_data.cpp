@@ -3,6 +3,7 @@
 
 #include <fmt/ranges.h>
 
+#include "generic_operators.hpp"
 #include "tensor_data.hpp"
 
 namespace tensor_data {

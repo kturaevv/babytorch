@@ -47,10 +47,9 @@ namespace tensor {
             , data(std::move(data)) {
         }
 
-        Tensor(History history, TensorData data)
+        Tensor(std::vector<double> data)
             : id(next_id++)
-            , data(std::move(data))
-            , history(history) {
+            , data(std::move(data)) {
         }
 
         template <typename... Sizes>
@@ -61,7 +60,7 @@ namespace tensor {
             Shape input_shapes{};
             (input_shapes.push_back(dims), ...);
 
-            this->data = TensorData(input_shapes);
+            this->data = TensorData::rand(input_shapes);
         }
 
         Tensor(const Tensor& other) = delete;
@@ -80,8 +79,8 @@ namespace tensor {
         //     return os;
         // }
 
-        template <typename... Sizes>
-        Tensor operator[](const Sizes... dims) {
+        template <typename... size_t>
+        Tensor operator[](const size_t... dims) {
             (passed_idx.push_back(dims), ...);
 
             fmt::print("Passed index: {}\n", passed_idx);

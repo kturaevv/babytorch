@@ -40,12 +40,12 @@ namespace tensor_data {
             this->strides = { 0 };
         };
 
-        TensorData(Shape user_shape) {
-            this->size = generic_operators::prod(user_shape);
-            this->_storage = utils::rand(size);
-            this->strides = strides_from_shape(user_shape);
-            this->shape = user_shape;
-            this->dims = this->strides.size();
+        TensorData(Storage storage)
+            : _storage(std::move(storage)) {
+            this->shape = { this->_storage.size() };
+            this->strides = strides_from_shape(shape);
+            this->size = generic_operators::prod(shape);
+            this->dims = strides.size();
         }
 
         TensorData(Storage storage, Shape shape)
@@ -71,6 +71,12 @@ namespace tensor_data {
         void set(const Index index);
         double get(const Index key);
         TensorData permute(const ReOrderIndex order);
+
+        static TensorData rand(Shape user_shape) {
+            size_t new_size = generic_operators::prod(user_shape);
+            Storage new_storage = utils::rand(new_size);
+            return TensorData(new_storage, user_shape);
+        }
 
         static Shape shape_broadcast(const Shape shape_a, const Shape shape_b);
     };
