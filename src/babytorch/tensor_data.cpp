@@ -20,7 +20,9 @@ namespace tensor_data {
         Strides strides{ 1 };
         size_t offset = 1;
 
-        for (auto s : shape | std::views::drop(1) | std::views::reverse) {
+        for (auto s : shape                      //
+                          | std::views::drop(1)  //
+                          | std::views::reverse) {
             strides.insert(strides.begin(), s * offset);
             offset *= s;
         }
@@ -51,11 +53,14 @@ namespace tensor_data {
     TensorStorageView TensorData::view(Index index) {
         size_t start_idx = index_to_position(index, this->strides);
 
-        auto slice_size = this->strides | std::views::drop(index.size() - 1) |
-                          std::views::take(1);
+        auto slice_size = this->strides  //
+                          | std::views::drop(index.size() - 1)
+                          | std::views::take(1);
 
-        size_t slice_width = std::accumulate(
-            slice_size.begin(), slice_size.end(), 1, std::multiplies<double>());
+        size_t slice_width = std::accumulate(slice_size.begin(),
+                                             slice_size.end(),
+                                             1,
+                                             std::multiplies<double>());
 
         return TensorStorageView(this->_storage.data() + start_idx, slice_width);
     }

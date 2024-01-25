@@ -67,8 +67,8 @@ namespace scalar {
 
         Scalar(Scalar* v)
             : id(next_id++) {
-            this->data = v->data;
-            this->grad = v->grad;
+            this->data    = v->data;
+            this->grad    = v->grad;
             this->history = v->history;
         }
 
@@ -236,7 +236,7 @@ namespace scalar {
         double result = F::forward(ctx, args->data...);
 
         History history;
-        history.ctx = std::move(ctx);
+        history.ctx      = std::move(ctx);
         history.backward = F::backward;
         (history.inputs.emplace_back(args), ...);
 
@@ -247,7 +247,9 @@ namespace scalar {
 template <>
 struct fmt::formatter<scalar::Scalar> : formatter<string_view> {
     auto format(const scalar::Scalar& s, format_context& ctx) {
-        return fmt::format_to(ctx.out(), "Scalar(data={}, grad={})\n", s.data,
+        return fmt::format_to(ctx.out(),
+                              "Scalar(data={}, grad={})\n",
+                              s.data,
                               s.grad);
     }
 };

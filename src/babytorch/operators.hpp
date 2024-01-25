@@ -31,7 +31,8 @@ namespace operators {
     std::vector<double> zipWith(const std::function<double(double, double)>& fn,
                                 const std::vector<double>& x,
                                 const std::vector<double>& y);
-    double reduce(std::function<double(double, double)> fn, double start,
+    double reduce(std::function<double(double, double)> fn,
+                  double start,
                   const std::vector<double>& ls);
 
     // Utility functions using high order function defined above

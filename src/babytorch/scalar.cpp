@@ -58,7 +58,7 @@ namespace scalar {
 
     std::vector<std::tuple<std::shared_ptr<Scalar>, double>> Scalar::chain_rule(
         double deriv) {
-        auto history = this->history;
+        auto history                = this->history;
         std::array<double, 2> grads = history.backward(history.ctx, deriv);
 
         std::vector<std::tuple<std::shared_ptr<Scalar>, double>> vals;

@@ -13,16 +13,16 @@ namespace tensor_ops {
 
     // Forward declarations
     using tensor::Tensor;
-    using Shape = std::vector<size_t>;
+    using Shape   = std::vector<size_t>;
     using Storage = std::vector<double>;
     using Strides = std::vector<size_t>;
 
     // Aliases
-    using TensorFunction = std::function<Tensor(Tensor&, Tensor&)>;
+    using TensorFunction       = std::function<Tensor(Tensor&, Tensor&)>;
     using TensorReduceFunction = std::function<Tensor(Tensor&, double)>;
 
     using SingleVariableFunction = std::function<double(double)>;
-    using TwoVariableFunction = std::function<double(double, double)>;
+    using TwoVariableFunction    = std::function<double(double, double)>;
 
     namespace TensorFuncs {
         static TensorFunction map(SingleVariableFunction);

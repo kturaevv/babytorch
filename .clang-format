@@ -1,14 +1,15 @@
 ---
 Language: Cpp
+
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align # [BlockIndent, Align]
-AlignArrayOfStructures: None # [None, Left, Right]
+AlignArrayOfStructures: Right # [None, Left, Right]
 AlignConsecutiveMacros: AcrossComments
-AlignConsecutiveAssignments: None # [Consecutive, None]
+AlignConsecutiveAssignments: Consecutive # [Consecutive, None]
 AlignConsecutiveBitFields: Consecutive
 AlignConsecutiveDeclarations: None
 AlignEscapedNewlines: Left
-AlignOperands: Align
+AlignOperands: Align # AlignAfterOperator
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -27,8 +28,9 @@ AlwaysBreakTemplateDeclarations: true
 # BreakAfterAttributes: Leave [required clang-format-16]
 AttributeMacros:
   - __capability
-BinPackArguments: true
-BinPackParameters: true
+BasedOnStyle: LLVM
+BinPackArguments: false
+BinPackParameters: false
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterCaseLabel: false 
@@ -49,7 +51,7 @@ BraceWrapping:
   SplitEmptyFunction: true
   SplitEmptyRecord: true
   SplitEmptyNamespace: true
-BreakBeforeBinaryOperators: None # true
+BreakBeforeBinaryOperators: All
 BreakBeforeConceptDeclarations: true
 BreakBeforeInheritanceComma: true
 BreakInheritanceList: AfterComma

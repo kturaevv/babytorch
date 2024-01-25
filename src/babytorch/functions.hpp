@@ -97,8 +97,7 @@ namespace functions {
     };
 
     struct Add {
-        static double forward(Context& ctx, const double self,
-                              const double other) {
+        static double forward(Context& ctx, const double self, const double other) {
             ctx.save_for_backwards(self);
             return operators::add(self, other);
         }
@@ -109,15 +108,14 @@ namespace functions {
     };
 
     struct Mul {
-        static double forward(Context& ctx, const double self,
-                              const double other) {
+        static double forward(Context& ctx, const double self, const double other) {
             ctx.save_for_backwards(self, other);
             return operators::mul(self, other);
         }
 
         static std::array<double, 2> backward(const Context& ctx,
                                               const double deriv) {
-            double self = ctx.saved_values[0];
+            double self  = ctx.saved_values[0];
             double other = ctx.saved_values[1];
             return { other * deriv, self * deriv };
         }
@@ -144,8 +142,7 @@ namespace functions {
     };
 
     struct Max {
-        static double forward(Context& ctx, const double self,
-                              const double other) {
+        static double forward(Context& ctx, const double self, const double other) {
             ctx.save_for_backwards(self, other);
             return operators::max(self, other);
         }
