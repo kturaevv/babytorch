@@ -30,7 +30,7 @@ namespace tensor_data {
         return strides;
     }
 
-    size_t TensorData::index(const Index index) {
+    size_t TensorData::index(const Index index) const {
         if (index.size() != this->shape.size()) {
             fmt::print("Index {}\n", index);
             fmt::print("Shape {}\n", shape);
@@ -50,7 +50,7 @@ namespace tensor_data {
         return index_to_position(index, this->strides);
     }
 
-    TensorStorageView TensorData::view(Index index) {
+    TensorStorageView TensorData::view(Index index) const {
         size_t start_idx = index_to_position(index, this->strides);
 
         auto slice_size = this->strides  //
@@ -65,7 +65,82 @@ namespace tensor_data {
         return TensorStorageView(this->_storage.data() + start_idx, slice_width);
     }
 
+    TensorStorageView TensorData::view() const {
+        return TensorStorageView(this->_storage.data(), this->size);
+    }
+
     double TensorData::get(const Index key) {
         return (this->_storage)[index(key)];
+    }
+
+    void TensorData::info() const {
+        fmt::print("TensorData(shape={}, size={}, dims={}, strides={})\n",
+                   this->shape,
+                   this->size,
+                   this->dims,
+                   this->strides);
+    }
+
+    std::string TensorData::string_view() const {
+        const TensorStorageView storage = this->view();
+        Strides strides                 = this->strides;
+        Shape shape                     = this->shape;
+
+        std::string tensor_string;
+        tensor_string.reserve(storage.size() * 10);
+
+        size_t idx    = 0;
+        size_t offset = strides.size() - 1;  // offset braces
+        offset += 7;                         // offset "Tensor("
+        while (idx < storage.size()) {
+            if (idx == 0)
+                tensor_string += '[';
+            else
+                // Whitespace between nums
+                tensor_string += ' ';
+
+            // Opening braces
+            for (auto stride : strides | std::views::take(strides.size() - 1))
+                if (idx % stride == 0)
+                    tensor_string += '[';
+
+            // Align for - sign
+            if (storage[idx] > 0)
+                tensor_string += ' ';
+
+            tensor_string += std::to_string(storage[idx]);
+
+            idx++;  // update
+            size_t n_newlines = 0;
+            for (auto stride : strides | std::views::take(strides.size() - 1))
+                if (idx % stride == 0)
+                    n_newlines++;
+                else if (std::isalnum(tensor_string.back()))
+                    tensor_string += ',';
+
+            // Closing braces
+            for (size_t i = 0; i < n_newlines; i++) {
+                // Remove trailing comma
+                if (tensor_string.back() == ',')
+                    tensor_string.pop_back();
+
+                tensor_string += ']';
+            }
+
+            // Closing newlines
+            for (size_t i = 0; i < n_newlines; i++) {
+                tensor_string += '\n';
+                for (size_t i = 0; i < offset - n_newlines; i++)
+                    tensor_string += ' ';
+            }
+        }
+
+        // Remove trailing space
+        while (std::isspace(tensor_string.back()))
+            tensor_string.pop_back();
+
+        // Last closing bracket
+        tensor_string += ']';
+        return tensor_string;
     }
 }  // namespace tensor_data

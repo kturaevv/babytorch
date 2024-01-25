@@ -3,6 +3,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <ranges>
 
 #include <fmt/core.h>
 #include <fmt/ranges.h>
@@ -84,7 +85,11 @@ namespace tensor {
             // Copy a view to a Tensor
             Storage new_storage = { storage_view.begin(), storage_view.end() };
 
-            return Tensor(std::move(new_storage));
+            auto shape_view = this->data.shape
+                              | std::views::drop(passed_idx.size());
+            Shape new_shape = { shape_view.begin(), shape_view.end() };
+
+            return Tensor(TensorData(std::move(new_storage), new_shape));
         }
 
         // functions
@@ -117,7 +122,7 @@ namespace tensor {
 template <>
 struct fmt::formatter<tensor::Tensor> : formatter<string_view> {
     auto format(const tensor::Tensor& s, format_context& ctx) {
-        std::string tensor_view = "";
-        return fmt::format_to(ctx.out(), "Tensor(storage={})\n", s.data._storage);
+        std::string tensor_view = s.data.string_view();
+        return fmt::format_to(ctx.out(), "Tensor({})\n", tensor_view);
     }
 };

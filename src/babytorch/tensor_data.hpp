@@ -17,7 +17,7 @@ namespace tensor_data {
     using Shape   = std::vector<size_t>;
     using Strides = std::vector<size_t>;
 
-    using TensorStorageView = std::span<double>;
+    using TensorStorageView = std::span<const double>;
     using ReOrderIndex      = std::vector<size_t>;
 
     // Map n-dim pos. to 1-dim storage
@@ -46,6 +46,7 @@ namespace tensor_data {
 
         TensorData(Storage storage)
             : _storage(std::move(storage)) {
+            // If vector passed construct 1-d Tensor
             this->shape   = { this->_storage.size() };
             this->strides = strides_from_shape(shape);
             this->size    = generic_operators::prod(shape);
@@ -68,14 +69,17 @@ namespace tensor_data {
             this->dims = strides.size();
         }
 
-        void info();
+        void info() const;
         bool is_contiguous();
         Index sample();
-        size_t index(const Index index);
+        size_t index(const Index index) const;
         void set(const Index index);
         double get(const Index key);
         TensorData permute(const ReOrderIndex order);
-        TensorStorageView view(const Index index);
+
+        TensorStorageView view() const;
+        TensorStorageView view(const Index index) const;
+        std::string string_view() const;
 
         static TensorData rand(Shape user_shape) {
             size_t new_size     = generic_operators::prod(user_shape);
