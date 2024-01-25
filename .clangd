@@ -1,65 +1,25 @@
 CompileFlags:
-  CompileCommandsDir: build
-  Args:
-    - "-std=c++20"
-
-FallbackFlags: []
-
-GlobalCompilationDatabase: ""
-
-Diagnostics:
-  CompileCommandsFallback: "Enabled"
-  ShowGlobalMacros: true
-  IgnoreUnknownSystemIncludes: false
-  NoIndex: false
-  CrossFileEditing: "None"
-  SuggestMissingIncludes: true
-  FallbackCompilationDatabase: ""
-
-Completion:
-  IncludeBlacklist: []
-  IncludePathWhitelist: []
-  EnableSnippets: true
-  EnableLogging: false
-
-Rename:
-  InMainFile: true
-
-SemanticHighlighting: true
-
-CodeLens:
-  LocalVariables: false
-  MainCalls: false
-  InlayHints:
-    ParameterNames: false
-    ParameterNamesMaxLines: 3
-
-Highlighting:
-  Enabled: true
-
-Format:
-  FallbackStyle: ""
-  ColumnLimit: 120
-
-SelectionRange: true
-FoldingRanges: true
-LinkSupport: false
-PCHStorage: "Memory"
-
-BackgroundIndex:
-  Enabled: false
-  BuildCommand: ""
-  IndexerCount: 1
-
-Logger: "stderr"
-
-WorkspaceSymbol:
-  Enabled: true
-
-Xref:
-  Enabled: true
-
-Client:
-  displayContext:
-    showRelativePath: "Always"
-    showBuildPath: "Default"
+  Add: [
+        -std = c++ 20,
+        -I./,
+        -W,
+        -Wall,
+        -Wextra,
+        -Wpedantic,
+        -Wno - unused - variable,
+        -Wno - infinite - recursion,
+        -Werror = implicit - function - declaration,
+        -Wshadow,
+        -Wno - shadow - field - in - constructor - modified,
+        -Wno - shadow - ivar,
+        -Wuninitialized,
+        -Wunused - label,
+        -Wunused - lambda -
+        capture
+    ]
+    
+Index:
+  Background: Build
+  StandardLibrary: Yes
+Hover:
+  ShowAKA: Yes
