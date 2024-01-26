@@ -49,8 +49,8 @@ namespace tensor {
         }
 
         Tensor(std::vector<double> data)
-            : id(next_id++)
-            , data(std::move(data)) {
+            : id(next_id++) {
+            this->data = TensorData(std::move(data));
         }
 
         template <typename... Sizes>

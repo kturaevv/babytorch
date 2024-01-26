@@ -56,6 +56,8 @@ namespace tensor_data {
         TensorData(Storage storage, Shape shape)
             : _storage(std::move(storage))
             , shape(shape) {
+            if (shape.size() == 0)
+                this->shape = { 1 };
             this->strides = strides_from_shape(shape);
             this->size    = generic_operators::prod(shape);
             this->dims    = strides.size();
@@ -65,6 +67,8 @@ namespace tensor_data {
             : _storage(std::move(storage))
             , shape(shape)
             , strides(strides) {
+            if (shape.size() == 0)
+                this->shape = { 1 };
             this->size = generic_operators::prod(shape);
             this->dims = strides.size();
         }
