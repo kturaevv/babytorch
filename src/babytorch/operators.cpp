@@ -109,7 +109,8 @@ namespace operators {
         return result;
     }
 
-    double reduce(std::function<double(double, double)> fn, double start,
+    double reduce(std::function<double(double, double)> fn,
+                  double start,
                   const std::vector<double>& ls) {
         return std::accumulate(ls.begin(), ls.end(), start, fn);
     }
