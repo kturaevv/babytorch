@@ -10,9 +10,7 @@
 namespace tensor_data {
 
     // Type - aliases
-    using Storage  = std::vector<double>;
-    using OutIndex = std::vector<size_t>;
-
+    using Storage = std::vector<double>;
     using Index   = std::vector<size_t>;
     using Shape   = std::vector<size_t>;
     using Strides = std::vector<size_t>;
@@ -20,15 +18,15 @@ namespace tensor_data {
     using TensorStorageView = std::span<const double>;
     using ReOrderIndex      = std::vector<size_t>;
 
-    // Map n-dim pos. to 1-dim storage
-    void to_index(size_t& ordinal, const Shape& shape, const OutIndex& out_index);
-    void broadcast_index(Index& index,
-                         const Shape in_shape,
-                         const Shape out_shape,
-                         const OutIndex out_index);
+    Index to_tensor_index(size_t storage_idx, Index tensor_idx, const Shape& shape);
+
+    Index broadcast_index(const Index& original_index,
+                          const Shape& original_shape,
+                          const Shape& broadcasted_shape);
+
+    Shape shape_broadcast(const Shape& shape1, const Shape& shape2);
     size_t index_to_position(const Index& index, const Strides& strides);
-    Shape shape_broadcast();
-    Strides strides_from_shape(Shape shape);
+    Strides strides_from_shape(const Shape& shape);
 
     struct TensorData {
         Storage _storage;
@@ -76,13 +74,13 @@ namespace tensor_data {
         void info() const;
         bool is_contiguous();
         Index sample();
-        size_t index(const Index index) const;
-        void set(const Index index);
-        double get(const Index key);
+        size_t index(const Index& index) const;
+        void set(const Index& index);
+        double get(const Index& key);
         TensorData permute(const ReOrderIndex order);
 
         TensorStorageView view() const;
-        TensorStorageView view(const Index index) const;
+        TensorStorageView view(const Index& index) const;
         std::string string_view() const;
 
         static TensorData rand(Shape user_shape) {

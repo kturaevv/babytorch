@@ -9,6 +9,60 @@
 
 namespace tensor_data {
 
+    Index broadcast_index(const Index& original_index,
+                          const Shape& original_shape,
+                          const Shape& broadcasted_shape) {
+        Index broadcasted_index(broadcasted_shape.size(), 0);
+
+        int oi = original_shape.size() - 1;
+        int bi = broadcasted_shape.size() - 1;
+
+        while (oi >= 0) {
+            broadcasted_index[bi] = original_shape[oi] == 1 ? 0
+                                                            : original_index[oi];
+            oi--;
+            bi--;
+        }
+
+        return broadcasted_index;
+    }
+
+    Shape shape_broadcast(const Shape& shape1, const Shape& shape2) {
+        Shape max_shape = shape1.size() >= shape2.size() ? shape1 : shape2;
+        Shape min_shape = shape1.size() < shape2.size() ? shape1 : shape2;
+
+        int min_size = min_shape.size();
+        int max_size = max_shape.size();
+        int offset   = max_size - min_size;
+        int idx      = max_size - 1;
+
+        Shape new_shape(max_size);
+
+        while (idx >= 0) {
+            int min_idx = idx - offset;
+            int max_val = max_shape[idx];
+            int min_val = min_idx >= 0 ? min_shape[min_idx] : 1;
+
+            // If neither of dimensions equal each other or 1
+            if (min_val != 1 && max_val != 1 && min_val != max_val)
+                throw std::runtime_error("IndexingError: Shape mismatch!");
+
+            new_shape[idx] = max_val > min_val ? max_val : min_val;
+            idx--;
+        }
+
+        return new_shape;
+    }
+
+    void to_tensor_index(size_t storage_idx,
+                         Index& tensor_idx,
+                         const Shape& shape) {
+        for (auto i : std::views::iota(0ull, shape.size())) {
+            tensor_idx[i] = storage_idx % shape[i];
+            storage_idx   = static_cast<int>(storage_idx / shape[i]);
+        }
+    }
+
     size_t index_to_position(const Index& index, const Strides& strides) {
         size_t pos = 0;
         for (auto i : std::ranges::views::iota(0ull, index.size()))
@@ -16,7 +70,7 @@ namespace tensor_data {
         return pos;
     }
 
-    Strides strides_from_shape(const Shape shape) {
+    Strides strides_from_shape(const Shape& shape) {
         Strides strides{ 1 };
         size_t offset = 1;
 
@@ -30,7 +84,7 @@ namespace tensor_data {
         return strides;
     }
 
-    size_t TensorData::index(const Index index) const {
+    size_t TensorData::index(const Index& index) const {
         if (index.size() != this->shape.size()) {
             fmt::print("Index {}\n", index);
             fmt::print("Shape {}\n", shape);
@@ -50,7 +104,7 @@ namespace tensor_data {
         return index_to_position(index, this->strides);
     }
 
-    TensorStorageView TensorData::view(Index index) const {
+    TensorStorageView TensorData::view(const Index& index) const {
         size_t start_idx = index_to_position(index, this->strides);
 
         auto slice_size = this->strides  //
@@ -69,7 +123,7 @@ namespace tensor_data {
         return TensorStorageView(this->_storage.data(), this->size);
     }
 
-    double TensorData::get(const Index key) {
+    double TensorData::get(const Index& key) {
         return (this->_storage)[index(key)];
     }
 

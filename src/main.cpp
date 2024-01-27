@@ -3,7 +3,6 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/lambda/lambda.hpp>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
