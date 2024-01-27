@@ -41,8 +41,6 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 add_executable(${TEST_NAME} ${TEST_FILES})
 
 find_package(fmt CONFIG REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
-find_package(Boost REQUIRED)
 find_package(Catch2 3 REQUIRED)
 
 target_compile_options(
@@ -60,7 +58,6 @@ target_link_libraries(
         PRIVATE 
             fmt::fmt
             fmt::fmt-header-only
-            spdlog::spdlog_header_only
 )
 
 target_link_libraries(

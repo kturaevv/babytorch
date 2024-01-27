@@ -55,9 +55,9 @@ Everything is configured with these tools. As a quick reminder:
 - vcpkg.json for the list of external dependencies
 - CmakePreset.json for env. variables requried for the build system.
 
-Dependency manager is dependencecy itself. To make the project more self-contained, `vcpkg` comes as a git sub-module and all of the calls to it are configured for that path, via *./extern*, so there is no need to have it installed on host machine. Packages which are **not** suported by vcpkg are exptected to be integrated as a submodule.
+Dependency manager is dependencecy itself. To make the project more self-contained, `vcpkg` comes as a git sub-module and all of the calls to it are configured for that path, via *./extern*, so there is no need to have it installed on host machine. Packages which are **not** suported by `vcpkg` are exptected to be integrated as a submodule.
 
-Adding a new dependency is trivial. A matter of editing **vcpkg.json** and adding requried commands to **Cmakelists.txt**. As an example, the project initially have integraded `fmt` and `spdlog` to showcase and test the integration process. Now, the project also contains `Catch2` library for tests and `Boost` for an upcoming python bindings.
+Adding a new dependency is trivial thanks to `vcpkg` and its `cmake` integration. A matter of editing **vcpkg.json** and adding requried commands to **Cmakelists.txt**. The project integration of `fmt` and `Catch2` libraries showcase this process of adding dependencies supported by `vcpkg`.
 
 To build the project build folder, configure with default presets, set the project root path and project build path you can run:
 ```bash
