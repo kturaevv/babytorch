@@ -1,6 +1,7 @@
 #include <ranges>
 #include <span>
 #include <sstream>
+#include <tuple>
 
 #include <fmt/ranges.h>
 
@@ -54,12 +55,14 @@ namespace tensor_data {
         return new_shape;
     }
 
-    void to_tensor_index(size_t storage_idx,
+    void to_tensor_index(const size_t storage_idx,
                          Index& tensor_idx,
                          const Shape& shape) {
+        size_t _storage_idx = storage_idx;
+
         for (auto i : std::views::iota(0ull, shape.size())) {
-            tensor_idx[i] = storage_idx % shape[i];
-            storage_idx   = static_cast<int>(storage_idx / shape[i]);
+            tensor_idx[i] = _storage_idx % shape[i];
+            _storage_idx  = static_cast<int>(_storage_idx / shape[i]);
         }
     }
 
@@ -127,12 +130,16 @@ namespace tensor_data {
         return (this->_storage)[index(key)];
     }
 
-    void TensorData::info() const {
+    void TensorData::print_info() const {
         fmt::print("TensorData(shape={}, size={}, dims={}, strides={})\n",
                    this->shape,
                    this->size,
                    this->dims,
                    this->strides);
+    }
+
+    TensorDataInfo TensorData::tuple() {
+        return TensorDataInfo(this->_storage, this->shape, this->strides);
     }
 
     std::string TensorData::string_view() const {

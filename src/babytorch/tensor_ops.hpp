@@ -4,10 +4,8 @@
 #include <vector>
 
 #include "operators.hpp"
-
-namespace tensor {
-    struct Tensor;
-}
+#include "tensor.hpp"
+#include "tensor_data.hpp"
 
 namespace tensor_ops {
     // Tensor base operations that leverage high order functions
@@ -15,47 +13,77 @@ namespace tensor_ops {
 
     // Forward declarations
     using tensor::Tensor;
-    using Shape   = std::vector<size_t>;
-    using Storage = std::vector<double>;
-    using Strides = std::vector<size_t>;
+    using tensor_data::TensorDataInfo;
 
     // Aliases
-    using TensorFunction       = std::function<Tensor(Tensor&, Tensor&)>;
-    using TensorReduceFunction = std::function<Tensor(Tensor&, double)>;
+    using UnivariateFn = std::function<double(double)>;
+    using BivariateFn  = std::function<double(double, double)>;
 
-    using SingleVariableFunction = std::function<double(double)>;
-    using TwoVariableFunction    = std::function<double(double, double)>;
+    using UnivariateTensorFn = std::function<Tensor(const TensorDataInfo&)>;
+    using BivariateTensorFn
+        = std::function<Tensor(const TensorDataInfo&, const TensorDataInfo&)>;
+    using ReduceTensorFn
+        = std::function<Tensor(const TensorDataInfo&, const size_t)>;
 
-    namespace TensorFuncs {
-        TensorFunction map(SingleVariableFunction);
-        TensorFunction zip(TwoVariableFunction);
-        TensorReduceFunction reduce(TwoVariableFunction, double);
-        Tensor matrix_multiply(Tensor&, Tensor&);
+    // Function factories
+    using MapFuncFactory = std::function<UnivariateTensorFn(UnivariateFn)>;
+    using ZipFuncFactory = std::function<BivariateTensorFn(BivariateFn)>;
+    using ReduceFuncFactory = std::function<ReduceTensorFn(BivariateFn, double)>;
+
+    struct TensorOps {
+        MapFuncFactory map;
+        ZipFuncFactory zip;
+        ReduceFuncFactory reduce;
+        UnivariateTensorFn matrix_multiply;
     };
 
-    namespace TensorOps {
-        // Map operations
-        TensorFunction id_map      = TensorFuncs::map(operators::id);
-        TensorFunction neg_map     = TensorFuncs::map(operators::neg);
-        TensorFunction inv_map     = TensorFuncs::map(operators::inv);
-        TensorFunction relu_map    = TensorFuncs::map(operators::relu);
-        TensorFunction log_map     = TensorFuncs::map(operators::log_func);
-        TensorFunction exp_map     = TensorFuncs::map(operators::exp_func);
-        TensorFunction sigmoid_map = TensorFuncs::map(operators::sigmoid);
+    struct TensorBackend {
+        UnivariateTensorFn id_map;
+        UnivariateTensorFn neg_map;
+        UnivariateTensorFn inv_map;
+        UnivariateTensorFn relu_map;
+        UnivariateTensorFn log_map;
+        UnivariateTensorFn exp_map;
+        UnivariateTensorFn sigmoid_map;
 
         // Zip operations
-        TensorFunction add_zip       = TensorFuncs::zip(operators::add);
-        TensorFunction mul_zip       = TensorFuncs::zip(operators::mul);
-        TensorFunction lt_zip        = TensorFuncs::zip(operators::lt);
-        TensorFunction eq_zip        = TensorFuncs::zip(operators::eq);
-        TensorFunction is_close_zip  = TensorFuncs::zip(operators::is_close);
-        TensorFunction relu_back_zip = TensorFuncs::zip(operators::relu_back);
-        TensorFunction log_back_zip  = TensorFuncs::zip(operators::log_back);
-        TensorFunction inv_back_zip  = TensorFuncs::zip(operators::inv_back);
+        BivariateTensorFn add_zip;
+        BivariateTensorFn mul_zip;
+        BivariateTensorFn lt_zip;
+        BivariateTensorFn eq_zip;
+        BivariateTensorFn is_close_zip;
+        BivariateTensorFn relu_back_zip;
+        BivariateTensorFn log_back_zip;
+        BivariateTensorFn inv_back_zip;
 
         // Reduce operations
-        TensorReduceFunction add_reduce = TensorFuncs::reduce(operators::add, 0);
-        TensorReduceFunction mul_reduce = TensorFuncs::reduce(operators::mul, 1);
+        ReduceTensorFn add_reduce;
+        ReduceTensorFn mul_reduce;
+
+        TensorBackend(const TensorOps* ops) {
+            if (ops == nullptr)
+                throw std::invalid_argument("TensorOps pointer cannot be null");
+
+            this->id_map      = ops->map(operators::id);
+            this->neg_map     = ops->map(operators::neg);
+            this->inv_map     = ops->map(operators::inv);
+            this->relu_map    = ops->map(operators::relu);
+            this->log_map     = ops->map(operators::log_func);
+            this->exp_map     = ops->map(operators::exp_func);
+            this->sigmoid_map = ops->map(operators::sigmoid);
+
+            this->add_zip       = ops->zip(operators::add);
+            this->mul_zip       = ops->zip(operators::mul);
+            this->lt_zip        = ops->zip(operators::lt);
+            this->eq_zip        = ops->zip(operators::eq);
+            this->is_close_zip  = ops->zip(operators::is_close);
+            this->relu_back_zip = ops->zip(operators::relu_back);
+            this->log_back_zip  = ops->zip(operators::log_back);
+            this->inv_back_zip  = ops->zip(operators::inv_back);
+
+            this->add_reduce = ops->reduce(operators::add, 0);
+            this->mul_reduce = ops->reduce(operators::mul, 1);
+        }
 
         // Additional methods
         Tensor (*matrix_multiply)(Tensor&, Tensor&);  // Pointer to
@@ -63,9 +91,8 @@ namespace tensor_ops {
                                                       // function
     };
 
-    // Helper functions
-    void tensor_map(SingleVariableFunction);
-    void tensor_zip(TwoVariableFunction);
-    void tensor_reduce(TensorReduceFunction);
+    UnivariateTensorFn tensor_map(UnivariateFn);
+    BivariateTensorFn tensor_zip(BivariateFn);
+    ReduceTensorFn tensor_reduce(BivariateFn, double);
 
 }  // namespace tensor_ops

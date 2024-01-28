@@ -15,10 +15,13 @@ namespace tensor_data {
     using Shape   = std::vector<size_t>;
     using Strides = std::vector<size_t>;
 
-    using TensorStorageView = std::span<const double>;
     using ReOrderIndex      = std::vector<size_t>;
+    using TensorStorageView = std::span<const double>;
+    using TensorDataInfo    = std::tuple<Storage&, Shape&, Strides&>;
 
-    Index to_tensor_index(size_t storage_idx, Index tensor_idx, const Shape& shape);
+    Index to_tensor_index(const size_t storage_idx,
+                          Index tensor_idx,
+                          const Shape& shape);
 
     Index broadcast_index(const Index& original_index,
                           const Shape& original_shape,
@@ -71,7 +74,8 @@ namespace tensor_data {
             this->dims = strides.size();
         }
 
-        void info() const;
+        void print_info() const;
+        TensorDataInfo tuple();
         bool is_contiguous();
         Index sample();
         size_t index(const Index& index) const;

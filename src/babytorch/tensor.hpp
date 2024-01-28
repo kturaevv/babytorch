@@ -19,6 +19,7 @@ namespace tensor {
     using namespace tensor_data;
 
     struct Tensor;
+    struct TensorBackend;
 
     struct History {
         Context ctx;
@@ -33,6 +34,7 @@ namespace tensor {
 
         TensorData data;
         History history;
+        TensorBackend* ops;
 
         static inline size_t next_id = 0;
         Index passed_idx;
@@ -64,7 +66,9 @@ namespace tensor {
             this->data = TensorData::rand(input_shapes);
         }
 
-        Tensor(const Tensor& other) = delete;
+        // Delete copy constructor and copy assignment operator
+        // Tensor(const Tensor&)            = delete;
+        // Tensor& operator=(const Tensor&) = delete;
 
         template <typename... Sizes>
         static Tensor create(Sizes... dims);
@@ -107,7 +111,7 @@ namespace tensor {
         Tensor contiguous();
         Tensor view(Shape shape);
         Tensor permute(ReOrderIndex order);
-        Tensor zeros(Shape shape);
+        static Tensor zeros(Shape shape);
 
         bool is_leaf();
         void backward();

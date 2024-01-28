@@ -5,6 +5,8 @@
 #include <sstream>
 #include <vector>
 
+#include "generic_operators.hpp"
+
 namespace utils {
     std::vector<double> rand(const size_t size);
     std::vector<double> rand(const size_t size, const int min, const int max);
@@ -20,5 +22,17 @@ namespace utils {
          }()),
          ...);
     }
+
+    template <typename T = double>
+    std::vector<T> zeros(const T size) {
+        return std::vector<T>(size, 0);
+    };
+
+    template <typename T = double>
+    std::vector<T> zeros(const std::vector<size_t> shape) {
+        std::vector<T> _shape{ shape.begin(), shape.end() };
+        T size = generic_operators::prod<T>(_shape);
+        return zeros<T>(size);
+    };
 
 }  // namespace utils
