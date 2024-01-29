@@ -19,9 +19,9 @@ namespace tensor_data {
     using TensorStorageView = std::span<const double>;
     using TensorDataInfo    = std::tuple<Storage&, Shape&, Strides&>;
 
-    Index to_tensor_index(const size_t storage_idx,
-                          Index tensor_idx,
-                          const Shape& shape);
+    void to_tensor_index(const size_t storage_idx,
+                         Index& tensor_idx,
+                         const Shape& shape);
 
     Index broadcast_index(const Index& original_index,
                           const Shape& original_shape,

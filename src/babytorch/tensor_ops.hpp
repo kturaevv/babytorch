@@ -4,8 +4,12 @@
 #include <vector>
 
 #include "operators.hpp"
-#include "tensor.hpp"
 #include "tensor_data.hpp"
+
+// Forward declaration of Tensor instead of including tensor.hpp
+namespace tensor {
+    struct Tensor;
+}
 
 namespace tensor_ops {
     // Tensor base operations that leverage high order functions

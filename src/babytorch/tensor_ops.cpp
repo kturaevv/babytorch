@@ -1,5 +1,6 @@
 #include <ranges>
 
+#include "tensor.hpp"
 #include "tensor_data.hpp"
 #include "tensor_ops.hpp"
 #include "utils.hpp"

@@ -13,13 +13,17 @@
 #include "tensor_data.hpp"
 #include "utils.hpp"
 
+namespace tensor_ops {
+    struct TensorBackend;
+}
+
 namespace tensor {
 
     using namespace autodiff;
     using namespace tensor_data;
+    using tensor_ops::TensorBackend;
 
     struct Tensor;
-    struct TensorBackend;
 
     struct History {
         Context ctx;
