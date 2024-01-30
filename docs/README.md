@@ -20,7 +20,7 @@ An engine was built around scalars at first to prototype the architecture that w
 
 Now adding further support for Tensors. In progress ... 
 
-![28](https://geps.dev/progress/28)
+![42](https://geps.dev/progress/42)
 
 
 ## Justfile
@@ -169,7 +169,6 @@ just test
 ### Todo list:
 > - [x] Setup project build system and structure
 > - [x] Add basic operators
-> - [x] Add operators tests
 > - [x] Add Scalar autograd
 >   - [x] Add Scalar
 >   - [x] Add ScalarFunction
