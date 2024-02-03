@@ -45,348 +45,348 @@ TEST_CASE("Scalar Addition", "[Scalar]") {
     auto b = Scalar::create(3.0);
 
     double d = 4.0;
-    int i = 5;
-    float f = 6.0f;
+    int i    = 5;
+    float f  = 6.0f;
 
     SECTION("Scalar + Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a + b;
         REQUIRE_THAT(result->data, WithinAbs(5.0, EPS));
     }
 
     SECTION("Scalar + double") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a + d;
         REQUIRE_THAT(result->data, WithinAbs(6.0, EPS));
     }
 
     SECTION("double + Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = d + a;
         REQUIRE_THAT(result->data, WithinAbs(6.0, EPS));
     }
 
     SECTION("Scalar + int") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a + i;
         REQUIRE_THAT(result->data, WithinAbs(7.0, EPS));
     }
 
     SECTION("int + Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = i + a;
         REQUIRE_THAT(result->data, WithinAbs(7.0, EPS));
     }
 
     SECTION("Scalar + float") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a + f;
         REQUIRE_THAT(result->data, WithinAbs(8.0, EPS));
     }
 
     SECTION("float + Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = f + a;
         REQUIRE_THAT(result->data, WithinAbs(8.0, EPS));
     }
 }
 
 TEST_CASE("Scalar Multiplication", "[Scalar]") {
-    auto a = Scalar::create(2.0);
-    auto b = Scalar::create(3.0);
+    auto a   = Scalar::create(2.0);
+    auto b   = Scalar::create(3.0);
     double d = 4.0;
-    int i = 5;
-    float f = 6.0f;
+    int i    = 5;
+    float f  = 6.0f;
 
     SECTION("Scalar * Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a * b;
         REQUIRE_THAT(result->data, WithinAbs(6.0, EPS));
     }
 
     SECTION("Scalar * double") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a * d;
         REQUIRE_THAT(result->data, WithinAbs(8.0, EPS));
     }
 
     SECTION("double * Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = d * a;
         REQUIRE_THAT(result->data, WithinAbs(8.0, EPS));
     }
 
     SECTION("Scalar * int") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a * i;
         REQUIRE_THAT(result->data, WithinAbs(10.0, EPS));
     }
 
     SECTION("int * Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = i * a;
         REQUIRE_THAT(result->data, WithinAbs(10.0, EPS));
     }
 
     SECTION("Scalar * float") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a * f;
         REQUIRE_THAT(result->data, WithinAbs(12.0, EPS));
     }
 
     SECTION("float * Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = f * a;
         REQUIRE_THAT(result->data, WithinAbs(12.0, EPS));
     }
 }
 
 TEST_CASE("Scalar Subtraction", "[Scalar]") {
-    auto a = Scalar::create(10.0);
-    auto b = Scalar::create(4.0);
+    auto a   = Scalar::create(10.0);
+    auto b   = Scalar::create(4.0);
     double d = 3.0;
-    int i = 2;
-    float f = 1.0f;
+    int i    = 2;
+    float f  = 1.0f;
 
     SECTION("Scalar - Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a - b;
         REQUIRE_THAT(result->data, WithinAbs(6.0, EPS));
     }
 
     SECTION("Scalar - double") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a - d;
         REQUIRE_THAT(result->data, WithinAbs(7.0, EPS));
     }
 
     SECTION("double - Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = d - a;
         REQUIRE_THAT(result->data, WithinAbs(-7.0, EPS));
     }
 
     SECTION("Scalar - int") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a - i;
         REQUIRE_THAT(result->data, WithinAbs(8.0, EPS));
     }
 
     SECTION("int - Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = i - a;
         REQUIRE_THAT(result->data, WithinAbs(-8.0, EPS));
     }
 
     SECTION("Scalar - float") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a - f;
         REQUIRE_THAT(result->data, WithinAbs(9.0, EPS));
     }
 
     SECTION("float - Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = f - a;
         REQUIRE_THAT(result->data, WithinAbs(-9.0, EPS));
     }
 }
 
 TEST_CASE("Scalar Division", "[Scalar]") {
-    auto a = Scalar::create(20.0);
-    auto b = Scalar::create(4.0);
+    auto a   = Scalar::create(20.0);
+    auto b   = Scalar::create(4.0);
     double d = 5.0;
-    int i = 2;
-    float f = 10.0f;
+    int i    = 2;
+    float f  = 10.0f;
 
     SECTION("Scalar / Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a / b;
         REQUIRE_THAT(result->data, WithinAbs(5.0, EPS));
     }
 
     SECTION("Scalar / double") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a / d;
         REQUIRE_THAT(result->data, WithinAbs(4.0, EPS));
     }
 
     SECTION("double / Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = d / a;
         REQUIRE_THAT(result->data, WithinAbs(0.25, EPS));
     }
 
     SECTION("Scalar / int") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a / i;
         REQUIRE_THAT(result->data, WithinAbs(10.0, EPS));
     }
 
     SECTION("int / Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = i / a;
         REQUIRE_THAT(result->data, WithinAbs(0.1, EPS));
     }
 
     SECTION("Scalar / float") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a / f;
         REQUIRE_THAT(result->data, WithinAbs(2.0, EPS));
     }
 
     SECTION("float / Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = f / a;
         REQUIRE_THAT(result->data, WithinAbs(0.5, EPS));
     }
 }
 
 TEST_CASE("Scalar Less Than Comparison", "[Scalar]") {
-    auto a = Scalar::create(2.0);
-    auto b = Scalar::create(3.0);
+    auto a   = Scalar::create(2.0);
+    auto b   = Scalar::create(3.0);
     double d = 4.0;
-    int i = 5;
-    float f = 6.0f;
+    int i    = 5;
+    float f  = 6.0f;
 
     SECTION("Scalar < Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a < b;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));  // Assuming true is
                                                         // represented as 1
     }
 
     SECTION("Scalar < double") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a < d;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("double < Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = d < a;
         REQUIRE_THAT(result->data, WithinAbs(0, EPS));
     }
 
     SECTION("Scalar < int") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a < i;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("int < Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = i < a;
         REQUIRE_THAT(result->data, WithinAbs(0, EPS));
     }
 
     SECTION("Scalar < float") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a < f;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("float < Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = f < a;
         REQUIRE_THAT(result->data, WithinAbs(0, EPS));
     }
 }
 
 TEST_CASE("Scalar Greater Than Comparison", "[Scalar]") {
-    auto a = Scalar::create(4.0);
-    auto b = Scalar::create(3.0);
+    auto a   = Scalar::create(4.0);
+    auto b   = Scalar::create(3.0);
     double d = 2.0;
-    int i = 1;
-    float f = 0.0f;
+    int i    = 1;
+    float f  = 0.0f;
 
     SECTION("Scalar > Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a > b;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("Scalar > double") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a > d;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("double > Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = d > a;
         REQUIRE_THAT(result->data, WithinAbs(0, EPS));
     }
 
     SECTION("Scalar > int") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a > i;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("int > Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = i > a;
         REQUIRE_THAT(result->data, WithinAbs(0, EPS));
     }
 
     SECTION("Scalar > float") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a > f;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("float > Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = f > a;
         REQUIRE_THAT(result->data, WithinAbs(0, EPS));
     }
 }
 
 TEST_CASE("Scalar Equality Comparison", "[Scalar]") {
-    auto a = Scalar::create(3.0);
-    auto b = Scalar::create(3.0);
+    auto a   = Scalar::create(3.0);
+    auto b   = Scalar::create(3.0);
     double d = 3.0;
-    int i = 3;
-    float f = 3.0f;
+    int i    = 3;
+    float f  = 3.0f;
 
     SECTION("Scalar == Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a == b;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("Scalar == double") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a == d;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("double == Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = d == a;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("Scalar == int") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a == i;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("int == Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = i == a;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("Scalar == float") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = a == f;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
 
     SECTION("float == Scalar") {
-        auto r = Scalar::create();
+        auto r      = Scalar::create();
         auto result = f == a;
         REQUIRE_THAT(result->data, WithinAbs(1, EPS));
     }
