@@ -13,12 +13,9 @@ Table of contents:
 
 ## About
 
-Currently fully supports auto-differentiation for scalar values.  
+Self-sustained autograd engine written in c++ from scratch.
 
-An engine was built around scalars at first to prototype the architecture that would enable the project to be easily extensible, loosely coupled and highly modular. For implementation details you may look [here](../src/babytorch/scalar.hpp). 
-
-
-Now adding further support for Tensors. In progress ... 
+Currently fully supports auto-differentiation for scalar values. Now adding further support for Tensors. In progress ... 
 
 ![42](https://geps.dev/progress/42)
 
