@@ -17,7 +17,9 @@ namespace tensor_data {
 
     using ReOrderIndex      = std::vector<size_t>;
     using TensorStorageView = std::span<const double>;
-    using TensorDataInfo    = std::tuple<Storage&, Shape&, Strides&>;
+    using TensorDataTuple   = std::tuple<Storage&, Shape&, Strides&>;
+    using TensorDataInfo
+        = std::tuple<const Storage&, const Shape&, const Strides&>;
 
     void to_tensor_index(const size_t storage_idx,
                          Index& tensor_idx,
@@ -75,7 +77,8 @@ namespace tensor_data {
         }
 
         void print_info() const;
-        TensorDataInfo tuple();
+        TensorDataInfo info() const;
+        TensorDataTuple tuple();
         bool is_contiguous();
         Index sample();
         size_t index(const Index& index) const;

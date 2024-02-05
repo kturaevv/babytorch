@@ -8,9 +8,11 @@
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
-#include "autodiff.hpp"
 #include "operators.hpp"
+#include "tensor_autodiff.hpp"
 #include "tensor_data.hpp"
+#include "tensor_functions.hpp"
+#include "tensor_ops.hpp"
 #include "utils.hpp"
 
 namespace tensor_ops {
@@ -19,11 +21,18 @@ namespace tensor_ops {
 
 namespace tensor {
 
-    using namespace autodiff;
+    using namespace tensor_autodiff;
+    using namespace tensor_functions;
     using namespace tensor_data;
+
     using tensor_ops::TensorBackend;
 
     struct Tensor;
+
+    struct TensorFunction {
+        template <typename Fn, typename... Args>
+        static Tensor apply(Args&&... args);
+    };
 
     struct History {
         Context ctx;
@@ -38,7 +47,7 @@ namespace tensor {
 
         TensorData data;
         History history;
-        TensorBackend* ops;
+        TensorBackend* backend;
 
         static inline size_t next_id = 0;
         Index passed_idx;
@@ -100,6 +109,22 @@ namespace tensor {
             return Tensor(TensorData(std::move(new_storage), new_shape));
         }
 
+        friend auto operator+(const Tensor& self, const Tensor& other) {
+            return TensorFunction::apply<Add>(self, other);
+        }
+
+        // template <typename T>
+        // friend auto operator+(const Tensor self, const T& rhs) {
+        //     auto other = Tensor(rhs);
+        //     return TensorFunction::apply<Add>(self, other);
+        // }
+
+        // template <typename T>
+        // friend auto operator+(const T& lhs, const Tensor other) {
+        //     auto self = Tensor(lhs);
+        //     return TensorFunction::apply<Add>(self, other);
+        // }
+
         // functions
         size_t size();
         size_t dims();
@@ -115,6 +140,7 @@ namespace tensor {
         Tensor contiguous();
         Tensor view(Shape shape);
         Tensor permute(ReOrderIndex order);
+        TensorDataInfo info() const;
         static Tensor zeros(Shape shape);
 
         bool is_leaf();
@@ -123,6 +149,12 @@ namespace tensor {
         std::vector<Tensor> parents();
         std::vector<std::tuple<Tensor, double>> chain_rule(double deriv);
     };
+
+    template <typename Fn, typename... Args>
+    Tensor TensorFunction::apply(Args&&... args) {
+        Context ctx;
+        return Fn::forward(ctx, args...);
+    }
 
     // helper functions
 }  // namespace tensor

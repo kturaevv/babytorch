@@ -17,7 +17,7 @@ namespace tensor_ops {
     using tensor_data::shape_broadcast;
     using tensor_data::to_tensor_index;
 
-    UnivariateTensorFn tensor_map(UnivariateFn fn) {
+    UnivariateTensorDataFn tensor_map(UnivariateFn fn) {
         return [fn](const TensorDataInfo& a) {
             auto& [in_storage, in_shape, in_strides] = a;
 
@@ -41,7 +41,7 @@ namespace tensor_ops {
         };
     }
 
-    BivariateTensorFn tensor_zip(BivariateFn fn) {
+    BivariateTensorDataFn tensor_zip(BivariateFn fn) {
         return [fn](const TensorDataInfo& a, const TensorDataInfo& b) {
             auto& [a_storage, a_shape, a_strides] = a;
             auto& [b_storage, b_shape, b_strides] = b;
@@ -75,7 +75,7 @@ namespace tensor_ops {
         };
     }
 
-    ReduceTensorFn tensor_reduce(BivariateFn fn, double start) {
+    ReduceTensorDataFn tensor_reduce(BivariateFn fn, double start) {
         return [fn, start](const TensorDataInfo& a, size_t dim) {
             auto& [in_storage, in_shape, in_strides] = a;
 
@@ -104,4 +104,17 @@ namespace tensor_ops {
             return out_tensor;
         };
     }
+
+    MapFuncFactory TensorOps::map = [](UnivariateFn fn) -> UnivariateTensorFn {
+        UnivariateTensorDataFn f = tensor_map(fn);
+        UnivariateTensorFn ret   = [&](const Tensor& a) {
+            return f(a.info());
+        };
+        return ret;
+    };
+
+    ZipFuncFactory TensorOps::zip;
+    ReduceFuncFactory TensorOps::reduce;
+    UnivariateTensorFn matrix_multiply;
+
 }  // tensor_ops

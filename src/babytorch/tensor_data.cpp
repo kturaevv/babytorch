@@ -138,8 +138,12 @@ namespace tensor_data {
                    this->strides);
     }
 
-    TensorDataInfo TensorData::tuple() {
+    TensorDataInfo TensorData::info() const {
         return TensorDataInfo(this->_storage, this->shape, this->strides);
+    }
+
+    TensorDataTuple TensorData::tuple() {
+        return TensorDataTuple(this->_storage, this->shape, this->strides);
     }
 
     std::string TensorData::string_view() const {
