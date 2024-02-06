@@ -64,6 +64,8 @@ target_link_libraries(
     ${TEST_NAME} 
         PRIVATE 
             Catch2::Catch2WithMain
+            fmt::fmt
+            fmt::fmt-header-only
 )
 
 # ----------- [Optional] ------------ # 
