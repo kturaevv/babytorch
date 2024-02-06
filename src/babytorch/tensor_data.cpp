@@ -46,7 +46,7 @@ namespace tensor_data {
 
             // If neither of dimensions equal each other or 1
             if (min_val != 1 && max_val != 1 && min_val != max_val)
-                throw std::runtime_error("IndexingError: Shape mismatch!");
+                throw IndexingError("Shape mismatch!");
 
             new_shape[idx] = max_val > min_val ? max_val : min_val;
             idx--;
@@ -93,8 +93,7 @@ namespace tensor_data {
         if (index.size() != this->shape.size()) {
             fmt::print("Index {}\n", index);
             fmt::print("Shape {}\n", shape);
-            throw std::runtime_error(
-                "IndexingError: Index must be size of shape.");
+            throw IndexingError("IndexingError: Index must be size of shape.");
         }
 
         for (auto i : std::views::iota(0ull, index.size())) {
@@ -102,7 +101,7 @@ namespace tensor_data {
                 std::ostringstream msg;
                 msg << "IndexingError: Index " << index[i]
                     << " is out of range for dimension " << i << ".";
-                throw std::runtime_error(msg.str());
+                throw IndexingError(msg.str());
             }
         }
 

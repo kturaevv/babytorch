@@ -2,12 +2,18 @@
 
 #include <memory>
 #include <span>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "generic_operators.hpp"
 #include "utils.hpp"
 
 namespace tensor_data {
+
+    struct IndexingError : std::runtime_error {
+        using std::runtime_error::runtime_error;
+    };
 
     // Type - aliases
     using Storage = std::vector<double>;

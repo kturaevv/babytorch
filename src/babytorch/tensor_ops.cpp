@@ -63,8 +63,10 @@ namespace tensor_ops {
             size_t len = out_storage.size();
             while (idx < len) {
                 out_index = to_tensor_index(idx, out_index, out_shape);
-                a_index   = broadcast_index(a_index, a_shape, out_shape);
-                b_index   = broadcast_index(b_index, b_shape, out_shape);
+
+                a_index = broadcast_index(out_index, out_shape, a_shape);
+                b_index = broadcast_index(out_index, out_shape, b_shape);
+
                 size_t ai = index_to_position(a_index, a_strides);
                 size_t bi = index_to_position(b_index, b_strides);
                 size_t oi = index_to_position(out_index, out_tensor.data.strides);
