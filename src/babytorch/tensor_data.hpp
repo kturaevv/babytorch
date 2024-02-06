@@ -21,9 +21,9 @@ namespace tensor_data {
     using TensorDataInfo
         = std::tuple<const Storage&, const Shape&, const Strides&>;
 
-    void to_tensor_index(const size_t storage_idx,
-                         Index& tensor_idx,
-                         const Shape& shape);
+    Index to_tensor_index(const size_t storage_idx,
+                          const Index& tensor_idx,
+                          const Shape& shape);
 
     Index broadcast_index(const Index& original_index,
                           const Shape& original_shape,

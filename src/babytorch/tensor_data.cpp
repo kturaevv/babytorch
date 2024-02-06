@@ -55,15 +55,17 @@ namespace tensor_data {
         return new_shape;
     }
 
-    void to_tensor_index(const size_t storage_idx,
-                         Index& tensor_idx,
-                         const Shape& shape) {
+    Index to_tensor_index(const size_t storage_idx,
+                          const Index& tensor_idx,
+                          const Shape& shape) {
         size_t _storage_idx = storage_idx;
+        Index _tensor_idx   = tensor_idx;
 
         for (auto i : std::views::iota(0ull, shape.size())) {
-            tensor_idx[i] = _storage_idx % shape[i];
-            _storage_idx  = static_cast<int>(_storage_idx / shape[i]);
+            _tensor_idx[i] = _storage_idx % shape[i];
+            _storage_idx   = static_cast<int>(_storage_idx / shape[i]);
         }
+        return _tensor_idx;
     }
 
     size_t index_to_position(const Index& index, const Strides& strides) {

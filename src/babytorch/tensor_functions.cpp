@@ -9,6 +9,6 @@ namespace tensor_functions {
 
     Tensor Add::forward(Context& ctx, const Tensor& self, const Tensor& other) {
         ctx.save_for_backwards(self, other);
-        return self.backend->add_zip(self, other);
+        return self.backend.add_zip(self, other);
     }
 }  // namespace tensor_functions

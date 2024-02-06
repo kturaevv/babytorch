@@ -47,7 +47,7 @@ namespace tensor {
 
         TensorData data;
         History history;
-        TensorBackend* backend;
+        TensorBackend backend;
 
         static inline size_t next_id = 0;
         Index passed_idx;
