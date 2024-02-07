@@ -130,6 +130,126 @@ namespace tensor {
             return TensorFunction::apply<Add>(self, other);
         }
 
+        // *
+
+        friend auto operator*(const Tensor& self, const Tensor& other) {
+            return TensorFunction::apply<Mul>(self, other);
+        }
+
+        template <typename T>
+        friend auto operator*(const Tensor& self, const T& rhs) {
+            auto val   = Storage{ static_cast<double>(rhs) };
+            auto other = Tensor(val);
+            return TensorFunction::apply<Mul>(self, other);
+        }
+
+        template <typename T>
+        friend auto operator*(const T& lhs, const Tensor& other) {
+            auto val  = Storage{ static_cast<double>(lhs) };
+            auto self = Tensor(val);
+            return TensorFunction::apply<Mul>(self, other);
+        }
+
+        // -
+
+        friend auto operator-(const Tensor& self, const Tensor& other) {
+            return self + TensorFunction::apply<Neg>(other);
+        }
+
+        template <typename T>
+        friend auto operator-(const Tensor& self, const T& rhs) {
+            auto val   = Storage{ static_cast<double>(rhs) };
+            auto other = Tensor(val);
+            return self + TensorFunction::apply<Neg>(other);
+        }
+
+        template <typename T>
+        friend auto operator-(const T& lhs, const Tensor& other) {
+            auto val  = Storage{ static_cast<double>(lhs) };
+            auto self = Tensor(val);
+            return self + TensorFunction::apply<Neg>(other);
+        }
+
+        // /
+
+        friend auto operator/(const Tensor& self, const Tensor& other) {
+            return self * TensorFunction::apply<Inv>(other);
+        }
+
+        template <typename T>
+        friend auto operator/(const Tensor& self, const T& rhs) {
+            auto val   = Storage{ static_cast<double>(rhs) };
+            auto other = Tensor(val);
+            return self * TensorFunction::apply<Inv>(other);
+        }
+
+        template <typename T>
+        friend auto operator/(const T& lhs, const Tensor& other) {
+            auto val  = Storage{ static_cast<double>(lhs) };
+            auto self = Tensor(val);
+            return self * TensorFunction::apply<Inv>(other);
+        }
+
+        // <
+
+        friend auto operator<(const Tensor& self, const Tensor& other) {
+            return TensorFunction::apply<Lt>(self, other);
+        }
+
+        template <typename T>
+        friend auto operator<(const Tensor& self, const T& rhs) {
+            auto val   = Storage{ static_cast<double>(rhs) };
+            auto other = Tensor(val);
+            return TensorFunction::apply<Lt>(self, other);
+        }
+
+        template <typename T>
+        friend auto operator<(const T& lhs, const Tensor& other) {
+            auto val  = Storage{ static_cast<double>(lhs) };
+            auto self = Tensor(val);
+            return TensorFunction::apply<Lt>(self, other);
+        }
+
+        // >
+
+        friend auto operator>(const Tensor& self, const Tensor& other) {
+            return TensorFunction::apply<Lt>(other, self);
+        }
+
+        template <typename T>
+        friend auto operator>(const Tensor& self, const T& rhs) {
+            auto val   = Storage{ static_cast<double>(rhs) };
+            auto other = Tensor(val);
+            return TensorFunction::apply<Lt>(other, self);
+        }
+
+        template <typename T>
+        friend auto operator>(const T& lhs, const Tensor& other) {
+            auto val  = Storage{ static_cast<double>(lhs) };
+            auto self = Tensor(val);
+            return TensorFunction::apply<Lt>(other, self);
+        }
+
+        // ==
+
+        friend auto operator==(const Tensor& self, const Tensor& other) {
+            return TensorFunction::apply<Eq>(self, other);
+        }
+
+        template <typename T>
+        friend auto operator==(const Tensor& self, const T& rhs) {
+            auto val   = Storage{ static_cast<double>(rhs) };
+            auto other = Tensor(val);
+            return TensorFunction::apply<Eq>(self, other);
+        }
+
+        template <typename T>
+        friend auto operator==(const T& lhs, const Tensor& other) {
+            auto val  = Storage{ static_cast<double>(lhs) };
+            auto self = Tensor(val);
+            return TensorFunction::apply<Eq>(other, self);
+        }
+
         // functions
         size_t size();
         size_t dims();

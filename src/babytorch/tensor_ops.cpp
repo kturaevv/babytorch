@@ -29,7 +29,7 @@ namespace tensor_ops {
             Index out_index = utils::zeros<size_t>(out_shape.size());
             Index in_index  = utils::zeros<size_t>(out_shape.size());
 
-            for (size_t idx : std::views::iota(in_storage.size())) {
+            for (size_t idx : std::views::iota(0ull, in_storage.size())) {
                 out_index     = to_tensor_index(idx, out_index, out_shape);
                 out_index     = broadcast_index(out_index, out_shape, in_shape);
                 size_t in_pos = index_to_position(in_index, in_strides);
