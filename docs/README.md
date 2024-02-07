@@ -8,6 +8,8 @@ Table of contents:
     -   [Pre-requisites](#pre-requisites)
     -   [Initialization](#initialization)
     -   [Usage](#usage)
+        - [Scalar](#scalar-example)
+        - [Tensor](#tensor-example)
     -   [Testing](#testing)
 -   [Todos](#todo-list)
 
@@ -15,9 +17,13 @@ Table of contents:
 
 Self-sustained autograd engine written in c++ from scratch.
 
-Currently fully supports auto-differentiation for scalar values. Now adding further support for Tensors. In progress ... 
+Currently fully supports auto-differentiation for scalar values. Examples can be found at [Scalar example](#scalar-example) of [Usage](#usage) section.  
 
-![42](https://geps.dev/progress/42)
+This library also provides full support for all arithmetic operations of Tensors of **varying** shapes and strides. For additional details refer to [Tensor example](#tensor-example) section.
+
+In progress ... 
+
+![64](https://geps.dev/progress/64)
 
 
 ## Justfile
@@ -63,7 +69,7 @@ just init
 
 ### Usage
 
-There is a sample **main.cpp** file in *./src* that showcases a simplest usage of an engine. There isn't much to it as of now. It proves to serve rather as a 'checkpoint' to test everything out and play around if there is a need to do so, as well as a showcase of current implementation state. 
+There is a sample [main.cpp](../src/main.cpp) file in *./src* that showcases a simplest usage of an engine. There isn't much to it as of now. It proves to serve rather as a 'checkpoint' to test everything out and play around if there is a need to do so, as well as a showcase of current implementation state. 
 
 To build and run use the following command:
 
@@ -111,7 +117,9 @@ Each variable has data that holds the value of a scalar `.data` and `.grad`, its
 
 #### Tensor Example
 
-At this point Tensors are still work in progress, but it already has full support for initialization and indexing. Tensor data is resided in `TensorData`, which is a wrapper around 1-D vector of values of a Tensor. This design is crucial for efficient tensor manipulations, without chaging the underlying data structure. This is achieved by the usage of strides and indexing to required location in 1-D storage given arbitrary shape.
+Tensors have full support for different initializations, indexing, broadcasting and all arithmetic operations. 
+
+Tensor data is resided in `TensorData`, which is a wrapper around 1-D vector of values of a Tensor. This design is crucial for efficient tensor manipulations, without chaging the underlying data structure. This is achieved by the usage of strides and indexing to required location in 1-D storage given arbitrary shape.
 
 Tensors can be created by either providing a vector or any number of integer arguments that represent the dimensionality. To create a tensor with dimensions 3x3, we simply do `Tensor(3,3);`. Consider this example:
 
@@ -152,6 +160,33 @@ Tensor([ 0.622890 -0.326047  0.134703 -0.741307 -0.883508])
 Tensor([-0.741307])
 
 ```
+
+As noted before, Tensors also support operations with ad-hoc polymorphism (i.e. Tensor can interact with other *arithmetic* types). So, the following expression is a valid expression:
+
+```c++
+auto a      = Tensor(3, 3, 5);
+auto b      = Tensor(3, 1, 5);
+auto c      = Tensor(5);
+auto d      = Tensor(3, 3, 1);
+auto e      = Tensor(3, 5);
+auto result = a / 1.2 + b * c / d - 3 - e;
+```
+
+Printing out the results would render expected tensor of shape `(3, 3, 5)`, i.e.:
+```
+Tensor([[[-6.890738 -1.263708,  2.054669, -1.155381, -1.935711]
+         [-7.028004 -1.796995,  2.212645, -1.111149, -1.362590]
+         [-7.293244 -0.599691,  1.726813, -0.809954, -2.071457]]
+
+        [[ 0.086415 -2.913973, -5.097692, -7.985071, -2.177253]
+         [ 1.717256 -1.971828, -6.132961, -8.329430, -0.660317]
+         [ 0.385969 -1.766070, -4.890303, -7.570299, -1.046319]]
+
+        [[ 1.723318 -8.519257, -3.483285,  0.339417, -3.913033]
+         [ 2.846399 -8.784151, -3.295351,  0.084319, -4.693404]
+         [ 1.689384 -8.196812, -3.309852,  1.165014, -3.930707]]])
+```
+
 ### Testing
 
 The choice for a testing framework have lied upon `Catch2` for its simplicity and ease of use. 
@@ -180,13 +215,11 @@ just test
     - [x] Add TensorStorage
     - [x] Add indexing, shape, strides
     - [x] Add Tensor string views
-    - [ ] Add TensorOperations
-    - [ ] Add TensorFunctions
-    - [ ] Add forward functions
+    - [x] Add TensorOperations
+    - [x] Add TensorFunctions
+    - [x] Add forward functions
+    - [x] Add operator overloads
     - [ ] Add backward functions
-    - [ ] Add operator overloads
     - [ ] Add backpropagation
 - [ ] CPU parallelization
 - [ ] GPU parallelization
-- [ ] Python bindings
-- [ ] SOTA architectures and algorithms
