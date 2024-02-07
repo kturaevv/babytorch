@@ -8,6 +8,7 @@
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
+#include "generic_operators.hpp"
 #include "operators.hpp"
 #include "tensor_autodiff.hpp"
 #include "tensor_data.hpp"
@@ -25,6 +26,7 @@ namespace tensor {
     using namespace tensor_functions;
     using namespace tensor_data;
 
+    using generic_operators::Arithmetic;
     using tensor_ops::TensorBackend;
 
     struct Tensor;
@@ -63,7 +65,8 @@ namespace tensor {
             , data(std::move(data)) {
         }
 
-        Tensor(std::vector<double> data)
+        template <typename T>
+        Tensor(std::vector<T> data)
             : id(next_id++) {
             this->data = TensorData(std::move(data));
         }
@@ -113,17 +116,19 @@ namespace tensor {
             return TensorFunction::apply<Add>(self, other);
         }
 
-        // template <typename T>
-        // friend auto operator+(const Tensor self, const T& rhs) {
-        //     auto other = Tensor(rhs);
-        //     return TensorFunction::apply<Add>(self, other);
-        // }
+        template <typename T>
+        friend auto operator+(const Tensor self, const T& rhs) {
+            auto val   = Storage{ static_cast<double>(rhs) };
+            auto other = Tensor(val);
+            return TensorFunction::apply<Add>(self, other);
+        }
 
-        // template <typename T>
-        // friend auto operator+(const T& lhs, const Tensor other) {
-        //     auto self = Tensor(lhs);
-        //     return TensorFunction::apply<Add>(self, other);
-        // }
+        template <typename T>
+        friend auto operator+(const T& lhs, const Tensor other) {
+            auto val  = Storage{ static_cast<double>(lhs) };
+            auto self = Tensor(val);
+            return TensorFunction::apply<Add>(self, other);
+        }
 
         // functions
         size_t size();
