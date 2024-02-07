@@ -10,22 +10,21 @@
 
 namespace tensor_data {
 
-    Index broadcast_index(const Index& original_index,
-                          const Shape& original_shape,
-                          const Shape& broadcasted_shape) {
-        Index broadcasted_index(broadcasted_shape.size(), 0);
+    Index broadcast_index(const Index& to_index,
+                          const Shape& to_shape,
+                          const Shape& from_shape) {
+        Index out_index(from_shape.size(), 0);
 
-        int oi = original_shape.size() - 1;
-        int bi = broadcasted_shape.size() - 1;
+        int to_i  = to_shape.size() - 1;
+        int out_i = from_shape.size() - 1;
 
-        while (oi >= 0) {
-            broadcasted_index[bi] = original_shape[oi] == 1 ? 0
-                                                            : original_index[oi];
-            oi--;
-            bi--;
+        while (out_i >= 0) {
+            out_index[out_i] = from_shape[out_i] == 1 ? 0 : to_index[to_i];
+            to_i--;
+            out_i--;
         }
 
-        return broadcasted_index;
+        return out_index;
     }
 
     Shape shape_broadcast(const Shape& shape1, const Shape& shape2) {
@@ -37,7 +36,7 @@ namespace tensor_data {
         int offset   = max_size - min_size;
         int idx      = max_size - 1;
 
-        Shape new_shape(max_size);
+        Shape new_shape(max_size, 1);
 
         while (idx >= 0) {
             int min_idx = idx - offset;
@@ -70,6 +69,7 @@ namespace tensor_data {
 
     size_t index_to_position(const Index& index, const Strides& strides) {
         size_t pos = 0;
+
         for (auto i : std::ranges::views::iota(0ull, index.size()))
             pos += index[i] * strides[i];
         return pos;
