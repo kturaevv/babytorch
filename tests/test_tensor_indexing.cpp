@@ -86,8 +86,6 @@ TEST_CASE("Test shape_broadcast function", "[shape_broadcast]") {
         Shape expected = { 2, 5 };
         REQUIRE(shape_broadcast(a, b) == expected);
     }
-
-    // Add more test cases as necessary
 }
 
 TEST_CASE("Test TensorData initialization") {
@@ -97,5 +95,23 @@ TEST_CASE("Test TensorData initialization") {
 
         REQUIRE(tensor_data.index({ 1, 0 }) == 5);
         REQUIRE(tensor_data.index({ 1, 2 }) == 7);
+    }
+}
+
+TEST_CASE("Test index broadcasting") {
+    SECTION("Test broadcast inside") {
+        Index to_index   = { 2, 1, 3 };
+        Shape to_shape   = { 3, 3, 5 };
+        Shape from_shape = { 3, 1, 5 };
+        Index expected   = { 2, 0, 3 };
+        REQUIRE(broadcast_index(to_index, to_shape, from_shape) == expected);
+    }
+
+    SECTION("Test broadcast outside") {
+        Index to_index   = { 2, 1, 3 };
+        Shape to_shape   = { 3, 3, 5 };
+        Shape from_shape = { 3, 5 };
+        Index expected   = { 1, 3 };
+        REQUIRE(broadcast_index(to_index, to_shape, from_shape) == expected);
     }
 }
