@@ -23,7 +23,7 @@ This library also provides full support for all arithmetic operations of Tensors
 
 In progress ... 
 
-![64](https://geps.dev/progress/64)
+![95](https://geps.dev/progress/95)
 
 
 ## Justfile
@@ -221,5 +221,5 @@ just test
     - [x] Add operator overloads
     - [ ] Add backward functions
     - [ ] Add backpropagation
-- [ ] CPU parallelization
-- [ ] GPU parallelization
+> - [ ] CPU parallelization
+> - [ ] GPU parallelization
