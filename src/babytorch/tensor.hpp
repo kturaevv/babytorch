@@ -39,7 +39,7 @@ namespace tensor {
     struct History {
         Context ctx;
         std::vector<Tensor*> inputs;
-        std::function<std::array<double, 2>(Context&, double)> backward;
+        // std::function<std::array<double, 2>(Context&, double)> backward;
     };
 
     struct Tensor {
@@ -48,6 +48,7 @@ namespace tensor {
         size_t id;
 
         TensorData data;
+        Tensor* grad;
         History history;
         TensorBackend backend;
 
@@ -82,9 +83,21 @@ namespace tensor {
             this->data = TensorData::rand(input_shapes);
         }
 
-        // Delete copy constructor and copy assignment operator
-        // Tensor(const Tensor&)            = delete;
-        // Tensor& operator=(const Tensor&) = delete;
+        Tensor(const Tensor& other)
+            : id(next_id++)
+            , data(other.data)
+            , grad(other.grad)
+            , history(other.history)
+            , backend(other.backend) {
+        }
+
+        Tensor(Tensor&& other) noexcept
+            : id(next_id++)
+            , data(std::move(other.data))
+            , grad(std::move(other.grad))
+            , history(std::move(other.history))
+            , backend(std::move(other.backend)) {
+        }
 
         template <typename... Sizes>
         static Tensor create(Sizes... dims);
@@ -250,6 +263,23 @@ namespace tensor {
             return TensorFunction::apply<Eq>(other, self);
         }
 
+        // +=
+
+        Tensor& operator+=(const Tensor& other) {
+            *this = std::move(TensorFunction::apply<Add>(*this, other));
+            return *this;
+        }
+
+        template <typename T>
+        Tensor& operator+=(const T& rhs) {
+            auto val   = Storage{ static_cast<double>(rhs) };
+            auto other = Tensor(val);
+            *this      = std::move(TensorFunction::apply<Add>(*this, other));
+            return *this;
+        }
+
+        Tensor& operator=(Tensor&& other) noexcept = default;
+
         // functions
         size_t size();
         size_t dims();
@@ -270,8 +300,8 @@ namespace tensor {
 
         bool is_leaf();
         void backward();
-        void accumulate_grad(double d_x);
-        std::vector<Tensor> parents();
+        void accumulate_grad(Tensor& d_x);
+        std::vector<Tensor*> parents();
         std::vector<std::tuple<Tensor, double>> chain_rule(double deriv);
     };
 
