@@ -72,6 +72,4 @@ namespace scalar {
         autodiff::backpropagate(std::make_shared<Scalar>(this), 1.0);
         return;
     }
-
-    void accumulate_grad(double d_x);
 }

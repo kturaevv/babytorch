@@ -14,54 +14,67 @@ namespace tensor_functions {
 
     struct Id {
         static Tensor forward(Context&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Neg {
         static Tensor forward(Context&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Inv {
         static Tensor forward(Context&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Relu {
         static Tensor forward(Context&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Sigmoid {
         static Tensor forward(Context&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Log {
         static Tensor forward(Context&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Exp {
         static Tensor forward(Context&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Add {
         static Tensor forward(Context&, const Tensor&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Mul {
         static Tensor forward(Context&, const Tensor&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Lt {
         static Tensor forward(Context&, const Tensor&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Eq {
         static Tensor forward(Context&, const Tensor&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Max {
         static Tensor forward(Context&, const Tensor&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
     struct Is_close {
         static Tensor forward(Context&, const Tensor&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
 }

@@ -38,8 +38,8 @@ namespace tensor {
 
     struct History {
         Context ctx;
-        std::vector<Tensor*> inputs;
-        // std::function<std::array<double, 2>(Context&, double)> backward;
+        std::vector<const Tensor*> inputs;
+        std::function<std::array<Tensor, 2>(Context&, Tensor)> backward;
     };
 
     struct Tensor {
@@ -64,6 +64,13 @@ namespace tensor {
         Tensor(TensorData data)
             : id(next_id++)
             , data(std::move(data)) {
+        }
+
+        Tensor(TensorData&& data, History&& hist, TensorBackend&& back)
+            : id(next_id++)
+            , data(std::move(data))
+            , history(std::move(hist))
+            , backend(std::move(back)) {
         }
 
         template <typename T>
@@ -301,14 +308,25 @@ namespace tensor {
         bool is_leaf();
         void backward();
         void accumulate_grad(Tensor& d_x);
-        std::vector<Tensor*> parents();
+        std::vector<const Tensor*> parents();
         std::vector<std::tuple<Tensor, double>> chain_rule(double deriv);
     };
 
     template <typename Fn, typename... Args>
     Tensor TensorFunction::apply(Args&&... args) {
         Context ctx;
-        return Fn::forward(ctx, args...);
+
+        Tensor result = Fn::forward(ctx, args.data...);
+
+        History history;
+        history.ctx      = std::move(ctx);
+        history.backward = Fn::backward;
+
+        (history.inputs.emplace_back(&args), ...);
+
+        return Tensor(std::move(result.data),
+                      std::move(history),
+                      std::move(result.backend));
     }
 
     // helper functions
