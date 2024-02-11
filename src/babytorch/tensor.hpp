@@ -290,7 +290,7 @@ namespace tensor {
         // functions
         size_t size();
         size_t dims();
-        Shape shape();
+        Shape shape() const;
         Tensor is_close();
         Tensor sigmoid();
         Tensor relu();
@@ -303,6 +303,7 @@ namespace tensor {
         Tensor view(Shape shape);
         Tensor permute(ReOrderIndex order);
         TensorDataInfo info() const;
+        Tensor zeros() const;
         static Tensor zeros(Shape shape);
 
         bool is_leaf();

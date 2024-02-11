@@ -12,12 +12,16 @@
 namespace tensor {
     using namespace tensor_autodiff;
 
-    Shape Tensor::shape() {
+    Shape Tensor::shape() const {
         return this->data.shape;
     }
 
     Tensor Tensor::zeros(Shape shape) {
         return Tensor(TensorData(utils::zeros(shape), shape));
+    }
+
+    Tensor Tensor::zeros() const {
+        return Tensor::zeros(this->shape());
     }
 
     TensorDataInfo Tensor::info() const {

@@ -12,11 +12,6 @@ namespace tensor_functions {
     using tensor::Tensor;
     using tensor_autodiff::Context;
 
-    struct Id {
-        static Tensor forward(Context&, const Tensor&);
-        static std::array<Tensor, 2> backward(Context&, const Tensor&);
-    };
-
     struct Neg {
         static Tensor forward(Context&, const Tensor&);
         static std::array<Tensor, 2> backward(Context&, const Tensor&);
@@ -74,6 +69,11 @@ namespace tensor_functions {
 
     struct Is_close {
         static Tensor forward(Context&, const Tensor&, const Tensor&);
+        static std::array<Tensor, 2> backward(Context&, const Tensor&);
+    };
+
+    struct Copy {
+        static Tensor forward(Context&, const Tensor&);
         static std::array<Tensor, 2> backward(Context&, const Tensor&);
     };
 
