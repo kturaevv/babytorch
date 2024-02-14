@@ -28,7 +28,7 @@ namespace tensor {
         return this->data.info();
     }
 
-    std::vector<const Tensor*> Tensor::parents() {
+    std::vector<Tensor*> Tensor::parents() const {
         return this->history.inputs;
     }
 
@@ -41,20 +41,20 @@ namespace tensor {
         return;
     }
 
-    // std::vector<std::tuple<Tensor, double>> Tensor::chain_rule(double deriv) {
-    //     auto history                = this->history;
-    //     std::array<double, 2> grads = history.backward(history.ctx, deriv);
+    std::vector<std::tuple<Tensor*, Tensor>> Tensor::chain_rule(Tensor* deriv) {
+        auto history                = this->history;
+        std::array<Tensor, 2> grads = history.backward(history.ctx, deriv);
 
-    //     std::vector<std::tuple<Tensor, double>> vals;
-    //     for (size_t i = 0; i < history.inputs.size() && i < 2; i++)
-    //         vals.emplace_back(history.inputs[i], grads[i]);
+        std::vector<std::tuple<Tensor*, Tensor>> vals;
+        for (size_t i = 0; i < history.inputs.size() && i < 2; i++)
+            vals.emplace_back(history.inputs[i], grads[i]);
 
-    //     return vals;
-    // }
+        return vals;
+    }
 
     void Tensor::backward() {
-        auto deriv = Tensor({ 1.0 });
-        tensor_autodiff::backpropagate(*this, deriv);
+        auto deriv = new Tensor({ 1.0 });
+        tensor_autodiff::backpropagate(*this, *deriv);
         return;
     }
 

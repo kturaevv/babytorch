@@ -38,7 +38,7 @@ namespace tensor {
 
     struct History {
         Context ctx;
-        std::vector<const Tensor*> inputs;
+        std::vector<Tensor*> inputs;
         std::function<std::array<Tensor, 2>(Context&, Tensor)> backward;
     };
 
@@ -309,8 +309,8 @@ namespace tensor {
         bool is_leaf();
         void backward();
         void accumulate_grad(Tensor& d_x);
-        std::vector<const Tensor*> parents();
-        std::vector<std::tuple<Tensor, double>> chain_rule(double deriv);
+        std::vector<Tensor*> parents() const;
+        std::vector<std::tuple<Tensor*, Tensor>> chain_rule(Tensor* deriv);
     };
 
     template <typename Fn, typename... Args>

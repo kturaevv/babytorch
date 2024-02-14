@@ -5,74 +5,57 @@
 #include <unordered_set>
 #include <vector>
 
-namespace tensor {
-    struct Tensor;
-}
+#include "tensor.hpp"
 
 namespace tensor_autodiff {
 
     using namespace tensor;
 
-    std::vector<Tensor> topological_sort(Tensor& v);
+    std::vector<Tensor*> topological_sort(Tensor* root) {
+        //
+        std::unordered_set<size_t> visited;
+        std::vector<Tensor*> order;
+        std::stack<Tensor*> stack;
 
-    void backpropagate(Tensor& variable);
-    void backpropagate(Tensor& variable, Tensor& deriv);
+        stack.push(root);
 
-    struct Context {
-        std::vector<Tensor> saved_values;
+        while (!stack.empty()) {
+            Tensor* cur_tensor = stack.top();
+            stack.pop();
 
-        template <typename... Args>
-        void save_for_backwards(Args&... args) {
-            (saved_values.push_back(args), ...);
-            return;
+            if (visited.contains(cur_tensor->id) || cur_tensor->is_leaf())
+                continue;
+
+            visited.insert(cur_tensor->id);
+            order.emplace_back(cur_tensor);
+
+            for (Tensor* parent : cur_tensor->parents())
+                if (!visited.contains(parent->id))
+                    stack.push(parent);
         }
-    };
 
-    // std::vector<Tensor> topological_sort(Tensor root) {
-    //     //
-    //     std::unordered_set<Tensor&> visited;
-    //     std::vector<Tensor> order;
-    //     std::stack<Tensor> stack;
+        return order;
+    }
 
-    //     stack.push(root);
+    void backpropagate(Tensor* variable, Tensor* deriv) {
+        auto order = topological_sort(variable);
 
-    //     while (!stack.empty()) {
-    //         Tensor cur_tensor = stack.top();
-    //         stack.pop();
+        std::unordered_map<size_t, Tensor*> grad_table;
+        grad_table[variable->id] = deriv;
 
-    //         if (visited.contains(cur_tensor->id) || cur_tensor->is_leaf())
-    //             continue;
+        for (auto v : order) {
+            Tensor* d_out = grad_table[v->id];
 
-    //         visited.insert(cur_tensor->id);
-    //         order.emplace_back(cur_tensor);
+            for (auto [var, grad] : v->chain_rule(d_out))
+                if (var->is_leaf())
+                    var->accumulate_grad(grad);
+                else if (grad_table.contains(var->id))
+                    *grad_table[var->id] += grad;
+                else
+                    grad_table[var->id] = grad;
+        }
 
-    //         for (auto parent : cur_tensor->parents())
-    //             if (!visited.contains(parent->id))
-    //                 stack.push(parent);
-    //     }
-
-    //     return order;
-    // }
-
-    // void backpropagate(Tensor& variable, Tensor& deriv) {
-    //     auto order = topological_sort(variable);
-
-    //     std::unordered_map<size_t, Tensor> grads;
-    //     grads[variable->id] = deriv;
-
-    //     for (auto v : order) {
-    //         Tensor d_out = grads[v->id];
-
-    //         for (auto [var, grad] : v->chain_rule(d_out))
-    //             if (var->is_leaf())
-    //                 var->accumulate_grad(grad);
-    //             else if (grads.contains(var->id))
-    //                 grads[var->id] += grad;
-    //             else
-    //                 grads[var->id] = grad;
-    //     }
-
-    //     return;
-    // }
+        return;
+    }
 
 }
