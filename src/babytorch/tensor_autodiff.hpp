@@ -15,14 +15,14 @@ namespace tensor_autodiff {
 
     std::vector<Tensor> topological_sort(Tensor& v);
 
-    void backpropagate(Tensor& variable);
-    void backpropagate(Tensor& variable, Tensor& deriv);
+    void backpropagate(Tensor* variable);
+    void backpropagate(Tensor* variable, Tensor* deriv);
 
     struct Context {
         std::vector<Tensor> saved_values;
 
         template <typename... Args>
-        void save_for_backwards(Args&... args) {
+        void save_for_backwards(Args&&... args) {
             (saved_values.push_back(args), ...);
             return;
         }

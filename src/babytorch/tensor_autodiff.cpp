@@ -43,17 +43,17 @@ namespace tensor_autodiff {
         std::unordered_map<size_t, Tensor*> grad_table;
         grad_table[variable->id] = deriv;
 
-        for (auto v : order) {
-            Tensor* d_out = grad_table[v->id];
+        // for (auto v : order) {
+        // Tensor* d_out = grad_table[v->id];
 
-            for (auto [var, grad] : v->chain_rule(d_out))
-                if (var->is_leaf())
-                    var->accumulate_grad(grad);
-                else if (grad_table.contains(var->id))
-                    *grad_table[var->id] += grad;
-                else
-                    grad_table[var->id] = grad;
-        }
+        // for (auto [var, grad] : std::move(v->chain_rule(d_out)))
+        //     if (var->is_leaf())
+        //         var->accumulate_grad(grad);
+        //     else if (grad_table.contains(var->id))
+        //         *grad_table[var->id] += grad;
+        // // else
+        //     grad_table[var->id] = grad;
+        // }
 
         return;
     }
