@@ -33,13 +33,13 @@ namespace tensor {
 
     struct TensorFunction {
         template <typename Fn, typename... Args>
-        static Tensor apply(Args&&... args);
+        static std::shared_ptr<Tensor> apply(Args&&... args);
     };
 
     struct History {
         Context ctx;
-        std::vector<Tensor*> inputs;
-        std::function<std::array<Tensor, 2>(Context&, Tensor)> backward;
+        std::vector<std::shared_ptr<Tensor>> inputs;
+        std::function<std::array<std::shared_ptr<Tensor>, 2>(Context&, std::shared_ptr<Tensor>)> backward;
     };
 
     struct Tensor {
@@ -48,7 +48,7 @@ namespace tensor {
         size_t id;
 
         TensorData data;
-        Tensor* grad;
+        std::shared_ptr<Tensor> grad;
         History history;
         TensorBackend backend;
 
@@ -90,7 +90,7 @@ namespace tensor {
             this->data = TensorData::rand(input_shapes);
         }
 
-        Tensor(const Tensor& other)
+        Tensor(Tensor& other)
             : id(next_id++)
             , data(other.data)
             , grad(other.grad)
@@ -107,16 +107,16 @@ namespace tensor {
         }
 
         template <typename... Sizes>
-        static Tensor create(Sizes... dims);
-        static Tensor create(TensorData data);
-        static Tensor create(History hist, TensorData data);
-        static Tensor create(Tensor* tensor);
-        static Tensor create(std::vector<double> data);
+        static std::shared_ptr<Tensor> create(Sizes... dims);
+        static std::shared_ptr<Tensor> create(TensorData data);
+        static std::shared_ptr<Tensor> create(History hist, TensorData data);
+        static std::shared_ptr<Tensor> create(std::shared_ptr<Tensor> tensor);
+        static std::shared_ptr<Tensor> create(std::vector<double> data);
 
         // overloads
 
         template <typename... size_t>
-        Tensor operator[](const size_t... dims) {
+        std::shared_ptr<Tensor> operator[](const size_t... dims) {
             Index passed_idx;
             (passed_idx.push_back(dims), ...);
 
@@ -129,160 +129,165 @@ namespace tensor {
                               | std::views::drop(passed_idx.size());
             Shape new_shape = { shape_view.begin(), shape_view.end() };
 
-            return Tensor(TensorData(std::move(new_storage), new_shape));
+            return std::make_shared<Tensor>(TensorData(std::move(new_storage), new_shape));
         }
 
-        friend auto operator+(const Tensor& self, const Tensor& other) {
+        friend auto operator+(std::shared_ptr<Tensor> self, std::shared_ptr<Tensor> other) {
             return TensorFunction::apply<Add>(self, other);
         }
 
         template <typename T>
-        friend auto operator+(const Tensor self, const T& rhs) {
+        friend auto operator+(std::shared_ptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
-            auto other = Tensor(val);
+            auto other = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Add>(self, other);
         }
 
         template <typename T>
-        friend auto operator+(const T& lhs, const Tensor other) {
+        friend auto operator+(std::shared_ptr<Tensor> self, std::shared_ptr<Tensor> other) {
+            return TensorFunction::apply<Add>(self, other);
+        }
+
+        template <typename T>
+        friend auto operator+(T& lhs, std::shared_ptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
-            auto self = Tensor(val);
+            auto self = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Add>(self, other);
         }
 
         // *
 
-        friend auto operator*(const Tensor& self, const Tensor& other) {
+        friend auto operator*(std::shared_ptr<Tensor> self, std::shared_ptr<Tensor> other) {
             return TensorFunction::apply<Mul>(self, other);
         }
 
         template <typename T>
-        friend auto operator*(const Tensor& self, const T& rhs) {
+        friend auto operator*(std::shared_ptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
-            auto other = Tensor(val);
+            auto other = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Mul>(self, other);
         }
 
         template <typename T>
-        friend auto operator*(const T& lhs, const Tensor& other) {
+        friend auto operator*(T& lhs, std::shared_ptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
-            auto self = Tensor(val);
+            auto self = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Mul>(self, other);
         }
 
         // -
 
-        friend auto operator-(const Tensor& self, const Tensor& other) {
-            return self + TensorFunction::apply<Neg>(other);
+        friend auto operator-(std::shared_ptr<Tensor> self, std::shared_ptr<Tensor> other) {
+            return *self + TensorFunction::apply<Neg>(other);
         }
 
         template <typename T>
-        friend auto operator-(const Tensor& self, const T& rhs) {
+        friend auto operator-(std::shared_ptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
-            auto other = Tensor(val);
-            return self + TensorFunction::apply<Neg>(other);
+            auto other = std::make_shared<Tensor>(val);
+            return *self + TensorFunction::apply<Neg>(other);
         }
 
         template <typename T>
-        friend auto operator-(const T& lhs, const Tensor& other) {
+        friend auto operator-(T& lhs, std::shared_ptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
-            auto self = Tensor(val);
-            return self + TensorFunction::apply<Neg>(other);
+            auto self = std::make_shared<Tensor>(val);
+            return *self + TensorFunction::apply<Neg>(other);
         }
 
         // /
 
-        friend auto operator/(const Tensor& self, const Tensor& other) {
-            return self * TensorFunction::apply<Inv>(other);
+        friend auto operator/(std::shared_ptr<Tensor> self, std::shared_ptr<Tensor> other) {
+            return *self * TensorFunction::apply<Inv>(other);
         }
 
         template <typename T>
-        friend auto operator/(const Tensor& self, const T& rhs) {
+        friend auto operator/(std::shared_ptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
-            auto other = Tensor(val);
-            return self * TensorFunction::apply<Inv>(other);
+            auto other = std::make_shared<Tensor>(val);
+            return *self * TensorFunction::apply<Inv>(other);
         }
 
         template <typename T>
-        friend auto operator/(const T& lhs, const Tensor& other) {
+        friend auto operator/(T& lhs, std::shared_ptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
-            auto self = Tensor(val);
-            return self * TensorFunction::apply<Inv>(other);
+            auto self = std::make_shared<Tensor>(val);
+            return *self * TensorFunction::apply<Inv>(other);
         }
 
         // <
 
-        friend auto operator<(const Tensor& self, const Tensor& other) {
+        friend auto operator<(std::shared_ptr<Tensor> self, std::shared_ptr<Tensor> other) {
             return TensorFunction::apply<Lt>(self, other);
         }
 
         template <typename T>
-        friend auto operator<(const Tensor& self, const T& rhs) {
+        friend auto operator<(std::shared_ptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
-            auto other = Tensor(val);
+            auto other = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Lt>(self, other);
         }
 
         template <typename T>
-        friend auto operator<(const T& lhs, const Tensor& other) {
+        friend auto operator<(T& lhs, std::shared_ptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
-            auto self = Tensor(val);
+            auto self = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Lt>(self, other);
         }
 
         // >
 
-        friend auto operator>(const Tensor& self, const Tensor& other) {
+        friend auto operator>(std::shared_ptr<Tensor> self, std::shared_ptr<Tensor> other) {
             return TensorFunction::apply<Lt>(other, self);
         }
 
         template <typename T>
-        friend auto operator>(const Tensor& self, const T& rhs) {
+        friend auto operator>(std::shared_ptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
-            auto other = Tensor(val);
+            auto other = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Lt>(other, self);
         }
 
         template <typename T>
-        friend auto operator>(const T& lhs, const Tensor& other) {
+        friend auto operator>(T& lhs, std::shared_ptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
-            auto self = Tensor(val);
+            auto self = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Lt>(other, self);
         }
 
         // ==
 
-        friend auto operator==(const Tensor& self, const Tensor& other) {
+        friend auto operator==(std::shared_ptr<Tensor> self, std::shared_ptr<Tensor> other) {
             return TensorFunction::apply<Eq>(self, other);
         }
 
         template <typename T>
-        friend auto operator==(const Tensor& self, const T& rhs) {
+        friend auto operator==(std::shared_ptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
-            auto other = Tensor(val);
+            auto other = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Eq>(self, other);
         }
 
         template <typename T>
-        friend auto operator==(const T& lhs, const Tensor& other) {
+        friend auto operator==(T& lhs, std::shared_ptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
-            auto self = Tensor(val);
+            auto self = std::make_shared<Tensor>(val);
             return TensorFunction::apply<Eq>(other, self);
         }
 
         // +=
 
-        Tensor& operator+=(const Tensor& other) {
-            *this = std::move(TensorFunction::apply<Add>(*this, other));
-            return *this;
+        std::shared_ptr<Tensor> operator+=(std::shared_ptr<Tensor> other) {
+            *this = std::move(*TensorFunction::apply<Add>(std::make_shared<Tensor>(*this), other));
+            return std::make_shared<Tensor>(*this);
         }
 
         template <typename T>
-        Tensor& operator+=(const T& rhs) {
+        std::shared_ptr<Tensor> operator+=(T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
-            auto other = Tensor(val);
-            *this      = std::move(TensorFunction::apply<Add>(*this, other));
-            return *this;
+            auto other = std::make_shared<Tensor>(val);
+            *this      = std::move(*TensorFunction::apply<Add>(std::make_shared<Tensor>(*this), other));
+            return std::make_shared<Tensor>(*this);
         }
 
         Tensor& operator=(Tensor&& other) noexcept = default;
@@ -291,43 +296,43 @@ namespace tensor {
         size_t size();
         size_t dims();
         Shape shape() const;
-        Tensor is_close();
-        Tensor sigmoid();
-        Tensor relu();
-        Tensor log();
-        Tensor exp();
-        Tensor item();
-        Tensor sum(size_t dim);
-        Tensor mean(size_t dim);
-        Tensor contiguous();
-        Tensor view(Shape shape);
-        Tensor permute(ReOrderIndex order);
+        std::shared_ptr<Tensor> is_close();
+        std::shared_ptr<Tensor> sigmoid();
+        std::shared_ptr<Tensor> relu();
+        std::shared_ptr<Tensor> log();
+        std::shared_ptr<Tensor> exp();
+        std::shared_ptr<Tensor> item();
+        std::shared_ptr<Tensor> sum(size_t dim);
+        std::shared_ptr<Tensor> mean(size_t dim);
+        std::shared_ptr<Tensor> contiguous();
+        std::shared_ptr<Tensor> view(Shape shape);
+        std::shared_ptr<Tensor> permute(ReOrderIndex order);
         TensorDataInfo info() const;
-        Tensor zeros() const;
-        static Tensor zeros(Shape shape);
+        std::shared_ptr<Tensor> zeros() const;
+        static std::shared_ptr<Tensor> zeros(Shape shape);
 
         bool is_leaf();
         void backward();
-        void accumulate_grad(Tensor& d_x);
-        std::vector<Tensor*> parents() const;
-        std::vector<std::tuple<Tensor*, Tensor>> chain_rule(Tensor* deriv);
+        void accumulate_grad(std::shared_ptr<Tensor> d_x);
+        std::vector<std::shared_ptr<Tensor>> parents() const;
+        std::vector<std::tuple<std::shared_ptr<Tensor>, std::shared_ptr<Tensor>>> chain_rule(std::shared_ptr<Tensor> deriv);
     };
 
     template <typename Fn, typename... Args>
-    Tensor TensorFunction::apply(Args&&... args) {
+    std::shared_ptr<Tensor> TensorFunction::apply(Args&&... args) {
         Context ctx;
 
-        Tensor result = Fn::forward(ctx, args.data...);
+        auto result = Fn::forward(ctx, args->data...);
 
         History history;
         history.ctx      = std::move(ctx);
         history.backward = Fn::backward;
 
-        (history.inputs.emplace_back(&args), ...);
+        (history.inputs.emplace_back(args), ...);
 
-        return Tensor(std::move(result.data),
-                      std::move(history),
-                      std::move(result.backend));
+        return std::make_shared<Tensor>(std::move(result.data),
+                                        std::move(history),
+                                        std::move(result.backend));
     }
 
     // helper functions
