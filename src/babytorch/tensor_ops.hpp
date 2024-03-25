@@ -6,6 +6,7 @@
 
 #include "operators.hpp"
 #include "tensor_data.hpp"
+#include "ptr.hpp"
 
 // Forward declaration of Tensor instead of including tensor.hpp
 namespace tensor {
@@ -24,16 +25,16 @@ namespace tensor_ops {
     using UnivariateFn = std::function<double(double)>;
     using BivariateFn  = std::function<double(double, double)>;
 
-    using UnivariateTensorFn = std::function<Tensor(const Tensor&)>;
-    using BivariateTensorFn = std::function<Tensor(const Tensor&, const Tensor&)>;
-    using ReduceTensorFn = std::function<Tensor(const Tensor&, const size_t)>;
+    using UnivariateTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>)>;
+    using BivariateTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>, const sptr<Tensor>)>;
+    using ReduceTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>, const size_t)>;
 
     using UnivariateTensorDataFn  //
-        = std::function<Tensor(const TensorDataInfo&)>;
+        = std::function<sptr<Tensor>(const TensorDataInfo&)>;
     using BivariateTensorDataFn
-        = std::function<Tensor(const TensorDataInfo&, const TensorDataInfo&)>;
+        = std::function<sptr<Tensor>(const TensorDataInfo&, const TensorDataInfo&)>;
     using ReduceTensorDataFn
-        = std::function<Tensor(const TensorDataInfo&, const size_t)>;
+        = std::function<sptr<Tensor>(const TensorDataInfo&, const size_t)>;
 
     // 1layer =
     // Function factories
@@ -94,7 +95,7 @@ namespace tensor_ops {
         }
 
         // Additional methods
-        Tensor (*matrix_multiply)(Tensor&, Tensor&);  // Pointer to
+        Tensor (*matrix_multiply)(sptr<Tensor>, sptr<Tensor>);  // Pointer to
                                                       // matrix_multiply
                                                       // function
     };

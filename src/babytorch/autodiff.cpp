@@ -9,20 +9,21 @@
 #include <vector>
 
 #include "scalar.hpp"
+#include "ptr.hpp"
 
 namespace autodiff {
 
-    std::vector<std::shared_ptr<Scalar>> topological_sort(
-        std::shared_ptr<Scalar> root) {
+    std::vector<sptr<Scalar>> topological_sort(
+        sptr<Scalar> root) {
         //
         std::unordered_set<double> visited;
-        std::vector<std::shared_ptr<Scalar>> order;
-        std::stack<std::shared_ptr<Scalar>> stack;
+        std::vector<sptr<Scalar>> order;
+        std::stack<sptr<Scalar>> stack;
 
         stack.push(root);
 
         while (!stack.empty()) {
-            std::shared_ptr<Scalar> current_scalar = stack.top();
+            sptr<Scalar> current_scalar = stack.top();
             stack.pop();
 
             if (visited.contains(current_scalar->id) || current_scalar->is_leaf())
@@ -39,7 +40,7 @@ namespace autodiff {
         return order;
     }
 
-    void backpropagate(std::shared_ptr<Scalar> variable, double deriv) {
+    void backpropagate(sptr<Scalar> variable, double deriv) {
         auto order = topological_sort(variable);
 
         std::unordered_map<double, double> grads;

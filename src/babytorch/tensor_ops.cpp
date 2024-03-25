@@ -4,6 +4,7 @@
 #include "tensor_data.hpp"
 #include "tensor_ops.hpp"
 #include "utils.hpp"
+#include "ptr.hpp"
 
 namespace tensor_ops {
 
@@ -18,11 +19,11 @@ namespace tensor_ops {
     using tensor_data::to_tensor_index;
 
     UnivariateTensorDataFn tensor_map(UnivariateFn fn) {
-        return [fn](const TensorDataInfo& a) -> Tensor {
+        return [fn](const TensorDataInfo& a) -> sptr<Tensor> {
             auto& [in_storage, in_shape, in_strides] = a;
 
             auto out_tensor = Tensor::zeros(in_shape);
-            auto data_tuple = out_tensor.data.tuple();
+            auto data_tuple = out_tensor->data.tuple();
 
             auto& [out_storage, out_shape, out_strides] = data_tuple;
 
@@ -37,12 +38,13 @@ namespace tensor_ops {
 
                 out_storage[out_pos] = fn(in_storage[in_pos]);
             }
+            
             return out_tensor;
         };
     }
 
     BivariateTensorDataFn tensor_zip(BivariateFn fn) {
-        return [fn](const TensorDataInfo& a, const TensorDataInfo& b) -> Tensor {
+        return [fn](const TensorDataInfo& a, const TensorDataInfo& b) -> sptr<Tensor> {
             auto& [a_storage, a_shape, a_strides] = a;
             auto& [b_storage, b_shape, b_strides] = b;
 
@@ -51,7 +53,7 @@ namespace tensor_ops {
                                   : a_shape;
 
             auto out_tensor = Tensor::zeros(out_shape);
-            auto data_tuple = out_tensor.data.tuple();
+            auto data_tuple = out_tensor->data.tuple();
 
             auto& [out_storage, _, out_strides] = data_tuple;
 
@@ -69,7 +71,7 @@ namespace tensor_ops {
 
                 size_t ai = index_to_position(a_index, a_strides);
                 size_t bi = index_to_position(b_index, b_strides);
-                size_t oi = index_to_position(out_index, out_tensor.data.strides);
+                size_t oi = index_to_position(out_index, out_tensor->data.strides);
 
                 out_storage[oi] = fn(a_storage[ai], b_storage[bi]);
                 idx++;
@@ -79,14 +81,14 @@ namespace tensor_ops {
     }
 
     ReduceTensorDataFn tensor_reduce(BivariateFn fn, double start) {
-        return [fn, start](const TensorDataInfo& a, size_t dim) -> Tensor {
+        return [fn, start](const TensorDataInfo& a, size_t dim) -> sptr<Tensor> {
             auto& [in_storage, in_shape, in_strides] = a;
 
             Shape out_shape = in_shape;
             out_shape[dim]  = 1;
 
             auto out_tensor = Tensor::zeros(out_shape);
-            auto data_tuple = out_tensor.data.tuple();
+            auto data_tuple = out_tensor->data.tuple();
 
             auto& [out_storage, _, out_strides] = data_tuple;
 

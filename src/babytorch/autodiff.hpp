@@ -5,6 +5,9 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ptr.hpp"
+
+
 namespace scalar {
     struct Scalar;
 }
@@ -13,11 +16,11 @@ namespace autodiff {
 
     using namespace scalar;
 
-    std::vector<std::shared_ptr<Scalar>> topological_sort(
-        std::shared_ptr<Scalar> v);
+    std::vector<sptr<Scalar>> topological_sort(
+        sptr<Scalar> v);
 
-    void backpropagate(std::shared_ptr<Scalar> variable);
-    void backpropagate(std::shared_ptr<Scalar> variable, double deriv);
+    void backpropagate(sptr<Scalar> variable);
+    void backpropagate(sptr<Scalar> variable, double deriv);
 
     struct Context {
         std::vector<double> saved_values;

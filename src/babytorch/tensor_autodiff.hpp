@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_set>
 #include <vector>
+#include "ptr.hpp"
 
 namespace tensor {
     struct Tensor;
@@ -13,13 +14,13 @@ namespace tensor_autodiff {
 
     using namespace tensor;
 
-    std::vector<Tensor> topological_sort(Tensor& v);
+    std::vector<sptr<Tensor>> topological_sort(sptr<Tensor> v);
 
-    void backpropagate(Tensor* variable);
-    void backpropagate(Tensor* variable, Tensor* deriv);
+    void backpropagate(sptr<Tensor> variable);
+    void backpropagate(sptr<Tensor> variable, sptr<Tensor> deriv);
 
     struct Context {
-        std::vector<Tensor> saved_values;
+        std::vector<sptr<Tensor>> saved_values;
 
         template <typename... Args>
         void save_for_backwards(Args&&... args) {
