@@ -8,49 +8,49 @@ namespace tensor_functions {
     using tensor::Tensor;
     using tensor_autodiff::Context;
 
-    Tensor Add::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+    sptr<Tensor> Add::forward(Context&, const sptr<Tensor>& self, const sptr<Tensor>& other) {
         return self->backend.add_zip(self, other);
     }
 
-    std::array<Tensor, 2> Add::backward(Context&, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Add::backward(Context&, const sptr<Tensor>& d_out) {
         return { d_out, d_out };
     }
 
-    Tensor Neg::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Neg::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.neg_map(self);
     }
 
-    std::array<Tensor, 2> Neg::backward(Context&, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Neg::backward(Context&, const sptr<Tensor>& d_out) {
         return { d_out->backend.neg_map(d_out) };
     }
 
-    Tensor Inv::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Inv::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.inv_map(self);
     }
 
-    std::array<Tensor, 2> Inv::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Inv::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self = ctx.saved_values[0];
         return { self->backend.inv_back_zip(self, d_out) };
     }
 
-    Tensor Relu::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Relu::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.relu_map(self);
     }
 
-    std::array<Tensor, 2> Relu::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Relu::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self = ctx.saved_values[0];
         return { d_out->backend.relu_back_zip(self, d_out) };
     }
 
-    Tensor Sigmoid::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Sigmoid::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.sigmoid_map(self);
     }
 
-    std::array<Tensor, 2> Sigmoid::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Sigmoid::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self            = ctx.saved_values[0];
         auto sigmoid_self    = self->backend.sigmoid_map(self);
         auto sigmoid_self_sq = self->backend.mul_zip(sigmoid_self, sigmoid_self);
@@ -60,70 +60,70 @@ namespace tensor_functions {
         return { out };
     }
 
-    Tensor Log::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Log::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.log_map(self);
     }
 
-    std::array<Tensor, 2> Log::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Log::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self = ctx.saved_values[0];
         return { self->backend.log_back_zip(self, d_out) };
     }
 
-    Tensor Exp::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Exp::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.exp_map(self);
     }
 
-    std::array<Tensor, 2> Exp::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Exp::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self = ctx.saved_values[0];
         return { self->backend.mul_zip(d_out, self->backend.exp_map(self)) };
     }
 
-    Tensor Mul::forward(Context& ctx, const sptr<Tensor> self, const sptr<Tensor> other) {
+    sptr<Tensor> Mul::forward(Context& ctx, const sptr<Tensor>& self, const sptr<Tensor>& other) {
         ctx.save_for_backwards(self, other);
         return self->backend.mul_zip(self, other);
     }
 
-    std::array<Tensor, 2> Mul::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Mul::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self  = ctx.saved_values[0];
         auto other = ctx.saved_values[1];
         return { self->backend.mul_zip(other, d_out),
                  self->backend.mul_zip(self, d_out) };
     }
 
-    Tensor Lt::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+    sptr<Tensor> Lt::forward(Context&, const sptr<Tensor>& self, const sptr<Tensor>& other) {
         return self->backend.lt_zip(self, other);
     }
 
-    std::array<Tensor, 2> Lt::backward(Context&, const sptr<Tensor> d_out) {
-        Tensor a = d_out->zeros();
-        Tensor b = d_out->zeros();
+    std::array<sptr<Tensor>, 2> Lt::backward(Context&, const sptr<Tensor>& d_out) {
+        sptr<Tensor> a = d_out->zeros();
+        sptr<Tensor> b = d_out->zeros();
         return { a, b };
     }
 
-    Tensor Eq::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+    sptr<Tensor> Eq::forward(Context&, const sptr<Tensor>& self, const sptr<Tensor>& other) {
         return self->backend.eq_zip(self, other);
     }
 
-    std::array<Tensor, 2> Eq::backward(Context&, const sptr<Tensor> d_out) {
-        Tensor a = d_out->zeros();
-        Tensor b = d_out->zeros();
+    std::array<sptr<Tensor>, 2> Eq::backward(Context&, const sptr<Tensor>& d_out) {
+        sptr<Tensor> a = d_out->zeros();
+        sptr<Tensor> b = d_out->zeros();
         return { a, b };
     }
 
-    Tensor Is_close::forward(Context& ctx,
-                             const sptr<Tensor> self,
-                             const sptr<Tensor> other) {
+    sptr<Tensor> Is_close::forward(Context& ctx,
+                             const sptr<Tensor>& self,
+                             const sptr<Tensor>& other) {
         ctx.save_for_backwards(self, other);
         return self->backend.is_close_zip(self, other);
     }
 
-    Tensor Copy::forward(Context&, const sptr<Tensor> self) {
+    sptr<Tensor> Copy::forward(Context&, const sptr<Tensor>& self) {
         return self->backend.id_map(self);
     }
 
-    std::array<Tensor, 2> Copy::backward(Context&, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Copy::backward(Context&, const sptr<Tensor>& d_out) {
         return { d_out };
     }
 

@@ -54,8 +54,8 @@ namespace tensor {
     // }
 
     void Tensor::backward() {
-        auto deriv = std::make_shared<Tensor>(TensorData({ 1.0 }, Shape{}));
-        tensor_autodiff::backpropagate(std::make_shared<Tensor>(this), deriv);
+        /*auto deriv = std::make_shared<Tensor>(TensorData({ 1.0 }, Shape{}));*/
+        /*tensor_autodiff::backpropagate(std::make_shared<Tensor>(this), deriv);*/
         return;
     }
 

@@ -23,15 +23,15 @@ int main() {
     result->backward();
     fmt::print("{}\n", *result);
 
-    using tensor::Tensor;
-    auto tensor_sample = Tensor(3, 3, 5);
-    auto a             = Tensor(3, 3, 5);
-    auto b             = Tensor(3, 1, 5);
-    auto c             = Tensor(5);
-    auto d             = Tensor(3, 3, 1);
-    auto e             = Tensor(3, 5);
-    auto tensor_result = a / 1.2 + b * c / d - 3 - e;
-    fmt::print("{}", tensor_result);
-
+    /*using tensor::Tensor;*/
+    /*auto tensor_sample = Tensor(3, 3, 5);*/
+    /*auto a             = Tensor(3, 3, 5);*/
+    /*auto b             = Tensor(3, 1, 5);*/
+    /*auto c             = Tensor(5);*/
+    /*auto d             = Tensor(3, 3, 1);*/
+    /*auto e             = Tensor(3, 5);*/
+    /*auto tensor_result = a / 1.2 + b * c / d - 3 - e;*/
+    /*fmt::print("{}", tensor_result);*/
+    /**/
     return 0;
 }

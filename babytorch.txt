@@ -1,0 +1,998 @@
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <memory>
+
+#include <fmt/core.h>
+#include <fmt/ranges.h>
+
+#include "./babytorch/scalar.hpp"
+#include "./babytorch/tensor.hpp"
+#include "./babytorch/tensor_data.hpp"
+
+int main() {
+    fmt::print("Autograd project!\n\n");
+
+    using scalar::Scalar;
+    auto x      = Scalar::create(1.0);
+    auto y      = Scalar::create(2.0);
+    auto z      = Scalar::create(3.0);
+    auto k      = Scalar::create(4.0);
+    auto j      = Scalar::create(5.0);
+    auto result = (x * y + z - k / j);
+    result->backward();
+    fmt::print("{}\n", *result);
+
+    using tensor::Tensor;
+    auto tensor_sample = Tensor(3, 3, 5);
+    auto a             = Tensor(3, 3, 5);
+    auto b             = Tensor(3, 1, 5);
+    auto c             = Tensor(5);
+    auto d             = Tensor(3, 3, 1);
+    auto e             = Tensor(3, 5);
+    auto tensor_result = a / 1.2 + b * c / d - 3 - e;
+    fmt::print("{}", tensor_result);
+
+    return 0;
+}
+
+// Source: ./src/main.cpp
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <memory>
+
+#include <fmt/core.h>
+#include <fmt/ranges.h>
+
+#include "./babytorch/scalar.hpp"
+#include "./babytorch/tensor.hpp"
+#include "./babytorch/tensor_data.hpp"
+
+int main() {
+    fmt::print("Autograd project!\n\n");
+
+    using scalar::Scalar;
+    auto x      = Scalar::create(1.0);
+    auto y      = Scalar::create(2.0);
+    auto z      = Scalar::create(3.0);
+    auto k      = Scalar::create(4.0);
+    auto j      = Scalar::create(5.0);
+    auto result = (x * y + z - k / j);
+    result->backward();
+    fmt::print("{}\n", *result);
+
+    using tensor::Tensor;
+    auto tensor_sample = Tensor(3, 3, 5);
+    auto a             = Tensor(3, 3, 5);
+    auto b             = Tensor(3, 1, 5);
+    auto c             = Tensor(5);
+    auto d             = Tensor(3, 3, 1);
+    auto e             = Tensor(3, 5);
+    auto tensor_result = a / 1.2 + b * c / d - 3 - e;
+    fmt::print("{}", tensor_result);
+
+    return 0;
+}
+
+// Source: ./src/babytorch/operators.cpp
+#include <cmath>
+#include <functional>
+#include <iostream>
+#include <numeric>
+#include <ranges>
+#include <vector>
+
+#include "operators.hpp"
+
+namespace operators {
+
+    const double EPS = 1e-8;
+
+    double mul(const double x, const double y) {
+        return x * y;
+    }
+
+    double id(const double x) {
+        return x;
+    }
+
+    double add(const double x, const double y) {
+        return x + y;
+    }
+
+    double neg(const double x) {
+        return -x;
+    }
+
+    double lt(const double x, const double y) {
+        return x < y ? 1.0 : 0.0;
+    }
+
+    double eq(const double x, const double y) {
+        return x == y ? 1.0 : 0.0;
+    }
+
+    double max(const double x, const double y) {
+        return x > y ? x : y;
+    }
+
+    double is_close(const double x, const double y) {
+        const double EPS = 1e-2;
+        return fabs(x - y) < EPS ? 1.0 : 0.0;
+    }
+
+    double sigmoid(const double x) {
+        if (x >= 0)
+            return 1.0 / (1.0 + exp(-x));
+        else
+            return exp(x) / (1.0 + exp(x));
+    }
+
+    double sigmoid_back(const double x, const double d) {
+        return x * (1 - x) * d;
+    }
+
+    double relu(const double x) {
+        return x > 0 ? x : 0;
+    }
+
+    double log_func(const double x) {
+        return std::log(x + EPS);
+    }
+
+    double exp_func(const double x) {
+        return std::exp(x);
+    }
+
+    double log_back(const double x, const double d) {
+        return 1.0 / (x * std::log(d + EPS) + EPS);
+    }
+
+    double inv(const double x) {
+        return 1.0 / (x + EPS);
+    }
+
+    double inv_back(const double x, const double d) {
+        return -1.0 / (x * x + EPS) * d;
+    }
+
+    double relu_back(const double x, const double d) {
+        return x > 0.0 ? d : 0.0;
+    }
+
+    // High Order functions Definitions
+
+    std::vector<double> map(const std::function<double(double)>& fn,
+                            const std::vector<double>& args) {
+        std::vector<double> result;
+        result.reserve(args.size());
+
+        for (const auto& i : args)
+            result.push_back(fn(i));
+
+        return result;
+    }
+
+    std::vector<double> zipWith(const std::function<double(double, double)>& fn,
+                                const std::vector<double>& x,
+                                const std::vector<double>& y) {
+        std::vector<double> result;
+
+        double minSize = std::min(x.size(), y.size());
+        result.reserve(minSize);
+
+        for (const auto i : std::views::iota(0, minSize))
+            result.push_back(fn(x[i], y[i]));
+        return result;
+    }
+
+    double reduce(std::function<double(double, double)> fn,
+                  double start,
+                  const std::vector<double>& ls) {
+        return std::accumulate(ls.begin(), ls.end(), start, fn);
+    }
+
+    // Utility functions using high order function defined above
+
+    double sum(const std::vector<double>& ls) {
+        return std::accumulate(ls.begin(), ls.end(), 0);
+    }
+
+    double prod(const std::vector<double>& ls) {
+        return reduce(std::multiplies<double>(), 1.0, ls);
+    }
+
+    std::vector<double> addLists(const std::vector<double>& ls1,
+                                 const std::vector<double>& ls2) {
+        return zipWith(add, ls1, ls2);
+    }
+
+    std::vector<double> negList(const std::vector<double>& ls) {
+        return map(neg, ls);
+    }
+}
+// Source: ./src/babytorch/tensor_autodiff.cpp
+#include <any>
+#include <memory>
+#include <stack>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+#include "tensor.hpp"
+#include "ptr.hpp"
+
+
+namespace tensor_autodiff {
+
+    using namespace tensor;
+
+    std::vector<sptr<Tensor>> topological_sort(sptr<Tensor> root) {
+        //
+        std::unordered_set<size_t> visited;
+        std::vector<sptr<Tensor>> order;
+        std::stack<sptr<Tensor>> stack;
+
+        stack.push(root);
+
+        while (!stack.empty()) {
+            sptr<Tensor> cur_tensor = stack.top();
+            stack.pop();
+
+            if (visited.contains(cur_tensor->id) || cur_tensor->is_leaf())
+                continue;
+
+            visited.insert(cur_tensor->id);
+            order.emplace_back(cur_tensor);
+
+            for (sptr<Tensor> parent : cur_tensor->parents())
+                if (!visited.contains(parent->id))
+                    stack.push(parent);
+        }
+
+        return order;
+    }
+
+    void backpropagate(sptr<Tensor> variable, sptr<Tensor> deriv) {
+        auto order = topological_sort(variable);
+
+        std::unordered_map<size_t, sptr<Tensor>> grad_table;
+        grad_table[variable->id] = deriv;
+
+        // for (auto v : order) {
+        // sptr<Tensor> d_out = grad_table[v->id];
+
+        // for (auto [var, grad] : std::move(v->chain_rule(d_out)))
+        //     if (var->is_leaf())
+        //         var->accumulate_grad(grad);
+        //     else if (grad_table.contains(var->id))
+        //         *grad_table[var->id] += grad;
+        // // else
+        //     grad_table[var->id] = grad;
+        // }
+
+        return;
+    }
+
+}
+// Source: ./src/babytorch/tensor_ops.cpp
+#include <ranges>
+
+#include "tensor.hpp"
+#include "tensor_data.hpp"
+#include "tensor_ops.hpp"
+#include "utils.hpp"
+#include "ptr.hpp"
+
+namespace tensor_ops {
+
+    using tensor_data::Index;
+    using tensor_data::Shape;
+    using tensor_data::Storage;
+    using tensor_data::Strides;
+
+    using tensor_data::broadcast_index;
+    using tensor_data::index_to_position;
+    using tensor_data::shape_broadcast;
+    using tensor_data::to_tensor_index;
+
+    UnivariateTensorDataFn tensor_map(UnivariateFn fn) {
+        return [fn](const TensorDataInfo& a) -> sptr<Tensor> {
+            auto& [in_storage, in_shape, in_strides] = a;
+
+            auto out_tensor = Tensor::zeros(in_shape);
+            auto data_tuple = out_tensor->data.tuple();
+
+            auto& [out_storage, out_shape, out_strides] = data_tuple;
+
+            Index out_index = utils::zeros<size_t>(out_shape.size());
+            Index in_index  = utils::zeros<size_t>(out_shape.size());
+
+            for (size_t idx : std::views::iota(0ull, in_storage.size())) {
+                out_index     = to_tensor_index(idx, out_index, out_shape);
+                out_index     = broadcast_index(out_index, out_shape, in_shape);
+                size_t in_pos = index_to_position(in_index, in_strides);
+                size_t out_pos = index_to_position(out_index, out_strides);
+
+                out_storage[out_pos] = fn(in_storage[in_pos]);
+            }
+            
+            return out_tensor;
+        };
+    }
+
+    BivariateTensorDataFn tensor_zip(BivariateFn fn) {
+        return [fn](const TensorDataInfo& a, const TensorDataInfo& b) -> sptr<Tensor> {
+            auto& [a_storage, a_shape, a_strides] = a;
+            auto& [b_storage, b_shape, b_strides] = b;
+
+            Shape out_shape = a_shape != b_shape
+                                  ? shape_broadcast(a_shape, b_shape)
+                                  : a_shape;
+
+            auto out_tensor = Tensor::zeros(out_shape);
+            auto data_tuple = out_tensor->data.tuple();
+
+            auto& [out_storage, _, out_strides] = data_tuple;
+
+            Index out_index = utils::zeros<size_t>(out_shape.size());
+            Index a_index   = utils::zeros<size_t>(a_shape.size());
+            Index b_index   = utils::zeros<size_t>(b_shape.size());
+
+            size_t idx = 0;
+            size_t len = out_storage.size();
+            while (idx < len) {
+                out_index = to_tensor_index(idx, out_index, out_shape);
+
+                a_index = broadcast_index(out_index, out_shape, a_shape);
+                b_index = broadcast_index(out_index, out_shape, b_shape);
+
+                size_t ai = index_to_position(a_index, a_strides);
+                size_t bi = index_to_position(b_index, b_strides);
+                size_t oi = index_to_position(out_index, out_tensor->data.strides);
+
+                out_storage[oi] = fn(a_storage[ai], b_storage[bi]);
+                idx++;
+            }
+            return out_tensor;
+        };
+    }
+
+    ReduceTensorDataFn tensor_reduce(BivariateFn fn, double start) {
+        return [fn, start](const TensorDataInfo& a, size_t dim) -> sptr<Tensor> {
+            auto& [in_storage, in_shape, in_strides] = a;
+
+            Shape out_shape = in_shape;
+            out_shape[dim]  = 1;
+
+            auto out_tensor = Tensor::zeros(out_shape);
+            auto data_tuple = out_tensor->data.tuple();
+
+            auto& [out_storage, _, out_strides] = data_tuple;
+
+            Index out_index = utils::zeros<size_t>(out_shape.size());
+
+            for (size_t idx = 0; idx < out_storage.size(); idx++) {
+                out_index = to_tensor_index(idx, out_index, out_shape);
+                auto pos  = index_to_position(out_index, out_strides);
+
+                for (auto j : std::views::iota(0ull, in_shape[dim])) {
+                    Index in_index = out_index;
+                    in_index[dim]  = j;
+                    size_t pos_a   = index_to_position(in_index, in_strides);
+
+                    out_storage[pos] = fn(in_storage[pos_a], out_storage[pos]);
+                }
+            }
+            return out_tensor;
+        };
+    }
+
+    MapFuncFactory TensorOps::map = [](UnivariateFn fn) -> UnivariateTensorFn {
+        UnivariateTensorDataFn f = tensor_map(fn);
+        UnivariateTensorFn ret   = [f](const Tensor& a) {
+            return f(a.info());
+        };
+        return ret;
+    };
+
+    ZipFuncFactory TensorOps::zip = [](BivariateFn fn) -> BivariateTensorFn {
+        BivariateTensorDataFn f = tensor_zip(fn);
+        BivariateTensorFn ret   = [f](const Tensor& a, const Tensor& b) {
+            return f(a.info(), b.info());
+        };
+        return ret;
+    };
+
+    ReduceFuncFactory TensorOps::reduce = [](BivariateFn fn,
+                                             double start) -> ReduceTensorFn {
+        ReduceTensorDataFn f = tensor_reduce(fn, start);
+        ReduceTensorFn ret   = [f](const Tensor& a, const size_t dim) {
+            return f(a.info(), dim);
+        };
+        return ret;
+    };
+
+    UnivariateTensorFn matrix_multiply;
+
+}  // tensor_ops
+// Source: ./src/babytorch/tensor_data.cpp
+#include <ranges>
+#include <span>
+#include <sstream>
+#include <tuple>
+
+#include <fmt/ranges.h>
+
+#include "generic_operators.hpp"
+#include "tensor_data.hpp"
+
+namespace tensor_data {
+
+    Index broadcast_index(const Index& to_index,
+                          const Shape& to_shape,
+                          const Shape& from_shape) {
+        Index out_index(from_shape.size(), 0);
+
+        int to_i  = to_shape.size() - 1;
+        int out_i = from_shape.size() - 1;
+
+        while (out_i >= 0) {
+            out_index[out_i] = from_shape[out_i] == 1 ? 0 : to_index[to_i];
+            to_i--;
+            out_i--;
+        }
+
+        return out_index;
+    }
+
+    Shape shape_broadcast(const Shape& shape1, const Shape& shape2) {
+        Shape max_shape = shape1.size() >= shape2.size() ? shape1 : shape2;
+        Shape min_shape = shape1.size() < shape2.size() ? shape1 : shape2;
+
+        int min_size = min_shape.size();
+        int max_size = max_shape.size();
+        int offset   = max_size - min_size;
+        int idx      = max_size - 1;
+
+        Shape new_shape(max_size, 1);
+
+        while (idx >= 0) {
+            int min_idx = idx - offset;
+            int max_val = max_shape[idx];
+            int min_val = min_idx >= 0 ? min_shape[min_idx] : 1;
+
+            // If neither of dimensions equal each other or 1
+            if (min_val != 1 && max_val != 1 && min_val != max_val)
+                throw IndexingError("Shape mismatch!");
+
+            new_shape[idx] = max_val > min_val ? max_val : min_val;
+            idx--;
+        }
+
+        return new_shape;
+    }
+
+    Index to_tensor_index(const size_t storage_idx,
+                          const Index& tensor_idx,
+                          const Shape& shape) {
+        size_t _storage_idx = storage_idx;
+        Index _tensor_idx   = tensor_idx;
+
+        for (auto i : std::views::iota(0ull, shape.size())) {
+            _tensor_idx[i] = _storage_idx % shape[i];
+            _storage_idx   = static_cast<int>(_storage_idx / shape[i]);
+        }
+        return _tensor_idx;
+    }
+
+    size_t index_to_position(const Index& index, const Strides& strides) {
+        size_t pos = 0;
+
+        for (auto i : std::ranges::views::iota(0ull, index.size()))
+            pos += index[i] * strides[i];
+        return pos;
+    }
+
+    Strides strides_from_shape(const Shape& shape) {
+        Strides strides{ 1 };
+        size_t offset = 1;
+
+        for (auto s : shape                      //
+                          | std::views::drop(1)  //
+                          | std::views::reverse) {
+            strides.insert(strides.begin(), s * offset);
+            offset *= s;
+        }
+
+        return strides;
+    }
+
+    size_t TensorData::index(const Index& index) const {
+        if (index.size() != this->shape.size()) {
+            fmt::print("Index {}\n", index);
+            fmt::print("Shape {}\n", shape);
+            throw IndexingError("IndexingError: Index must be size of shape.");
+        }
+
+        for (auto i : std::views::iota(0ull, index.size())) {
+            if (index[i] >= this->shape[i]) {
+                std::ostringstream msg;
+                msg << "IndexingError: Index " << index[i]
+                    << " is out of range for dimension " << i << ".";
+                throw IndexingError(msg.str());
+            }
+        }
+
+        return index_to_position(index, this->strides);
+    }
+
+    TensorStorageView TensorData::view(const Index& index) const {
+        size_t start_idx = index_to_position(index, this->strides);
+
+        auto slice_size = this->strides  //
+                          | std::views::drop(index.size() - 1)
+                          | std::views::take(1);
+
+        size_t slice_width = std::accumulate(slice_size.begin(),
+                                             slice_size.end(),
+                                             1,
+                                             std::multiplies<double>());
+
+        return TensorStorageView(this->_storage.data() + start_idx, slice_width);
+    }
+
+    TensorStorageView TensorData::view() const {
+        return TensorStorageView(this->_storage.data(), this->size);
+    }
+
+    double TensorData::get(const Index& key) {
+        return (this->_storage)[index(key)];
+    }
+
+    void TensorData::print_info() const {
+        fmt::print("TensorData(shape={}, size={}, dims={}, strides={})\n",
+                   this->shape,
+                   this->size,
+                   this->dims,
+                   this->strides);
+    }
+
+    TensorDataInfo TensorData::info() const {
+        return TensorDataInfo(this->_storage, this->shape, this->strides);
+    }
+
+    TensorDataTuple TensorData::tuple() {
+        return TensorDataTuple(this->_storage, this->shape, this->strides);
+    }
+
+    std::string TensorData::string_view() const {
+        const TensorStorageView storage = this->view();
+        Strides strides                 = this->strides;
+        Shape shape                     = this->shape;
+
+        std::string tensor_string = "[";
+        tensor_string.reserve(storage.size() * 10);
+
+        size_t offset = strides.size();  // offset braces
+        offset += 7;                     // offset "Tensor("
+
+        for (size_t idx = 0; idx < storage.size(); idx++) {
+            // Closing brackets
+            for (auto stride : strides | std::views::take(shape.size() - 1)) {
+                if (idx != 0 && idx % stride == 0) {
+                    if (tensor_string.back() == ',')
+                        tensor_string.pop_back();
+                    tensor_string += ']';
+                }
+            }
+
+            // Newlines
+            size_t n_newlines = 0;
+            for (auto stride : strides | std::views::take(shape.size() - 1))
+                if (idx != 0 && idx % stride == 0) {
+                    tensor_string += '\n';
+                    n_newlines++;
+                }
+
+            // Offset
+            if (n_newlines)
+                for (size_t i = 0; i < offset - n_newlines; i++)
+                    tensor_string += ' ';
+
+            // Opening brackets
+            for (auto stride : strides | std::views::take(shape.size() - 1))
+                if (idx % stride == 0)
+                    tensor_string += '[';
+
+            // Space between nums
+            if (tensor_string.back() != '[')
+                tensor_string += ' ';
+
+            // Align for negative sign
+            if (storage[idx] > 0)
+                tensor_string += ' ';
+
+            tensor_string += std::to_string(storage[idx]);
+
+            // Comma
+            if (idx % shape.back() != 0 && idx + 1 < storage.size())
+                tensor_string += ',';
+        }
+
+        // Remove trailing space
+        while (std::isspace(tensor_string.back()))
+            tensor_string.pop_back();
+
+        // Last closing bracket
+        for (size_t i = 0; i <= strides.size() - 1; i++)
+            tensor_string += ']';
+
+        return tensor_string;
+    }
+}  // namespace tensor_data
+// Source: ./src/babytorch/autodiff.cpp
+#include <any>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <stack>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+#include "scalar.hpp"
+#include "ptr.hpp"
+
+namespace autodiff {
+
+    std::vector<sptr<Scalar>> topological_sort(
+        sptr<Scalar> root) {
+        //
+        std::unordered_set<double> visited;
+        std::vector<sptr<Scalar>> order;
+        std::stack<sptr<Scalar>> stack;
+
+        stack.push(root);
+
+        while (!stack.empty()) {
+            sptr<Scalar> current_scalar = stack.top();
+            stack.pop();
+
+            if (visited.contains(current_scalar->id) || current_scalar->is_leaf())
+                continue;
+
+            visited.insert(current_scalar->id);
+            order.emplace_back(current_scalar);
+
+            for (auto parent : current_scalar->parents())
+                if (!visited.contains(parent->id))
+                    stack.push(parent);
+        }
+
+        return order;
+    }
+
+    void backpropagate(sptr<Scalar> variable, double deriv) {
+        auto order = topological_sort(variable);
+
+        std::unordered_map<double, double> grads;
+        grads[variable->id] = deriv;
+
+        for (auto v : order) {
+            double d_out = grads[v->id];
+
+            for (auto [var, grad] : v->chain_rule(d_out))
+                if (var->is_leaf())
+                    var->accumulate_grad(grad);
+                else if (grads.contains(var->id))
+                    grads[var->id] += grad;
+                else
+                    grads[var->id] = grad;
+        }
+
+        return;
+    }
+
+}
+// Source: ./src/babytorch/utils.cpp
+#include <random>
+#include <vector>
+
+#include "utils.hpp"
+
+namespace utils {
+    std::vector<double> rand(size_t size, int min, int max) {
+        std::random_device rd;   // Obtain a random number from hardware
+        std::mt19937 gen(rd());  // Seed the generator
+
+        auto random_values = std::vector<double>();
+        random_values.reserve(size);
+
+        std::uniform_real_distribution<double> distr(min, max);
+
+        for (size_t i = 0; i < size; ++i)
+            random_values.push_back(distr(gen));
+
+        return random_values;
+    }
+
+    std::vector<double> rand(size_t size) {
+        return rand(size, -1, 1);
+    }
+
+}
+// Source: ./src/babytorch/scalar.cpp
+#include <array>
+#include <cassert>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <optional>
+#include <variant>
+#include <vector>
+
+#include "autodiff.hpp"
+#include "functions.hpp"
+#include "operators.hpp"
+#include "scalar.hpp"
+#include "ptr.hpp"
+
+namespace scalar {
+    using namespace functions;
+
+    sptr<Scalar> Scalar::create() {
+        return std::make_shared<Scalar>();
+    }
+
+    sptr<Scalar> Scalar::create(double data) {
+        return std::make_shared<Scalar>(data);
+    }
+
+    sptr<Scalar> Scalar::create(History hist, double data) {
+        return std::make_shared<Scalar>(hist, data);
+    }
+
+    sptr<Scalar> Scalar::log() {
+        return ScalarFunction::apply<Log>(std::make_shared<Scalar>(this));
+    }
+
+    sptr<Scalar> Scalar::exp() {
+        return ScalarFunction::apply<Exp>(std::make_shared<Scalar>(this));
+    }
+
+    sptr<Scalar> Scalar::sigmoid() {
+        return ScalarFunction::apply<Sigmoid>(std::make_shared<Scalar>(this));
+    }
+
+    sptr<Scalar> Scalar::relu() {
+        return ScalarFunction::apply<Relu>(std::make_shared<Scalar>(this));
+    }
+
+    std::vector<sptr<Scalar>> Scalar::parents() {
+        return history.inputs;
+    }
+
+    bool Scalar::is_leaf() {
+        return parents().empty();
+    }
+
+    void Scalar::accumulate_grad(double deriv) {
+        this->grad += deriv;
+        return;
+    }
+
+    std::vector<std::tuple<sptr<Scalar>, double>> Scalar::chain_rule(
+        double deriv) {
+        auto history                = this->history;
+        std::array<double, 2> grads = history.backward(history.ctx, deriv);
+
+        std::vector<std::tuple<sptr<Scalar>, double>> vals;
+        for (size_t i = 0; i < history.inputs.size() && i < 2; i++)
+            vals.emplace_back(history.inputs[i], grads[i]);
+
+        return vals;
+    }
+
+    void Scalar::backward() {
+        autodiff::backpropagate(std::make_shared<Scalar>(this), 1.0);
+        return;
+    }
+}
+
+// Source: ./src/babytorch/tensor_functions.cpp
+#include "operators.hpp"
+#include "tensor.hpp"
+#include "tensor_functions.hpp"
+#include "ptr.hpp"
+
+namespace tensor_functions {
+
+    using tensor::Tensor;
+    using tensor_autodiff::Context;
+
+    Tensor Add::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+        return self->backend.add_zip(self, other);
+    }
+
+    std::array<Tensor, 2> Add::backward(Context&, const sptr<Tensor> d_out) {
+        return { d_out, d_out };
+    }
+
+    Tensor Neg::forward(Context& ctx, const sptr<Tensor> self) {
+        ctx.save_for_backwards(self);
+        return self->backend.neg_map(self);
+    }
+
+    std::array<Tensor, 2> Neg::backward(Context&, const sptr<Tensor> d_out) {
+        return { d_out->backend.neg_map(d_out) };
+    }
+
+    Tensor Inv::forward(Context& ctx, const sptr<Tensor> self) {
+        ctx.save_for_backwards(self);
+        return self->backend.inv_map(self);
+    }
+
+    std::array<Tensor, 2> Inv::backward(Context& ctx, const sptr<Tensor> d_out) {
+        auto self = ctx.saved_values[0];
+        return { self->backend.inv_back_zip(self, d_out) };
+    }
+
+    Tensor Relu::forward(Context& ctx, const sptr<Tensor> self) {
+        ctx.save_for_backwards(self);
+        return self->backend.relu_map(self);
+    }
+
+    std::array<Tensor, 2> Relu::backward(Context& ctx, const sptr<Tensor> d_out) {
+        auto self = ctx.saved_values[0];
+        return { d_out->backend.relu_back_zip(self, d_out) };
+    }
+
+    Tensor Sigmoid::forward(Context& ctx, const sptr<Tensor> self) {
+        ctx.save_for_backwards(self);
+        return self->backend.sigmoid_map(self);
+    }
+
+    std::array<Tensor, 2> Sigmoid::backward(Context& ctx, const sptr<Tensor> d_out) {
+        auto self            = ctx.saved_values[0];
+        auto sigmoid_self    = self->backend.sigmoid_map(self);
+        auto sigmoid_self_sq = self->backend.mul_zip(sigmoid_self, sigmoid_self);
+        auto exp_minus_self  = self->backend.exp_map(self->backend.neg_map(self));
+        auto mul_zip         = self->backend.mul_zip;
+        auto out = mul_zip(d_out, mul_zip(exp_minus_self, sigmoid_self_sq));
+        return { out };
+    }
+
+    Tensor Log::forward(Context& ctx, const sptr<Tensor> self) {
+        ctx.save_for_backwards(self);
+        return self->backend.log_map(self);
+    }
+
+    std::array<Tensor, 2> Log::backward(Context& ctx, const sptr<Tensor> d_out) {
+        auto self = ctx.saved_values[0];
+        return { self->backend.log_back_zip(self, d_out) };
+    }
+
+    Tensor Exp::forward(Context& ctx, const sptr<Tensor> self) {
+        ctx.save_for_backwards(self);
+        return self->backend.exp_map(self);
+    }
+
+    std::array<Tensor, 2> Exp::backward(Context& ctx, const sptr<Tensor> d_out) {
+        auto self = ctx.saved_values[0];
+        return { self->backend.mul_zip(d_out, self->backend.exp_map(self)) };
+    }
+
+    Tensor Mul::forward(Context& ctx, const sptr<Tensor> self, const sptr<Tensor> other) {
+        ctx.save_for_backwards(self, other);
+        return self->backend.mul_zip(self, other);
+    }
+
+    std::array<Tensor, 2> Mul::backward(Context& ctx, const sptr<Tensor> d_out) {
+        auto self  = ctx.saved_values[0];
+        auto other = ctx.saved_values[1];
+        return { self->backend.mul_zip(other, d_out),
+                 self->backend.mul_zip(self, d_out) };
+    }
+
+    Tensor Lt::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+        return self->backend.lt_zip(self, other);
+    }
+
+    std::array<Tensor, 2> Lt::backward(Context&, const sptr<Tensor> d_out) {
+        Tensor a = d_out->zeros();
+        Tensor b = d_out->zeros();
+        return { a, b };
+    }
+
+    Tensor Eq::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+        return self->backend.eq_zip(self, other);
+    }
+
+    std::array<Tensor, 2> Eq::backward(Context&, const sptr<Tensor> d_out) {
+        Tensor a = d_out->zeros();
+        Tensor b = d_out->zeros();
+        return { a, b };
+    }
+
+    Tensor Is_close::forward(Context& ctx,
+                             const sptr<Tensor> self,
+                             const sptr<Tensor> other) {
+        ctx.save_for_backwards(self, other);
+        return self->backend.is_close_zip(self, other);
+    }
+
+    Tensor Copy::forward(Context&, const sptr<Tensor> self) {
+        return self->backend.id_map(self);
+    }
+
+    std::array<Tensor, 2> Copy::backward(Context&, const sptr<Tensor> d_out) {
+        return { d_out };
+    }
+
+}  // namespace tensor_functions
+// Source: ./src/babytorch/tensor.cpp
+#include <algorithm>
+#include <cctype>
+#include <ranges>
+#include <string>
+#include <memory>
+
+#include "tensor.hpp"
+#include "tensor_autodiff.hpp"
+#include "tensor_data.hpp"
+#include "tensor_functions.hpp"
+#include "utils.hpp"
+
+namespace tensor {
+    using namespace tensor_autodiff;
+
+    Shape Tensor::shape() const {
+        return this->data.shape;
+    }
+
+    sptr<Tensor> Tensor::zeros(Shape shape) {
+        return std::make_shared<Tensor>(TensorData(utils::zeros(shape), shape));
+    }
+
+    sptr<Tensor> Tensor::zeros() const {
+        return Tensor::zeros(this->shape());
+    }
+
+    TensorDataInfo Tensor::info() const {
+        return this->data.info();
+    }
+
+    std::vector<sptr<Tensor>> Tensor::parents() const {
+        return this->history.inputs;
+    }
+
+    bool Tensor::is_leaf() {
+        return parents().empty();
+    }
+
+    void Tensor::accumulate_grad(sptr<Tensor> deriv) {
+        (*this->grad) += deriv;
+        return;
+    }
+
+    // std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> Tensor::chain_rule(sptr<Tensor> deriv) {
+    //     History history             = this->history;
+    //     std::array<sptr<Tensor>, 2> grads = history.backward(history.ctx, deriv);
+
+    //     std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> vals;
+    //     // for (size_t i = 0; i < history.inputs.size() && i < 2; i++)
+    //     //     vals.emplace_back(history.inputs[i], std::move(grads[i]));
+
+    //     return vals;
+    // }
+
+    void Tensor::backward() {
+        auto deriv = std::make_shared<Tensor>(TensorData({ 1.0 }, Shape{}));
+        tensor_autodiff::backpropagate(std::make_shared<Tensor>(this), deriv);
+        return;
+    }
+
+}  // namespace tensor

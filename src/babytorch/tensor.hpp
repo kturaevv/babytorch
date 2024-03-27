@@ -79,16 +79,6 @@ namespace tensor {
             this->data = TensorData(std::move(data));
         }
 
-        template <typename... Sizes>
-        Tensor(Sizes... dims)
-            : id(next_id++) {
-            utils::check_dimensions(dims...);
-
-            Shape input_shapes{};
-            (input_shapes.push_back(dims), ...);
-
-            this->data = TensorData::rand(input_shapes);
-        }
 
         Tensor(Tensor& other)
             : id(next_id++)
@@ -178,41 +168,41 @@ namespace tensor {
         // -
 
         friend auto operator-(sptr<Tensor> self, sptr<Tensor> other) {
-            return *self + TensorFunction::apply<Neg>(other);
+            return self + TensorFunction::apply<Neg>(other);
         }
 
         template <typename T>
         friend auto operator-(sptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = std::make_shared<Tensor>(val);
-            return *self + TensorFunction::apply<Neg>(other);
+            return self + TensorFunction::apply<Neg>(other);
         }
 
         template <typename T>
         friend auto operator-(T& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = std::make_shared<Tensor>(val);
-            return *self + TensorFunction::apply<Neg>(other);
+            return self + TensorFunction::apply<Neg>(other);
         }
 
         // /
 
         friend auto operator/(sptr<Tensor> self, sptr<Tensor> other) {
-            return *self * TensorFunction::apply<Inv>(other);
+            return self * TensorFunction::apply<Inv>(other);
         }
 
         template <typename T>
         friend auto operator/(sptr<Tensor> self, T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = std::make_shared<Tensor>(val);
-            return *self * TensorFunction::apply<Inv>(other);
+            return self * TensorFunction::apply<Inv>(other);
         }
 
         template <typename T>
         friend auto operator/(T& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = std::make_shared<Tensor>(val);
-            return *self * TensorFunction::apply<Inv>(other);
+            return self * TensorFunction::apply<Inv>(other);
         }
 
         // <
@@ -330,9 +320,9 @@ namespace tensor {
 
         (history.inputs.emplace_back(args), ...);
 
-        return std::make_shared<Tensor>(std::move(result.data),
+        return std::make_shared<Tensor>(std::move(result->data),
                                         std::move(history),
-                                        std::move(result.backend));
+                                        std::move(result->backend));
     }
 
     // helper functions

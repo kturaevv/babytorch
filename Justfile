@@ -34,3 +34,7 @@ deps:
 # check setup
 check:
 	./tools/check_setup.sh
+
+# concat project into 1 file
+concat *args:
+    ./tools/concat.sh {{args}}

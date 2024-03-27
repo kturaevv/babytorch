@@ -112,16 +112,16 @@ namespace tensor_ops {
 
     MapFuncFactory TensorOps::map = [](UnivariateFn fn) -> UnivariateTensorFn {
         UnivariateTensorDataFn f = tensor_map(fn);
-        UnivariateTensorFn ret   = [f](const Tensor& a) {
-            return f(a.info());
+        UnivariateTensorFn ret   = [f](const sptr<Tensor>& a) {
+            return f(a->info());
         };
         return ret;
     };
 
     ZipFuncFactory TensorOps::zip = [](BivariateFn fn) -> BivariateTensorFn {
         BivariateTensorDataFn f = tensor_zip(fn);
-        BivariateTensorFn ret   = [f](const Tensor& a, const Tensor& b) {
-            return f(a.info(), b.info());
+        BivariateTensorFn ret   = [f](const sptr<Tensor>& a, const sptr<Tensor>& b) {
+            return f(a->info(), b->info());
         };
         return ret;
     };
@@ -129,8 +129,8 @@ namespace tensor_ops {
     ReduceFuncFactory TensorOps::reduce = [](BivariateFn fn,
                                              double start) -> ReduceTensorFn {
         ReduceTensorDataFn f = tensor_reduce(fn, start);
-        ReduceTensorFn ret   = [f](const Tensor& a, const size_t dim) {
-            return f(a.info(), dim);
+        ReduceTensorFn ret   = [f](const sptr<Tensor>& a, const size_t dim) {
+            return f(a->info(), dim);
         };
         return ret;
     };

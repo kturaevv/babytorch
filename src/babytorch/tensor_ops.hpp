@@ -25,9 +25,9 @@ namespace tensor_ops {
     using UnivariateFn = std::function<double(double)>;
     using BivariateFn  = std::function<double(double, double)>;
 
-    using UnivariateTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>)>;
-    using BivariateTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>, const sptr<Tensor>)>;
-    using ReduceTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>, const size_t)>;
+    using UnivariateTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>&)>;
+    using BivariateTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>&, const sptr<Tensor>&)>;
+    using ReduceTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>&, const size_t)>;
 
     using UnivariateTensorDataFn  //
         = std::function<sptr<Tensor>(const TensorDataInfo&)>;

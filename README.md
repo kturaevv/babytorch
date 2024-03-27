@@ -21,11 +21,6 @@ Currently fully supports auto-differentiation for scalar values. Examples can be
 
 This library also provides full support for all arithmetic operations of Tensors of **varying** shapes and strides. For additional details refer to [Tensor example](#tensor-example) section.
 
-In progress ... 
-
-![95](https://geps.dev/progress/95)
-
-
 ## Justfile
 The project uses [Just](https://github.com/casey/just) for command automation and ease of access, a better alternative to Makefile. 
 
@@ -198,28 +193,3 @@ To test the project, simply run:
 just test
 ```
 
-### Todo list:
-> - [x] Setup project build system and structure
-> - [x] Add basic operators
-> - [x] Add Scalar autograd
->   - [x] Add Scalar
->   - [x] Add ScalarFunction
->   - [x] Add forward functions
->   - [x] Add backward functions
->   - [x] Add Scalar operator overloads
->   - [x] Add Scalar tests
->   - [x] Add topological sort for backpropagation
->   - [x] Add backpropagation
-- [ ] Add Tensor autograd 
-    - [x] Add Tensor
-    - [x] Add TensorStorage
-    - [x] Add indexing, shape, strides
-    - [x] Add Tensor string views
-    - [x] Add TensorOperations
-    - [x] Add TensorFunctions
-    - [x] Add forward functions
-    - [x] Add operator overloads
-    - [ ] Add backward functions
-    - [ ] Add backpropagation
-> - [ ] CPU parallelization
-> - [ ] GPU parallelization
