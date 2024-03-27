@@ -11,11 +11,13 @@ namespace tensor {
     using namespace tensor_autodiff;
 
     Shape Tensor::shape() const {
-        return this->data.shape;
+        return this->data->shape;
     }
 
     sptr<Tensor> Tensor::zeros(Shape shape) {
-        return std::make_shared<Tensor>(TensorData(utils::zeros(shape), shape));
+        auto tensor_data = std::make_unique<TensorData>(utils::zeros(shape),
+                                                        shape);
+        return std::make_shared<Tensor>(std::move(tensor_data));
     }
 
     sptr<Tensor> Tensor::zeros() const {
@@ -23,7 +25,7 @@ namespace tensor {
     }
 
     TensorDataInfo Tensor::info() const {
-        return this->data.info();
+        return this->data->info();
     }
 
     std::vector<sptr<Tensor>> Tensor::parents() const {
@@ -52,12 +54,15 @@ namespace tensor {
     // }
 
     void Tensor::backward() {
-        Storage storage    = Storage{ 1.0 };
-        TensorData _data   = TensorData{ storage };
-        sptr<Tensor> _this = shared_from_this();
-        auto deriv         = std::make_shared<Tensor>(Tensor(_data));
+        // auto deriv_storage = Storage{ 1.0 };
+        // auto deriv_data    = std::make_unique<TensorData>(
+        //     TensorData{ deriv_storage });
+        // auto deriv_tensor = Tensor{ std::move(deriv_data) };
+        // auto deriv        = std::make_shared<Tensor>(deriv_tensor);
+        //
+        // sptr<Tensor> _this = shared_from_this();
 
-        tensor_autodiff::backpropagate(_this, deriv);
+        // tensor_autodiff::backpropagate(_this, deriv);
         return;
     }
 

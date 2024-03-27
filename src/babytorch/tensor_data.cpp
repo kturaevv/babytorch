@@ -1,11 +1,8 @@
 #include <ranges>
-#include <span>
 #include <sstream>
-#include <tuple>
 
 #include <fmt/ranges.h>
 
-#include "generic_operators.hpp"
 #include "tensor_data.hpp"
 
 namespace tensor_data {
@@ -149,18 +146,19 @@ namespace tensor_data {
 
     std::string TensorData::string_view() const {
         const TensorStorageView storage = this->view();
-        Strides strides                 = this->strides;
-        Shape shape                     = this->shape;
+        Strides this_stride             = this->strides;
+        Shape this_shape                = this->shape;
 
         std::string tensor_string = "[";
         tensor_string.reserve(storage.size() * 10);
 
-        size_t offset = strides.size();  // offset braces
-        offset += 7;                     // offset "Tensor("
+        size_t offset = this_stride.size();  // offset braces
+        offset += 7;                         // offset "Tensor("
 
         for (size_t idx = 0; idx < storage.size(); idx++) {
             // Closing brackets
-            for (auto stride : strides | std::views::take(shape.size() - 1)) {
+            for (auto stride :
+                 this_stride | std::views::take(this_shape.size() - 1)) {
                 if (idx != 0 && idx % stride == 0) {
                     if (tensor_string.back() == ',')
                         tensor_string.pop_back();
@@ -170,7 +168,8 @@ namespace tensor_data {
 
             // Newlines
             size_t n_newlines = 0;
-            for (auto stride : strides | std::views::take(shape.size() - 1))
+            for (auto stride :
+                 this_stride | std::views::take(this_shape.size() - 1))
                 if (idx != 0 && idx % stride == 0) {
                     tensor_string += '\n';
                     n_newlines++;
@@ -182,7 +181,8 @@ namespace tensor_data {
                     tensor_string += ' ';
 
             // Opening brackets
-            for (auto stride : strides | std::views::take(shape.size() - 1))
+            for (auto stride :
+                 this_stride | std::views::take(this_shape.size() - 1))
                 if (idx % stride == 0)
                     tensor_string += '[';
 
@@ -197,7 +197,7 @@ namespace tensor_data {
             tensor_string += std::to_string(storage[idx]);
 
             // Comma
-            if (idx % shape.back() != 0 && idx + 1 < storage.size())
+            if (idx % this_shape.back() != 0 && idx + 1 < storage.size())
                 tensor_string += ',';
         }
 
@@ -206,7 +206,7 @@ namespace tensor_data {
             tensor_string.pop_back();
 
         // Last closing bracket
-        for (size_t i = 0; i <= strides.size() - 1; i++)
+        for (size_t i = 0; i <= this_stride.size() - 1; i++)
             tensor_string += ']';
 
         return tensor_string;

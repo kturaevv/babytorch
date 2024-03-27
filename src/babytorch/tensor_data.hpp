@@ -1,11 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <span>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "generic_operators.hpp"
+#include "ptr.hpp"
 #include "utils.hpp"
 
 namespace tensor_data {
@@ -95,10 +97,10 @@ namespace tensor_data {
         TensorStorageView view(const Index& index) const;
         std::string string_view() const;
 
-        static TensorData rand(Shape user_shape) {
+        static uptr<TensorData> rand(Shape user_shape) {
             size_t new_size     = generic_operators::prod(user_shape);
             Storage new_storage = utils::rand(new_size);
-            return TensorData(new_storage, user_shape);
+            return std::make_unique<TensorData>(new_storage, user_shape);
         }
 
         static Shape shape_broadcast(const Shape shape_a, const Shape shape_b);

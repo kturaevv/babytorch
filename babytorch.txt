@@ -1,14 +1,8 @@
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <memory>
-
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
 #include "./babytorch/scalar.hpp"
 #include "./babytorch/tensor.hpp"
-#include "./babytorch/tensor_data.hpp"
 
 int main() {
     fmt::print("Autograd project!\n\n");
@@ -25,29 +19,24 @@ int main() {
 
     using tensor::Tensor;
     auto tensor_sample = Tensor(3, 3, 5);
-    auto a             = Tensor(3, 3, 5);
-    auto b             = Tensor(3, 1, 5);
-    auto c             = Tensor(5);
-    auto d             = Tensor(3, 3, 1);
-    auto e             = Tensor(3, 5);
-    auto tensor_result = a / 1.2 + b * c / d - 3 - e;
-    fmt::print("{}", tensor_result);
+    // auto a             = Tensor(3, 3, 5);
+    // auto b             = Tensor(3, 1, 5);
+    // auto c             = Tensor(5);
+    // auto d             = Tensor(3, 3, 1);
+    // auto e             = Tensor(3, 5);
+
+    // auto tensor_result = a / 1.2 + b * c / d - 3 - e;
+    // fmt::print("{}", tensor_result);
 
     return 0;
 }
 
 // Source: ./src/main.cpp
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <memory>
-
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
 #include "./babytorch/scalar.hpp"
 #include "./babytorch/tensor.hpp"
-#include "./babytorch/tensor_data.hpp"
 
 int main() {
     fmt::print("Autograd project!\n\n");
@@ -64,13 +53,14 @@ int main() {
 
     using tensor::Tensor;
     auto tensor_sample = Tensor(3, 3, 5);
-    auto a             = Tensor(3, 3, 5);
-    auto b             = Tensor(3, 1, 5);
-    auto c             = Tensor(5);
-    auto d             = Tensor(3, 3, 1);
-    auto e             = Tensor(3, 5);
-    auto tensor_result = a / 1.2 + b * c / d - 3 - e;
-    fmt::print("{}", tensor_result);
+    // auto a             = Tensor(3, 3, 5);
+    // auto b             = Tensor(3, 1, 5);
+    // auto c             = Tensor(5);
+    // auto d             = Tensor(3, 3, 1);
+    // auto e             = Tensor(3, 5);
+
+    // auto tensor_result = a / 1.2 + b * c / d - 3 - e;
+    // fmt::print("{}", tensor_result);
 
     return 0;
 }
@@ -213,16 +203,13 @@ namespace operators {
     }
 }
 // Source: ./src/babytorch/tensor_autodiff.cpp
-#include <any>
-#include <memory>
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "tensor.hpp"
 #include "ptr.hpp"
-
+#include "tensor.hpp"
 
 namespace tensor_autodiff {
 
@@ -276,6 +263,7 @@ namespace tensor_autodiff {
     }
 
 }
+
 // Source: ./src/babytorch/tensor_ops.cpp
 #include <ranges>
 
@@ -391,16 +379,16 @@ namespace tensor_ops {
 
     MapFuncFactory TensorOps::map = [](UnivariateFn fn) -> UnivariateTensorFn {
         UnivariateTensorDataFn f = tensor_map(fn);
-        UnivariateTensorFn ret   = [f](const Tensor& a) {
-            return f(a.info());
+        UnivariateTensorFn ret   = [f](const sptr<Tensor>& a) {
+            return f(a->info());
         };
         return ret;
     };
 
     ZipFuncFactory TensorOps::zip = [](BivariateFn fn) -> BivariateTensorFn {
         BivariateTensorDataFn f = tensor_zip(fn);
-        BivariateTensorFn ret   = [f](const Tensor& a, const Tensor& b) {
-            return f(a.info(), b.info());
+        BivariateTensorFn ret   = [f](const sptr<Tensor>& a, const sptr<Tensor>& b) {
+            return f(a->info(), b->info());
         };
         return ret;
     };
@@ -408,8 +396,8 @@ namespace tensor_ops {
     ReduceFuncFactory TensorOps::reduce = [](BivariateFn fn,
                                              double start) -> ReduceTensorFn {
         ReduceTensorDataFn f = tensor_reduce(fn, start);
-        ReduceTensorFn ret   = [f](const Tensor& a, const size_t dim) {
-            return f(a.info(), dim);
+        ReduceTensorFn ret   = [f](const sptr<Tensor>& a, const size_t dim) {
+            return f(a->info(), dim);
         };
         return ret;
     };
@@ -417,15 +405,13 @@ namespace tensor_ops {
     UnivariateTensorFn matrix_multiply;
 
 }  // tensor_ops
+
 // Source: ./src/babytorch/tensor_data.cpp
 #include <ranges>
-#include <span>
 #include <sstream>
-#include <tuple>
 
 #include <fmt/ranges.h>
 
-#include "generic_operators.hpp"
 #include "tensor_data.hpp"
 
 namespace tensor_data {
@@ -569,18 +555,19 @@ namespace tensor_data {
 
     std::string TensorData::string_view() const {
         const TensorStorageView storage = this->view();
-        Strides strides                 = this->strides;
-        Shape shape                     = this->shape;
+        Strides this_stride             = this->strides;
+        Shape this_shape                = this->shape;
 
         std::string tensor_string = "[";
         tensor_string.reserve(storage.size() * 10);
 
-        size_t offset = strides.size();  // offset braces
-        offset += 7;                     // offset "Tensor("
+        size_t offset = this_stride.size();  // offset braces
+        offset += 7;                         // offset "Tensor("
 
         for (size_t idx = 0; idx < storage.size(); idx++) {
             // Closing brackets
-            for (auto stride : strides | std::views::take(shape.size() - 1)) {
+            for (auto stride :
+                 this_stride | std::views::take(this_shape.size() - 1)) {
                 if (idx != 0 && idx % stride == 0) {
                     if (tensor_string.back() == ',')
                         tensor_string.pop_back();
@@ -590,7 +577,8 @@ namespace tensor_data {
 
             // Newlines
             size_t n_newlines = 0;
-            for (auto stride : strides | std::views::take(shape.size() - 1))
+            for (auto stride :
+                 this_stride | std::views::take(this_shape.size() - 1))
                 if (idx != 0 && idx % stride == 0) {
                     tensor_string += '\n';
                     n_newlines++;
@@ -602,7 +590,8 @@ namespace tensor_data {
                     tensor_string += ' ';
 
             // Opening brackets
-            for (auto stride : strides | std::views::take(shape.size() - 1))
+            for (auto stride :
+                 this_stride | std::views::take(this_shape.size() - 1))
                 if (idx % stride == 0)
                     tensor_string += '[';
 
@@ -617,7 +606,7 @@ namespace tensor_data {
             tensor_string += std::to_string(storage[idx]);
 
             // Comma
-            if (idx % shape.back() != 0 && idx + 1 < storage.size())
+            if (idx % this_shape.back() != 0 && idx + 1 < storage.size())
                 tensor_string += ',';
         }
 
@@ -626,12 +615,13 @@ namespace tensor_data {
             tensor_string.pop_back();
 
         // Last closing bracket
-        for (size_t i = 0; i <= strides.size() - 1; i++)
+        for (size_t i = 0; i <= this_stride.size() - 1; i++)
             tensor_string += ']';
 
         return tensor_string;
     }
 }  // namespace tensor_data
+
 // Source: ./src/babytorch/autodiff.cpp
 #include <any>
 #include <functional>
@@ -813,49 +803,49 @@ namespace tensor_functions {
     using tensor::Tensor;
     using tensor_autodiff::Context;
 
-    Tensor Add::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+    sptr<Tensor> Add::forward(Context&, const sptr<Tensor>& self, const sptr<Tensor>& other) {
         return self->backend.add_zip(self, other);
     }
 
-    std::array<Tensor, 2> Add::backward(Context&, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Add::backward(Context&, const sptr<Tensor>& d_out) {
         return { d_out, d_out };
     }
 
-    Tensor Neg::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Neg::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.neg_map(self);
     }
 
-    std::array<Tensor, 2> Neg::backward(Context&, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Neg::backward(Context&, const sptr<Tensor>& d_out) {
         return { d_out->backend.neg_map(d_out) };
     }
 
-    Tensor Inv::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Inv::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.inv_map(self);
     }
 
-    std::array<Tensor, 2> Inv::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Inv::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self = ctx.saved_values[0];
         return { self->backend.inv_back_zip(self, d_out) };
     }
 
-    Tensor Relu::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Relu::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.relu_map(self);
     }
 
-    std::array<Tensor, 2> Relu::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Relu::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self = ctx.saved_values[0];
         return { d_out->backend.relu_back_zip(self, d_out) };
     }
 
-    Tensor Sigmoid::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Sigmoid::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.sigmoid_map(self);
     }
 
-    std::array<Tensor, 2> Sigmoid::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Sigmoid::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self            = ctx.saved_values[0];
         auto sigmoid_self    = self->backend.sigmoid_map(self);
         auto sigmoid_self_sq = self->backend.mul_zip(sigmoid_self, sigmoid_self);
@@ -865,79 +855,77 @@ namespace tensor_functions {
         return { out };
     }
 
-    Tensor Log::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Log::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.log_map(self);
     }
 
-    std::array<Tensor, 2> Log::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Log::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self = ctx.saved_values[0];
         return { self->backend.log_back_zip(self, d_out) };
     }
 
-    Tensor Exp::forward(Context& ctx, const sptr<Tensor> self) {
+    sptr<Tensor> Exp::forward(Context& ctx, const sptr<Tensor>& self) {
         ctx.save_for_backwards(self);
         return self->backend.exp_map(self);
     }
 
-    std::array<Tensor, 2> Exp::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Exp::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self = ctx.saved_values[0];
         return { self->backend.mul_zip(d_out, self->backend.exp_map(self)) };
     }
 
-    Tensor Mul::forward(Context& ctx, const sptr<Tensor> self, const sptr<Tensor> other) {
+    sptr<Tensor> Mul::forward(Context& ctx, const sptr<Tensor>& self, const sptr<Tensor>& other) {
         ctx.save_for_backwards(self, other);
         return self->backend.mul_zip(self, other);
     }
 
-    std::array<Tensor, 2> Mul::backward(Context& ctx, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Mul::backward(Context& ctx, const sptr<Tensor>& d_out) {
         auto self  = ctx.saved_values[0];
         auto other = ctx.saved_values[1];
         return { self->backend.mul_zip(other, d_out),
                  self->backend.mul_zip(self, d_out) };
     }
 
-    Tensor Lt::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+    sptr<Tensor> Lt::forward(Context&, const sptr<Tensor>& self, const sptr<Tensor>& other) {
         return self->backend.lt_zip(self, other);
     }
 
-    std::array<Tensor, 2> Lt::backward(Context&, const sptr<Tensor> d_out) {
-        Tensor a = d_out->zeros();
-        Tensor b = d_out->zeros();
+    std::array<sptr<Tensor>, 2> Lt::backward(Context&, const sptr<Tensor>& d_out) {
+        sptr<Tensor> a = d_out->zeros();
+        sptr<Tensor> b = d_out->zeros();
         return { a, b };
     }
 
-    Tensor Eq::forward(Context&, const sptr<Tensor> self, const sptr<Tensor> other) {
+    sptr<Tensor> Eq::forward(Context&, const sptr<Tensor>& self, const sptr<Tensor>& other) {
         return self->backend.eq_zip(self, other);
     }
 
-    std::array<Tensor, 2> Eq::backward(Context&, const sptr<Tensor> d_out) {
-        Tensor a = d_out->zeros();
-        Tensor b = d_out->zeros();
+    std::array<sptr<Tensor>, 2> Eq::backward(Context&, const sptr<Tensor>& d_out) {
+        sptr<Tensor> a = d_out->zeros();
+        sptr<Tensor> b = d_out->zeros();
         return { a, b };
     }
 
-    Tensor Is_close::forward(Context& ctx,
-                             const sptr<Tensor> self,
-                             const sptr<Tensor> other) {
+    sptr<Tensor> Is_close::forward(Context& ctx,
+                             const sptr<Tensor>& self,
+                             const sptr<Tensor>& other) {
         ctx.save_for_backwards(self, other);
         return self->backend.is_close_zip(self, other);
     }
 
-    Tensor Copy::forward(Context&, const sptr<Tensor> self) {
+    sptr<Tensor> Copy::forward(Context&, const sptr<Tensor>& self) {
         return self->backend.id_map(self);
     }
 
-    std::array<Tensor, 2> Copy::backward(Context&, const sptr<Tensor> d_out) {
+    std::array<sptr<Tensor>, 2> Copy::backward(Context&, const sptr<Tensor>& d_out) {
         return { d_out };
     }
 
 }  // namespace tensor_functions
+
 // Source: ./src/babytorch/tensor.cpp
-#include <algorithm>
 #include <cctype>
-#include <ranges>
-#include <string>
 #include <memory>
 
 #include "tensor.hpp"
@@ -950,11 +938,13 @@ namespace tensor {
     using namespace tensor_autodiff;
 
     Shape Tensor::shape() const {
-        return this->data.shape;
+        return this->data->shape;
     }
 
     sptr<Tensor> Tensor::zeros(Shape shape) {
-        return std::make_shared<Tensor>(TensorData(utils::zeros(shape), shape));
+        auto tensor_data = std::make_unique<TensorData>(utils::zeros(shape),
+                                                        shape);
+        return std::make_shared<Tensor>(tensor_data);
     }
 
     sptr<Tensor> Tensor::zeros() const {
@@ -962,7 +952,7 @@ namespace tensor {
     }
 
     TensorDataInfo Tensor::info() const {
-        return this->data.info();
+        return this->data->info();
     }
 
     std::vector<sptr<Tensor>> Tensor::parents() const {
@@ -978,7 +968,8 @@ namespace tensor {
         return;
     }
 
-    // std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> Tensor::chain_rule(sptr<Tensor> deriv) {
+    // std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>>
+    // Tensor::chain_rule(sptr<Tensor> deriv) {
     //     History history             = this->history;
     //     std::array<sptr<Tensor>, 2> grads = history.backward(history.ctx, deriv);
 
@@ -990,8 +981,15 @@ namespace tensor {
     // }
 
     void Tensor::backward() {
-        auto deriv = std::make_shared<Tensor>(TensorData({ 1.0 }, Shape{}));
-        tensor_autodiff::backpropagate(std::make_shared<Tensor>(this), deriv);
+        // auto deriv_storage = Storage{ 1.0 };
+        // auto deriv_data    = std::make_unique<TensorData>(
+        //     TensorData{ deriv_storage });
+        // auto deriv_tensor = Tensor{ std::move(deriv_data) };
+        // auto deriv        = std::make_shared<Tensor>(deriv_tensor);
+        //
+        // sptr<Tensor> _this = shared_from_this();
+
+        // tensor_autodiff::backpropagate(_this, deriv);
         return;
     }
 

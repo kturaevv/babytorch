@@ -23,7 +23,7 @@ namespace tensor_ops {
             auto& [in_storage, in_shape, in_strides] = a;
 
             auto out_tensor = Tensor::zeros(in_shape);
-            auto data_tuple = out_tensor->data.tuple();
+            auto data_tuple = out_tensor->data->tuple();
 
             auto& [out_storage, out_shape, out_strides] = data_tuple;
 
@@ -53,7 +53,7 @@ namespace tensor_ops {
                                   : a_shape;
 
             auto out_tensor = Tensor::zeros(out_shape);
-            auto data_tuple = out_tensor->data.tuple();
+            auto data_tuple = out_tensor->data->tuple();
 
             auto& [out_storage, _, out_strides] = data_tuple;
 
@@ -71,7 +71,7 @@ namespace tensor_ops {
 
                 size_t ai = index_to_position(a_index, a_strides);
                 size_t bi = index_to_position(b_index, b_strides);
-                size_t oi = index_to_position(out_index, out_tensor->data.strides);
+                size_t oi = index_to_position(out_index, out_tensor->data->strides);
 
                 out_storage[oi] = fn(a_storage[ai], b_storage[bi]);
                 idx++;
@@ -88,7 +88,7 @@ namespace tensor_ops {
             out_shape[dim]  = 1;
 
             auto out_tensor = Tensor::zeros(out_shape);
-            auto data_tuple = out_tensor->data.tuple();
+            auto data_tuple = out_tensor->data->tuple();
 
             auto& [out_storage, _, out_strides] = data_tuple;
 

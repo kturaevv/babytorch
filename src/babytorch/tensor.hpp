@@ -46,7 +46,7 @@ namespace tensor {
 
         size_t id;
 
-        TensorData data;
+        uptr<TensorData> data;
         sptr<Tensor> grad;
         History history;
         TensorBackend backend;
@@ -60,12 +60,12 @@ namespace tensor {
             : id(next_id++) {
         }
 
-        Tensor(TensorData data)
+        Tensor(uptr<TensorData> data)
             : id(next_id++)
             , data(std::move(data)) {
         }
 
-        Tensor(TensorData&& data, History&& hist, TensorBackend&& back)
+        Tensor(uptr<TensorData>&& data, History&& hist, TensorBackend&& back)
             : id(next_id++)
             , data(std::move(data))
             , history(std::move(hist))
@@ -73,9 +73,9 @@ namespace tensor {
         }
 
         template <typename T>
-        Tensor(std::vector<T> data)
+        Tensor(std::vector<T> input_arr)
             : id(next_id++) {
-            this->data = TensorData(std::move(data));
+            this->data = std::make_unique<TensorData>(std::move(input_arr));
         }
 
         template <typename... Sizes>
@@ -89,10 +89,11 @@ namespace tensor {
             this->data = TensorData::rand(input_shapes);
         }
 
-        Tensor(Tensor& other)
+        Tensor(const Tensor& other)
             : std::enable_shared_from_this<Tensor>()
             , id(next_id++)
-            , data(other.data)
+            , data(other.data ? std::make_unique<TensorData>(*other.data)
+                              : nullptr)
             , grad(other.grad)
             , history(other.history)
             , backend(other.backend) {
@@ -108,8 +109,8 @@ namespace tensor {
 
         template <typename... Sizes>
         static sptr<Tensor> create(Sizes... dims);
-        static sptr<Tensor> create(TensorData data);
-        static sptr<Tensor> create(History hist, TensorData data);
+        static sptr<Tensor> create(uptr<TensorData> data);
+        static sptr<Tensor> create(History hist, uptr<TensorData> data);
         static sptr<Tensor> create(sptr<Tensor> tensor);
         static sptr<Tensor> create(std::vector<double> data);
 
@@ -120,12 +121,12 @@ namespace tensor {
             Index ix;
             (ix.push_back(dims), ...);
 
-            TensorStorageView storage_view = this->data.view(ix);
+            TensorStorageView storage_view = this->data->view(ix);
 
             // Copy a view to a Tensor
             Storage new_storage = { storage_view.begin(), storage_view.end() };
 
-            auto shape_view = this->data.shape | std::views::drop(ix.size());
+            auto shape_view = this->data->shape | std::views::drop(ix.size());
             Shape new_shape = { shape_view.begin(), shape_view.end() };
 
             return std::make_shared<Tensor>(
@@ -346,7 +347,7 @@ namespace tensor {
 template <>
 struct fmt::formatter<tensor::Tensor> : formatter<string_view> {
     auto format(const tensor::Tensor& s, format_context& ctx) {
-        std::string tensor_view = s.data.string_view();
+        std::string tensor_view = s.data->string_view();
         return fmt::format_to(ctx.out(), "Tensor({})\n", tensor_view);
     }
 };
