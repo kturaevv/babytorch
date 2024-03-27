@@ -1,14 +1,8 @@
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <memory>
-
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
 #include "./babytorch/scalar.hpp"
 #include "./babytorch/tensor.hpp"
-#include "./babytorch/tensor_data.hpp"
 
 int main() {
     fmt::print("Autograd project!\n\n");
@@ -23,8 +17,9 @@ int main() {
     result->backward();
     fmt::print("{}\n", *result);
 
-    /*using tensor::Tensor;*/
-    /*auto tensor_sample = Tensor(3, 3, 5);*/
+    using tensor::Tensor;
+    auto tensor_sample = Tensor(3, 3, 5);
+    fmt::print("{}\n", tensor_sample);
     /*auto a             = Tensor(3, 3, 5);*/
     /*auto b             = Tensor(3, 1, 5);*/
     /*auto c             = Tensor(5);*/

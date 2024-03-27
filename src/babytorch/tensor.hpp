@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <ranges>
 
@@ -9,7 +8,6 @@
 #include <fmt/ranges.h>
 
 #include "generic_operators.hpp"
-#include "operators.hpp"
 #include "tensor_autodiff.hpp"
 #include "tensor_data.hpp"
 #include "tensor_functions.hpp"
@@ -29,7 +27,7 @@ namespace tensor {
     using generic_operators::Arithmetic;
     using tensor_ops::TensorBackend;
 
-    struct Tensor;
+    class Tensor;
 
     struct TensorFunction {
         template <typename Fn, typename... Args>
@@ -42,7 +40,8 @@ namespace tensor {
         std::function<std::array<sptr<Tensor>, 2>(Context&, sptr<Tensor>)> backward;
     };
 
-    struct Tensor {
+    class Tensor : std::enable_shared_from_this<Tensor> {
+    public:
         // members
 
         size_t id;
@@ -79,9 +78,20 @@ namespace tensor {
             this->data = TensorData(std::move(data));
         }
 
+        template <typename... Sizes>
+        Tensor(Sizes... dims)
+            : id(next_id++) {
+            utils::check_dimensions(dims...);
+
+            Shape input_shapes{};
+            (input_shapes.push_back(dims), ...);
+
+            this->data = TensorData::rand(input_shapes);
+        }
 
         Tensor(Tensor& other)
-            : id(next_id++)
+            : std::enable_shared_from_this<Tensor>()
+            , id(next_id++)
             , data(other.data)
             , grad(other.grad)
             , history(other.history)
@@ -107,19 +117,19 @@ namespace tensor {
 
         template <typename... size_t>
         sptr<Tensor> operator[](const size_t... dims) {
-            Index passed_idx;
-            (passed_idx.push_back(dims), ...);
+            Index ix;
+            (ix.push_back(dims), ...);
 
-            TensorStorageView storage_view = this->data.view(passed_idx);
+            TensorStorageView storage_view = this->data.view(ix);
 
             // Copy a view to a Tensor
             Storage new_storage = { storage_view.begin(), storage_view.end() };
 
-            auto shape_view = this->data.shape
-                              | std::views::drop(passed_idx.size());
+            auto shape_view = this->data.shape | std::views::drop(ix.size());
             Shape new_shape = { shape_view.begin(), shape_view.end() };
 
-            return std::make_shared<Tensor>(TensorData(std::move(new_storage), new_shape));
+            return std::make_shared<Tensor>(
+                TensorData(std::move(new_storage), new_shape));
         }
 
         friend auto operator+(sptr<Tensor> self, sptr<Tensor> other) {
@@ -268,7 +278,9 @@ namespace tensor {
         // +=
 
         sptr<Tensor> operator+=(sptr<Tensor> other) {
-            *this = std::move(*TensorFunction::apply<Add>(std::make_shared<Tensor>(*this), other));
+            *this = std::move(
+                *TensorFunction::apply<Add>(std::make_shared<Tensor>(*this),
+                                            other));
             return std::make_shared<Tensor>(*this);
         }
 
@@ -276,7 +288,9 @@ namespace tensor {
         sptr<Tensor> operator+=(T& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = std::make_shared<Tensor>(val);
-            *this      = std::move(*TensorFunction::apply<Add>(std::make_shared<Tensor>(*this), other));
+            *this      = std::move(
+                *TensorFunction::apply<Add>(std::make_shared<Tensor>(*this),
+                                            other));
             return std::make_shared<Tensor>(*this);
         }
 
@@ -305,7 +319,8 @@ namespace tensor {
         void backward();
         void accumulate_grad(sptr<Tensor> d_x);
         std::vector<sptr<Tensor>> parents() const;
-        std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> chain_rule(sptr<Tensor> deriv);
+        std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> chain_rule(
+            sptr<Tensor> deriv);
     };
 
     template <typename Fn, typename... Args>

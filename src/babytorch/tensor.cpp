@@ -1,7 +1,4 @@
-#include <algorithm>
 #include <cctype>
-#include <ranges>
-#include <string>
 #include <memory>
 
 #include "tensor.hpp"
@@ -42,7 +39,8 @@ namespace tensor {
         return;
     }
 
-    // std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> Tensor::chain_rule(sptr<Tensor> deriv) {
+    // std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>>
+    // Tensor::chain_rule(sptr<Tensor> deriv) {
     //     History history             = this->history;
     //     std::array<sptr<Tensor>, 2> grads = history.backward(history.ctx, deriv);
 
@@ -54,8 +52,12 @@ namespace tensor {
     // }
 
     void Tensor::backward() {
-        /*auto deriv = std::make_shared<Tensor>(TensorData({ 1.0 }, Shape{}));*/
-        /*tensor_autodiff::backpropagate(std::make_shared<Tensor>(this), deriv);*/
+        Storage storage    = Storage{ 1.0 };
+        TensorData _data   = TensorData{ storage };
+        sptr<Tensor> _this = shared_from_this();
+        auto deriv         = std::make_shared<Tensor>(Tensor(_data));
+
+        tensor_autodiff::backpropagate(_this, deriv);
         return;
     }
 

@@ -1,16 +1,14 @@
 #pragma once
 
-#include <concepts>
 #include <functional>
-#include <vector>
 
 #include "operators.hpp"
-#include "tensor_data.hpp"
 #include "ptr.hpp"
+#include "tensor_data.hpp"
 
 // Forward declaration of Tensor instead of including tensor.hpp
 namespace tensor {
-    struct Tensor;
+    class Tensor;
 }
 
 namespace tensor_ops {
@@ -26,8 +24,10 @@ namespace tensor_ops {
     using BivariateFn  = std::function<double(double, double)>;
 
     using UnivariateTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>&)>;
-    using BivariateTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>&, const sptr<Tensor>&)>;
-    using ReduceTensorFn = std::function<sptr<Tensor>(const sptr<Tensor>&, const size_t)>;
+    using BivariateTensorFn
+        = std::function<sptr<Tensor>(const sptr<Tensor>&, const sptr<Tensor>&)>;
+    using ReduceTensorFn
+        = std::function<sptr<Tensor>(const sptr<Tensor>&, const size_t)>;
 
     using UnivariateTensorDataFn  //
         = std::function<sptr<Tensor>(const TensorDataInfo&)>;
@@ -96,8 +96,8 @@ namespace tensor_ops {
 
         // Additional methods
         Tensor (*matrix_multiply)(sptr<Tensor>, sptr<Tensor>);  // Pointer to
-                                                      // matrix_multiply
-                                                      // function
+                                                                // matrix_multiply
+                                                                // function
     };
 
     UnivariateTensorDataFn tensor_map(UnivariateFn);

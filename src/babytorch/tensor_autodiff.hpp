@@ -1,13 +1,11 @@
 #pragma once
 
-#include <any>
-#include <memory>
-#include <unordered_set>
 #include <vector>
+
 #include "ptr.hpp"
 
 namespace tensor {
-    struct Tensor;
+    class Tensor;
 }
 
 namespace tensor_autodiff {

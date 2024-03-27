@@ -10,4 +10,4 @@ using uptr = std::unique_ptr<T, Deleter>;
 template <typename T>
 using sptr = std::shared_ptr<T>;
 
-#endif // COMMON_ALIASES_H
+#endif  // COMMON_ALIASES_H

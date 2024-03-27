@@ -1,13 +1,10 @@
-#include <any>
-#include <memory>
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "tensor.hpp"
 #include "ptr.hpp"
-
+#include "tensor.hpp"
 
 namespace tensor_autodiff {
 
