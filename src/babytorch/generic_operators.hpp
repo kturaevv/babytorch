@@ -4,10 +4,7 @@
 #include <cmath>
 #include <concepts>
 #include <functional>
-#include <iostream>
 #include <numeric>
-#include <random>
-#include <ranges>
 #include <vector>
 
 namespace generic_operators {
@@ -17,12 +14,12 @@ namespace generic_operators {
     // A concept to check if a type supports basic arithmetic operations
     template <typename T>
     concept Arithmetic = requires(T a, T b) {
-                             { a + b } -> std::convertible_to<T>;
-                             { a - b } -> std::convertible_to<T>;
-                             { a* b } -> std::convertible_to<T>;
-                             { a / b } -> std::convertible_to<T>;
-                             { -a } -> std::convertible_to<T>;
-                         };
+        { a + b } -> std::convertible_to<T>;
+        { a - b } -> std::convertible_to<T>;
+        { a* b } -> std::convertible_to<T>;
+        { a / b } -> std::convertible_to<T>;
+        { -a } -> std::convertible_to<T>;
+    };
 
     // Basic operations
     template <Arithmetic T>
@@ -62,8 +59,7 @@ namespace generic_operators {
 
     template <Arithmetic T>
     auto is_close(const T& x, const T& y) {
-        const T EPS = 1e-2;
-        return fabs(x - y) < EPS ? 1 : 0;
+        return fabs(x - y) < static_cast<T>(EPS) ? 1 : 0;
     }
 
     template <Arithmetic T>
@@ -86,8 +82,7 @@ namespace generic_operators {
 
     template <Arithmetic T>
     auto log_func(const T& x) {
-        const T EPS = 1e-2;
-        return std::log(x + EPS);
+        return std::log(x + static_cast<T>(EPS));
     }
 
     template <Arithmetic T>
@@ -97,20 +92,18 @@ namespace generic_operators {
 
     template <Arithmetic T>
     auto log_back(const T& x, const T& d) {
-        const T EPS = 1e-2;
-        return 1.0 / (x * std::log(d + EPS) + EPS);
+        return 1.0
+               / (x * std::log(d + static_cast<T>(EPS)) + static_cast<T>(EPS));
     }
 
     template <Arithmetic T>
     auto inv(const T& x) {
-        const T EPS = 1e-2;
-        return 1.0 / (x + EPS);
+        return 1.0 / (x + static_cast<T>(EPS));
     }
 
     template <Arithmetic T>
     auto inv_back(const T& x, const T& d) {
-        const T EPS = 1e-2;
-        return -1.0 / (x * x + EPS) * d;
+        return -1.0 / (x * x + static_cast<T>(EPS)) * d;
     }
 
     template <Arithmetic T>

@@ -4,6 +4,7 @@
 #include <memory>
 #include <ranges>
 #include <type_traits>
+#include <vector>
 
 #include <fmt/core.h>
 #include <fmt/ranges.h>
@@ -155,19 +156,16 @@ namespace tensor {
         }
 
         template <typename T>
-        friend auto operator+(sptr<Tensor> self, T& rhs) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator+(sptr<Tensor> self, T&& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = Tensor::create(val);
             return TensorFunction::apply<Add>(self, other);
         }
 
         template <typename T>
-        friend auto operator+(sptr<Tensor> self, sptr<Tensor> other) {
-            return TensorFunction::apply<Add>(self, other);
-        }
-
-        template <typename T>
-        friend auto operator+(T& lhs, sptr<Tensor> other) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator+(T&& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = Tensor::create(val);
             return TensorFunction::apply<Add>(self, other);
@@ -180,14 +178,16 @@ namespace tensor {
         }
 
         template <typename T>
-        friend auto operator*(sptr<Tensor> self, T& rhs) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator*(sptr<Tensor> self, T&& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = Tensor::create(val);
             return TensorFunction::apply<Mul>(self, other);
         }
 
         template <typename T>
-        friend auto operator*(T& lhs, sptr<Tensor> other) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator*(T&& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = Tensor::create(val);
             return TensorFunction::apply<Mul>(self, other);
@@ -200,14 +200,16 @@ namespace tensor {
         }
 
         template <typename T>
-        friend auto operator-(sptr<Tensor> self, T& rhs) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator-(sptr<Tensor> self, T&& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = Tensor::create(val);
             return self + TensorFunction::apply<Neg>(other);
         }
 
         template <typename T>
-        friend auto operator-(T& lhs, sptr<Tensor> other) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator-(T&& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = Tensor::create(val);
             return self + TensorFunction::apply<Neg>(other);
@@ -220,14 +222,16 @@ namespace tensor {
         }
 
         template <typename T>
-        friend auto operator/(sptr<Tensor> self, T& rhs) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator/(sptr<Tensor> self, T&& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = Tensor::create(val);
             return self * TensorFunction::apply<Inv>(other);
         }
 
         template <typename T>
-        friend auto operator/(T& lhs, sptr<Tensor> other) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator/(T&& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = Tensor::create(val);
             return self * TensorFunction::apply<Inv>(other);
@@ -240,14 +244,16 @@ namespace tensor {
         }
 
         template <typename T>
-        friend auto operator<(sptr<Tensor> self, T& rhs) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator<(sptr<Tensor> self, T&& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = Tensor::create(val);
             return TensorFunction::apply<Lt>(self, other);
         }
 
         template <typename T>
-        friend auto operator<(T& lhs, sptr<Tensor> other) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator<(T&& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = Tensor::create(val);
             return TensorFunction::apply<Lt>(self, other);
@@ -260,14 +266,15 @@ namespace tensor {
         }
 
         template <typename T>
-        friend auto operator>(sptr<Tensor> self, T& rhs) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator>(sptr<Tensor> self, T&& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = Tensor::create(val);
             return TensorFunction::apply<Lt>(other, self);
         }
 
         template <typename T>
-        friend auto operator>(T& lhs, sptr<Tensor> other) {
+        friend auto operator>(T&& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = Tensor::create(val);
             return TensorFunction::apply<Lt>(other, self);
@@ -280,14 +287,16 @@ namespace tensor {
         }
 
         template <typename T>
-        friend auto operator==(sptr<Tensor> self, T& rhs) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator==(sptr<Tensor> self, T&& rhs) {
             auto val   = Storage{ static_cast<double>(rhs) };
             auto other = Tensor::create(val);
             return TensorFunction::apply<Eq>(self, other);
         }
 
         template <typename T>
-        friend auto operator==(T& lhs, sptr<Tensor> other) {
+            requires std::is_arithmetic_v<T>
+        friend auto operator==(T&& lhs, sptr<Tensor> other) {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = Tensor::create(val);
             return TensorFunction::apply<Eq>(other, self);
@@ -300,7 +309,7 @@ namespace tensor {
         }
 
         template <typename T>
-        sptr<Tensor> operator+=(T& rhs) {
+        sptr<Tensor> operator+=(T&& rhs) {
             return shared_from_this() + rhs;
         }
 

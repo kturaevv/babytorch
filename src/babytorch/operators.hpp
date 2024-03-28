@@ -2,9 +2,6 @@
 
 #include <cmath>
 #include <functional>
-#include <iostream>
-#include <numeric>
-#include <ranges>
 #include <vector>
 
 namespace operators {

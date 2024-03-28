@@ -160,7 +160,7 @@ TEST_CASE("Maximum Function Tests") {
 // Tests for is_close function
 TEST_CASE("Is Close Function Tests") {
     SECTION("Basic Is Close") {
-        REQUIRE(is_close(5.0, 5.01) == 1.0);
+        REQUIRE(is_close(5.0, 5.00000001) == 1.0);
         REQUIRE(is_close(5.0, 6.0) == 0.0);
     }
 

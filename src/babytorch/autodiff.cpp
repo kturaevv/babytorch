@@ -1,20 +1,14 @@
-#include <any>
-#include <functional>
-#include <iostream>
-#include <memory>
 #include <stack>
-#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "scalar.hpp"
 #include "ptr.hpp"
+#include "scalar.hpp"
 
 namespace autodiff {
 
-    std::vector<sptr<Scalar>> topological_sort(
-        sptr<Scalar> root) {
+    std::vector<sptr<Scalar>> topological_sort(sptr<Scalar> root) {
         //
         std::unordered_set<double> visited;
         std::vector<sptr<Scalar>> order;

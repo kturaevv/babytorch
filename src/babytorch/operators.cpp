@@ -1,6 +1,5 @@
 #include <cmath>
 #include <functional>
-#include <iostream>
 #include <numeric>
 #include <ranges>
 #include <vector>
@@ -40,7 +39,6 @@ namespace operators {
     }
 
     double is_close(const double x, const double y) {
-        const double EPS = 1e-2;
         return fabs(x - y) < EPS ? 1.0 : 0.0;
     }
 

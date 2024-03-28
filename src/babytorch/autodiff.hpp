@@ -1,12 +1,8 @@
 #pragma once
 
-#include <any>
-#include <memory>
-#include <unordered_set>
 #include <vector>
 
 #include "ptr.hpp"
-
 
 namespace scalar {
     struct Scalar;
@@ -16,8 +12,7 @@ namespace autodiff {
 
     using namespace scalar;
 
-    std::vector<sptr<Scalar>> topological_sort(
-        sptr<Scalar> v);
+    std::vector<sptr<Scalar>> topological_sort(sptr<Scalar> v);
 
     void backpropagate(sptr<Scalar> variable);
     void backpropagate(sptr<Scalar> variable, double deriv);

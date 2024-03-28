@@ -1,10 +1,10 @@
 #include <ranges>
 
+#include "ptr.hpp"
 #include "tensor.hpp"
 #include "tensor_data.hpp"
 #include "tensor_ops.hpp"
 #include "utils.hpp"
-#include "ptr.hpp"
 
 namespace tensor_ops {
 
@@ -38,13 +38,14 @@ namespace tensor_ops {
 
                 out_storage[out_pos] = fn(in_storage[in_pos]);
             }
-            
+
             return out_tensor;
         };
     }
 
     BivariateTensorDataFn tensor_zip(BivariateFn fn) {
-        return [fn](const TensorDataInfo& a, const TensorDataInfo& b) -> sptr<Tensor> {
+        return [fn](const TensorDataInfo& a,
+                    const TensorDataInfo& b) -> sptr<Tensor> {
             auto& [a_storage, a_shape, a_strides] = a;
             auto& [b_storage, b_shape, b_strides] = b;
 
@@ -71,7 +72,8 @@ namespace tensor_ops {
 
                 size_t ai = index_to_position(a_index, a_strides);
                 size_t bi = index_to_position(b_index, b_strides);
-                size_t oi = index_to_position(out_index, out_tensor->data->strides);
+                size_t oi = index_to_position(out_index,
+                                              out_tensor->data->strides);
 
                 out_storage[oi] = fn(a_storage[ai], b_storage[bi]);
                 idx++;
@@ -120,7 +122,7 @@ namespace tensor_ops {
 
     ZipFuncFactory TensorOps::zip = [](BivariateFn fn) -> BivariateTensorFn {
         BivariateTensorDataFn f = tensor_zip(fn);
-        BivariateTensorFn ret   = [f](const sptr<Tensor>& a, const sptr<Tensor>& b) {
+        BivariateTensorFn ret = [f](const sptr<Tensor>& a, const sptr<Tensor>& b) {
             return f(a->info(), b->info());
         };
         return ret;
