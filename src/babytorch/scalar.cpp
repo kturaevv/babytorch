@@ -1,17 +1,13 @@
 #include <array>
 #include <cassert>
 #include <functional>
-#include <iostream>
 #include <memory>
-#include <optional>
-#include <variant>
 #include <vector>
 
 #include "autodiff.hpp"
 #include "functions.hpp"
-#include "operators.hpp"
-#include "scalar.hpp"
 #include "ptr.hpp"
+#include "scalar.hpp"
 
 namespace scalar {
     using namespace functions;
@@ -59,12 +55,12 @@ namespace scalar {
 
     std::vector<std::tuple<sptr<Scalar>, double>> Scalar::chain_rule(
         double deriv) {
-        auto history                = this->history;
-        std::array<double, 2> grads = history.backward(history.ctx, deriv);
+        auto hist                   = this->history;
+        std::array<double, 2> grads = hist.backward(hist.ctx, deriv);
 
         std::vector<std::tuple<sptr<Scalar>, double>> vals;
-        for (size_t i = 0; i < history.inputs.size() && i < 2; i++)
-            vals.emplace_back(history.inputs[i], grads[i]);
+        for (size_t i = 0; i < hist.inputs.size() && i < 2; i++)
+            vals.emplace_back(hist.inputs[i], grads[i]);
 
         return vals;
     }

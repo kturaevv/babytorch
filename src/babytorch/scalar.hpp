@@ -2,11 +2,7 @@
 
 #include <functional>
 #include <iostream>
-#include <memory>
-#include <mutex>
-#include <optional>
 #include <tuple>
-#include <variant>
 #include <vector>
 
 #include <fmt/core.h>
@@ -14,7 +10,6 @@
 #include "autodiff.hpp"
 #include "functions.hpp"
 #include "ptr.hpp"
-
 
 namespace scalar {
 
@@ -77,8 +72,7 @@ namespace scalar {
         // overloads
 
         // +
-        friend auto operator+(const sptr<Scalar> self,
-                              const sptr<Scalar> other) {
+        friend auto operator+(const sptr<Scalar> self, const sptr<Scalar> other) {
             return ScalarFunction::apply<Add>(self, other);
         }
 
@@ -96,8 +90,7 @@ namespace scalar {
 
         // *
 
-        friend auto operator*(const sptr<Scalar> self,
-                              const sptr<Scalar> other) {
+        friend auto operator*(const sptr<Scalar> self, const sptr<Scalar> other) {
             return ScalarFunction::apply<Mul>(self, other);
         }
 
@@ -115,8 +108,7 @@ namespace scalar {
 
         // -
 
-        friend auto operator-(const sptr<Scalar> self,
-                              const sptr<Scalar> other) {
+        friend auto operator-(const sptr<Scalar> self, const sptr<Scalar> other) {
             return self + ScalarFunction::apply<Neg>(other);
         }
 
@@ -134,8 +126,7 @@ namespace scalar {
 
         // /
 
-        friend auto operator/(const sptr<Scalar> self,
-                              const sptr<Scalar> other) {
+        friend auto operator/(const sptr<Scalar> self, const sptr<Scalar> other) {
             return self * ScalarFunction::apply<Inv>(other);
         }
 
@@ -153,8 +144,7 @@ namespace scalar {
 
         // <
 
-        friend auto operator<(const sptr<Scalar> self,
-                              const sptr<Scalar> other) {
+        friend auto operator<(const sptr<Scalar> self, const sptr<Scalar> other) {
             return ScalarFunction::apply<Lt>(self, other);
         }
 
@@ -172,8 +162,7 @@ namespace scalar {
 
         // >
 
-        friend auto operator>(const sptr<Scalar> self,
-                              const sptr<Scalar> other) {
+        friend auto operator>(const sptr<Scalar> self, const sptr<Scalar> other) {
             return ScalarFunction::apply<Lt>(other, self);
         }
 
@@ -191,8 +180,7 @@ namespace scalar {
 
         // ==
 
-        friend auto operator==(const sptr<Scalar> self,
-                               const sptr<Scalar> other) {
+        friend auto operator==(const sptr<Scalar> self, const sptr<Scalar> other) {
             return ScalarFunction::apply<Eq>(self, other);
         }
 
@@ -223,8 +211,7 @@ namespace scalar {
         void backward();
         void accumulate_grad(double d_x);
         std::vector<sptr<Scalar>> parents();
-        std::vector<std::tuple<sptr<Scalar>, double>> chain_rule(
-            double deriv);
+        std::vector<std::tuple<sptr<Scalar>, double>> chain_rule(double deriv);
 
         static sptr<Scalar> create();
         static sptr<Scalar> create(double data);

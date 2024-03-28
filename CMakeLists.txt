@@ -17,6 +17,8 @@ option(
         ON
 )
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
+
 add_compile_options(-Wall -Wextra -Werror)
 
 # Set C++ standard and compile options
@@ -48,7 +50,6 @@ target_compile_options(
         PUBLIC 
             -fsanitize=address 
             -fno-omit-frame-pointer 
-            -g
 )
 
 target_link_libraries(

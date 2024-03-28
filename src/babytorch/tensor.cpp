@@ -17,7 +17,7 @@ namespace tensor {
     sptr<Tensor> Tensor::zeros(Shape shape) {
         auto tensor_data = std::make_unique<TensorData>(utils::zeros(shape),
                                                         shape);
-        return std::make_shared<Tensor>(std::move(tensor_data));
+        return Tensor::create(std::move(tensor_data));
     }
 
     sptr<Tensor> Tensor::zeros() const {
