@@ -2,6 +2,8 @@
 
 #include <functional>
 
+#include <fmt/core.h>
+
 #include "operators.hpp"
 #include "ptr.hpp"
 #include "tensor_data.hpp"
@@ -38,9 +40,9 @@ namespace tensor_ops {
 
     // 1layer =
     // Function factories
-    using MapFuncFactory = std::function<UnivariateTensorFn(UnivariateFn)>;
-    using ZipFuncFactory = std::function<BivariateTensorFn(BivariateFn)>;
-    using ReduceFuncFactory = std::function<ReduceTensorFn(BivariateFn, double)>;
+    using MapFuncFactory    = std::function<UnivariateTensorFn(UnivariateFn)>;
+    using ZipFuncFactory    = std::function<BivariateTensorFn(BivariateFn)>;
+    using ReduceFuncFactory = std::function<ReduceTensorFn(BivariateFn)>;
 
     struct TensorOps {
         static MapFuncFactory map;
@@ -90,18 +92,22 @@ namespace tensor_ops {
             this->log_back_zip  = TensorOps::zip(operators::log_back);
             this->inv_back_zip  = TensorOps::zip(operators::inv_back);
 
-            this->add_reduce = TensorOps::reduce(operators::add, 0);
-            this->mul_reduce = TensorOps::reduce(operators::mul, 1);
+            this->add_reduce = TensorOps::reduce(operators::add);
+            this->mul_reduce = TensorOps::reduce(operators::mul);
         }
 
         // Additional methods
         Tensor (*matrix_multiply)(sptr<Tensor>, sptr<Tensor>);  // Pointer to
                                                                 // matrix_multiply
                                                                 // function
+
+        void about() {
+            fmt::print("TensorBackend: CPU\n");
+        };
     };
 
     UnivariateTensorDataFn tensor_map(UnivariateFn);
     BivariateTensorDataFn tensor_zip(BivariateFn);
-    ReduceTensorDataFn tensor_reduce(BivariateFn, double);
+    ReduceTensorDataFn tensor_reduce(BivariateFn);
 
 }  // namespace tensor_ops

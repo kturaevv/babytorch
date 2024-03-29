@@ -56,8 +56,8 @@ namespace tensor {
 
     void Tensor::backward() {
         auto deriv = Tensor::create({ 1.0 });
-        tensor_autodiff::backpropagate(shared_from_this(), deriv);
+        auto self  = shared_from_this();
+        tensor_autodiff::backpropagate(self, deriv);
         return;
     }
-
 }  // namespace tensor

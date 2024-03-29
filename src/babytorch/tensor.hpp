@@ -51,12 +51,14 @@ namespace tensor {
         uptr<TensorData> data;
         sptr<Tensor> grad;
         History history;
-        TensorBackend backend;
-
+        static inline sptr<TensorBackend> backend;
         static inline size_t next_id = 0;
-        Index passed_idx;
 
-        // constructors
+        // static functions
+
+        static void set_backend() {
+            backend = std::make_shared<TensorBackend>();
+        }
 
         template <typename... Args>
             requires(std::is_same_v<int, Args> && ...)
@@ -68,18 +70,15 @@ namespace tensor {
             return std::make_shared<Tensor>(std::move(data));
         }
 
-        static sptr<Tensor> create(History hist,
-                                   uptr<TensorData> data,
-                                   TensorBackend back) {
-            return std::make_shared<Tensor>(std::move(data),
-                                            std::move(hist),
-                                            std::move(back));
-        }
-
         static sptr<Tensor> create(std::vector<double> data) {
             return std::make_shared<Tensor>(std::move(data));
         }
 
+        static sptr<Tensor> create(History hist, uptr<TensorData> data) {
+            return std::make_shared<Tensor>(std::move(data), std::move(hist));
+        }
+
+        // constructors
         Tensor()
             : id(next_id++) {
         }
@@ -89,11 +88,10 @@ namespace tensor {
             , data(std::move(data)) {
         }
 
-        Tensor(uptr<TensorData>&& data, History&& hist, TensorBackend&& back)
+        Tensor(uptr<TensorData>&& data, History&& hist)
             : id(next_id++)
             , data(std::move(data))
-            , history(std::move(hist))
-            , backend(std::move(back)) {
+            , history(std::move(hist)) {
         }
 
         template <typename T>
@@ -120,16 +118,14 @@ namespace tensor {
             , data(other.data ? std::make_unique<TensorData>(*other.data)
                               : nullptr)
             , grad(other.grad)
-            , history(other.history)
-            , backend(other.backend) {
+            , history(other.history) {
         }
 
         Tensor(Tensor&& other) noexcept
             : id(next_id++)
             , data(std::move(other.data))
             , grad(std::move(other.grad))
-            , history(std::move(other.history))
-            , backend(std::move(other.backend)) {
+            , history(std::move(other.history)) {
         }
 
         // functions
@@ -355,9 +351,7 @@ namespace tensor {
 
         (history.inputs.emplace_back(args), ...);
 
-        return Tensor::create(std::move(history),
-                              std::move(result->data),
-                              std::move(result->backend));
+        return Tensor::create(std::move(history), std::move(result->data));
     }
 
     // helper functions

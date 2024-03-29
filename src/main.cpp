@@ -19,6 +19,9 @@ int main() {
     fmt::print("{}\n", *result);
 
     using tensor::Tensor;
+
+    Tensor::set_backend();
+
     auto tensor_sample = Tensor::create(3, 3, 5);
     auto a             = Tensor::create(3, 3, 5);
     auto b             = Tensor::create(3, 1, 5);
@@ -26,7 +29,11 @@ int main() {
     auto d             = Tensor::create(3, 3, 1);
     auto e             = Tensor::create(3, 5);
     auto tensor_result = a / 1.2 + b * c / d - 3 - e;
+
+    tensor_result->backend->about();
+
     tensor_result->backward();
+
     fmt::print("{}", *tensor_result);
 
     return 0;

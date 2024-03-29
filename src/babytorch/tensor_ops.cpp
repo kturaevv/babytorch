@@ -83,8 +83,8 @@ namespace tensor_ops {
         };
     }
 
-    ReduceTensorDataFn tensor_reduce(BivariateFn fn, double start) {
-        return [fn, start](const TensorDataInfo& a, size_t dim) -> sptr<Tensor> {
+    ReduceTensorDataFn tensor_reduce(BivariateFn fn) {
+        return [fn](const TensorDataInfo& a, size_t dim) -> sptr<Tensor> {
             auto& [in_storage, in_shape, in_strides] = a;
 
             Shape out_shape = in_shape;
@@ -129,9 +129,8 @@ namespace tensor_ops {
         return ret;
     };
 
-    ReduceFuncFactory TensorOps::reduce = [](BivariateFn fn,
-                                             double start) -> ReduceTensorFn {
-        ReduceTensorDataFn f = tensor_reduce(fn, start);
+    ReduceFuncFactory TensorOps::reduce = [](BivariateFn fn) -> ReduceTensorFn {
+        ReduceTensorDataFn f = tensor_reduce(fn);
         ReduceTensorFn ret   = [f](const sptr<Tensor>& a, const size_t dim) {
             return f(a->info(), dim);
         };
