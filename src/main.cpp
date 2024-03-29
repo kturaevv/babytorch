@@ -26,6 +26,7 @@ int main() {
     auto d             = Tensor::create(3, 3, 1);
     auto e             = Tensor::create(3, 5);
     auto tensor_result = a / 1.2 + b * c / d - 3 - e;
+    tensor_result->backward();
     fmt::print("{}", *tensor_result);
 
     return 0;

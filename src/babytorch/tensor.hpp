@@ -132,6 +132,33 @@ namespace tensor {
             , backend(std::move(other.backend)) {
         }
 
+        // functions
+        size_t size();
+        size_t dims();
+        Shape shape() const;
+        sptr<Tensor> adjust_for_broadcast(sptr<Tensor> other);
+        sptr<Tensor> is_close();
+        sptr<Tensor> sigmoid();
+        sptr<Tensor> relu();
+        sptr<Tensor> log();
+        sptr<Tensor> exp();
+        sptr<Tensor> item();
+        sptr<Tensor> sum(size_t dim);
+        sptr<Tensor> mean(size_t dim);
+        sptr<Tensor> contiguous();
+        sptr<Tensor> view(Shape shape);
+        sptr<Tensor> permute(ReOrderIndex order);
+        TensorDataInfo info() const;
+        sptr<Tensor> zeros() const;
+        static sptr<Tensor> zeros(Shape shape);
+
+        bool is_leaf();
+        void backward();
+        void accumulate_grad(sptr<Tensor>&& d_x);
+        std::vector<sptr<Tensor>> parents() const;
+        std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> chain_rule(
+            sptr<Tensor> deriv);
+
         // overloads
 
         template <typename... size_t>
@@ -314,32 +341,6 @@ namespace tensor {
         }
 
         Tensor& operator=(Tensor&& other) noexcept = default;
-
-        // functions
-        size_t size();
-        size_t dims();
-        Shape shape() const;
-        sptr<Tensor> is_close();
-        sptr<Tensor> sigmoid();
-        sptr<Tensor> relu();
-        sptr<Tensor> log();
-        sptr<Tensor> exp();
-        sptr<Tensor> item();
-        sptr<Tensor> sum(size_t dim);
-        sptr<Tensor> mean(size_t dim);
-        sptr<Tensor> contiguous();
-        sptr<Tensor> view(Shape shape);
-        sptr<Tensor> permute(ReOrderIndex order);
-        TensorDataInfo info() const;
-        sptr<Tensor> zeros() const;
-        static sptr<Tensor> zeros(Shape shape);
-
-        bool is_leaf();
-        void backward();
-        void accumulate_grad(sptr<Tensor> d_x);
-        std::vector<sptr<Tensor>> parents() const;
-        std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> chain_rule(
-            sptr<Tensor> deriv);
     };
 
     template <typename Fn, typename... Args>

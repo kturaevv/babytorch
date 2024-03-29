@@ -29,8 +29,7 @@ namespace tensor_autodiff {
             order.emplace_back(cur_tensor);
 
             for (sptr<Tensor> parent : cur_tensor->parents())
-                if (!visited.contains(parent->id))
-                    stack.push(parent);
+                stack.push(parent);
         }
 
         return order;
@@ -42,18 +41,17 @@ namespace tensor_autodiff {
         std::unordered_map<size_t, sptr<Tensor>> grad_table;
         grad_table[variable->id] = deriv;
 
-        // for (auto v : order) {
-        // sptr<Tensor> d_out = grad_table[v->id];
+        for (auto curr_node : order) {
+            sptr<Tensor> d_out = grad_table[curr_node->id];
 
-        // for (auto [var, grad] : std::move(v->chain_rule(d_out)))
-        //     if (var->is_leaf())
-        //         var->accumulate_grad(grad);
-        //     else if (grad_table.contains(var->id))
-        //         *grad_table[var->id] += grad;
-        // // else
-        //     grad_table[var->id] = grad;
-        // }
-
+            for (auto [input, grad] : curr_node->chain_rule(d_out))
+                if (input->is_leaf())
+                    input->accumulate_grad(std::move(grad));
+                else if (!grad_table.contains(input->id))
+                    grad_table[input->id] = std::move(grad);
+                else if (grad_table.contains(input->id))
+                    *grad_table[input->id] += std::move(grad);
+        }
         return;
     }
 

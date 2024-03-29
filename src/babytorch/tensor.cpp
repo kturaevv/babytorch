@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cctype>
 #include <memory>
 
@@ -36,33 +37,26 @@ namespace tensor {
         return parents().empty();
     }
 
-    void Tensor::accumulate_grad(sptr<Tensor> deriv) {
+    void Tensor::accumulate_grad(sptr<Tensor>&& deriv) {
         (*this->grad) += deriv;
         return;
     }
 
-    // std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>>
-    // Tensor::chain_rule(sptr<Tensor> deriv) {
-    //     History history             = this->history;
-    //     std::array<sptr<Tensor>, 2> grads = history.backward(history.ctx, deriv);
+    std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> Tensor::chain_rule(
+        sptr<Tensor> deriv) {
+        auto backward_fn = this->history.backward;
+        auto grads       = backward_fn(this->history.ctx, deriv);
 
-    //     std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> vals;
-    //     // for (size_t i = 0; i < history.inputs.size() && i < 2; i++)
-    //     //     vals.emplace_back(history.inputs[i], std::move(grads[i]));
+        std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> zip_inputs_grads;
+        for (size_t i = 0; i < history.inputs.size() && i < 2; i++)
+            zip_inputs_grads.emplace_back(history.inputs[i], std::move(grads[i]));
 
-    //     return vals;
-    // }
+        return zip_inputs_grads;
+    }
 
     void Tensor::backward() {
-        // auto deriv_storage = Storage{ 1.0 };
-        // auto deriv_data    = std::make_unique<TensorData>(
-        //     TensorData{ deriv_storage });
-        // auto deriv_tensor = Tensor{ std::move(deriv_data) };
-        // auto deriv        = std::make_shared<Tensor>(deriv_tensor);
-        //
-        // sptr<Tensor> _this = shared_from_this();
-
-        // tensor_autodiff::backpropagate(_this, deriv);
+        auto deriv = Tensor::create({ 1.0 });
+        tensor_autodiff::backpropagate(shared_from_this(), deriv);
         return;
     }
 

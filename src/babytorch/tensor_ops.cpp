@@ -7,6 +7,7 @@
 #include "utils.hpp"
 
 namespace tensor_ops {
+    using tensor::Tensor;
 
     using tensor_data::Index;
     using tensor_data::Shape;
