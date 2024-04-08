@@ -27,7 +27,7 @@ namespace utils {
     };
 
     template <typename T = double>
-    std::vector<T> zeros(const std::vector<size_t> shape) {
+    std::vector<T> zeros(const std::vector<size_t>& shape) {
         std::vector<T> _shape{ shape.begin(), shape.end() };
         T size = generic_operators::prod<T>(_shape);
         return zeros<T>(size);

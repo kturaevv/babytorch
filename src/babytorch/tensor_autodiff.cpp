@@ -50,7 +50,7 @@ namespace tensor_autodiff {
                 else if (!grad_table.contains(input->id))
                     grad_table[input->id] = std::move(grad);
                 else if (grad_table.contains(input->id))
-                    *grad_table[input->id] += std::move(grad);
+                    grad_table[input->id] = grad_table[input->id] + grad;
         }
         return;
     }

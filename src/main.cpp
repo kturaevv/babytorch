@@ -19,10 +19,8 @@ int main() {
     fmt::print("{}\n", *result);
 
     using tensor::Tensor;
-
     Tensor::set_backend();
 
-    auto tensor_sample = Tensor::create(3, 3, 5);
     auto a             = Tensor::create(3, 3, 5);
     auto b             = Tensor::create(3, 1, 5);
     auto c             = Tensor::create(5);

@@ -38,7 +38,9 @@ namespace tensor {
     }
 
     void Tensor::accumulate_grad(sptr<Tensor>&& deriv) {
-        (*this->grad) += deriv;
+        if (this->grad == nullptr)
+            this->grad = zeros();
+        this->grad = this->grad + deriv;
         return;
     }
 

@@ -42,7 +42,7 @@ namespace tensor {
         std::function<std::array<sptr<Tensor>, 2>(Context&, sptr<Tensor>)> backward;
     };
 
-    class Tensor : std::enable_shared_from_this<Tensor> {
+    class Tensor : public std::enable_shared_from_this<Tensor> {
     public:
         // members
 
@@ -323,17 +323,6 @@ namespace tensor {
             auto val  = Storage{ static_cast<double>(lhs) };
             auto self = Tensor::create(val);
             return TensorFunction::apply<Eq>(other, self);
-        }
-
-        // +=
-
-        sptr<Tensor> operator+=(sptr<Tensor> other) {
-            return shared_from_this() + other;
-        }
-
-        template <typename T>
-        sptr<Tensor> operator+=(T&& rhs) {
-            return shared_from_this() + rhs;
         }
 
         Tensor& operator=(Tensor&& other) noexcept = default;
