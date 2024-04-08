@@ -155,10 +155,8 @@ namespace tensor {
         std::vector<std::tuple<sptr<Tensor>, sptr<Tensor>>> chain_rule(
             sptr<Tensor> deriv);
 
-        // overloads
-
         template <typename... size_t>
-        sptr<Tensor> operator[](const size_t... dims) {
+        sptr<Tensor> at(const size_t... dims) {
             Index ix;
             (ix.push_back(dims), ...);
 
@@ -171,6 +169,25 @@ namespace tensor {
             Shape new_shape = { shape_view.begin(), shape_view.end() };
 
             return Tensor::create(
+                std::make_unique<TensorData>(std::move(new_storage), new_shape));
+        }
+
+        // overloads
+
+        template <typename... size_t>
+        Tensor operator[](const size_t... dims) {
+            Index ix;
+            (ix.push_back(dims), ...);
+
+            TensorStorageView storage_view = this->data->view(ix);
+
+            // Copy a view to a Tensor
+            Storage new_storage = { storage_view.begin(), storage_view.end() };
+
+            auto shape_view = this->data->shape | std::views::drop(ix.size());
+            Shape new_shape = { shape_view.begin(), shape_view.end() };
+
+            return Tensor(
                 std::make_unique<TensorData>(std::move(new_storage), new_shape));
         }
 
