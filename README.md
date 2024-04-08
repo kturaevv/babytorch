@@ -11,15 +11,14 @@ Table of contents:
         - [Scalar](#scalar-example)
         - [Tensor](#tensor-example)
     -   [Testing](#testing)
--   [Todos](#todo-list)
 
 ## About
 
-Self-sustained autograd engine written in c++ from scratch.
+Self-sustained autograd engine written in C++ entirely from scratch with broadcasting and cross type arithmetics (Tensors can operate with plain arithmetic values). 
 
-Currently fully supports auto-differentiation for scalar values. Examples can be found at [Scalar example](#scalar-example) of [Usage](#usage) section.  
+Engine adheres to data oriented design, i.e. tensor data is separated from the tensor itself and is contained within one 1D vector to facilitate data locality to improve performance.
 
-This library also provides full support for all arithmetic operations of Tensors of **varying** shapes and strides. For additional details refer to [Tensor example](#tensor-example) section.
+Supports auto-differentiation for both scalar and tensor values. Examples can be found at [Scalar example](#scalar-example) and [Tensor example](#tensor-example) of [Usage](#usage) section.  
 
 ## Justfile
 The project uses [Just](https://github.com/casey/just) for command automation and ease of access, a better alternative to Makefile. 
@@ -50,16 +49,18 @@ The main components are tightly integrated `cmake` build system with a `vcpkg` a
 
 Everything is configured with these tools. As a quick reminder:
 - CmakeLists.txt for cmake build process 
+- CmakePreset.json for variables requried for the build system.
 - vcpkg.json for the list of external dependencies
-- CmakePreset.json for env. variables requried for the build system.
 
 Dependency manager is dependencecy itself. To make the project more self-contained, `vcpkg` comes as a git sub-module and all of the calls to it are configured for that path, via *./extern*, so there is no need to have it installed on host machine. Packages which are **not** suported by `vcpkg` are exptected to be integrated as a submodule.
 
 Adding a new dependency is trivial thanks to `vcpkg` and its `cmake` integration. A matter of editing **vcpkg.json** and adding requried commands to **Cmakelists.txt**. The project integration of `fmt` and `Catch2` libraries showcase this process of adding dependencies supported by `vcpkg`.
 
 To build the project build folder, configure with default presets, set the project root path and project build path you can run:
+
 ```bash
 just init
+just build
 ```
 
 ### Usage
@@ -153,17 +154,26 @@ Tensor([ 0.622890 -0.326047  0.134703 -0.741307 -0.883508])
 
 // i.e. Tensor[1,2,3]
 Tensor([-0.741307])
+```
 
+Alternatively, if Tensor is heap allocated use `at` ->
+
+```c++
+auto tensor = Tensor::create(3,3,5);
+
+auto tensor1 = tensor.at(1);
+auto tensor1 = tensor.at(1, 2);
+auto tensor1 = tensor.at(1, 2, 3);
 ```
 
 As noted before, Tensors also support operations with ad-hoc polymorphism (i.e. Tensor can interact with other *arithmetic* types). So, the following expression is a valid expression:
 
 ```c++
-auto a      = Tensor(3, 3, 5);
-auto b      = Tensor(3, 1, 5);
-auto c      = Tensor(5);
-auto d      = Tensor(3, 3, 1);
-auto e      = Tensor(3, 5);
+auto a      = Tensor::create(3, 3, 5);
+auto b      = Tensor::create(3, 1, 5);
+auto c      = Tensor::create(5);
+auto d      = Tensor::create(3, 3, 1);
+auto e      = Tensor::create(3, 5);
 auto result = a / 1.2 + b * c / d - 3 - e;
 ```
 
@@ -189,7 +199,7 @@ The choice for a testing framework have lied upon `Catch2` for its simplicity an
 At this point tests are primarily covering Scalars, starting with base operators and ending with Scalar overloaded operators, to make sure that basic building blocks are working properly. 
 
 To test the project, simply run:
+
 ```bash
 just test
 ```
-
