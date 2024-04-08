@@ -359,7 +359,7 @@ namespace tensor {
 
 template <>
 struct fmt::formatter<tensor::Tensor> : formatter<string_view> {
-    auto format(const tensor::Tensor& s, format_context& ctx) {
+    auto format(const tensor::Tensor& s, format_context& ctx) const {
         std::string tensor_view = s.data->string_view();
         return fmt::format_to(ctx.out(), "Tensor({})\n", tensor_view);
     }

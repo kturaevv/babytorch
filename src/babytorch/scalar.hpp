@@ -235,7 +235,7 @@ namespace scalar {
 
 template <>
 struct fmt::formatter<scalar::Scalar> : formatter<string_view> {
-    auto format(const scalar::Scalar& s, format_context& ctx) {
+    auto format(const scalar::Scalar& s, format_context& ctx) const {
         return fmt::format_to(ctx.out(),
                               "Scalar(data={}, grad={})\n",
                               s.data,

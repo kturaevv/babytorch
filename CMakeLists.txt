@@ -3,15 +3,6 @@ cmake_minimum_required(VERSION 3.21)
 set(PROJECT_NAME engine)
 set(TEST_NAME tests)
 
-# Set C++ standard and compile options
-set(CMAKE_CXX_COMPILER "clang-18")
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_EXTENSIONS ON)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_COLOR_DIAGNOSTICS ON)
-set(CMAKE_MESSAGE_LOG_LEVEL STATUS)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
-
 add_compile_options(
   -Wall
   -Wextra

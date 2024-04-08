@@ -7,11 +7,12 @@ default:
 
 # initialize the project with cmake
 init:
-	mkdir -p ./build && cmake --preset default -S `pwd`/ -B `pwd`/build
+    git submodule update --init --remote --recursive
 
 # rebuild with cmake
-build:
-	cmake --build ./build
+build *args="default":
+    cmake --preset={{args}}
+    cmake --build --preset={{args}}
 
 # run generated binary
 run:
@@ -22,7 +23,7 @@ test:
 	
 # reset the build environment to clean state
 reset:
-	rm -rf ./build 
+	rm -rf ./build && mkdir -p ./build
 
 # re-{build,run,test}
 re: build run test

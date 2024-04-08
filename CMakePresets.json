@@ -1,14 +1,50 @@
 {
-    "version": 3,
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
     "configurePresets": [
         {
             "name": "default",
+            "generator": "Ninja",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "$env{PWD}/extern/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_MAKE_PROGRAM": "/usr/bin/ninja",
+                "CMAKE_C_COMPILER": "clang-18",
+                "CMAKE_CXX_STANDARD": "23",
+                "CMAKE_CXX_EXTENSIONS": "ON",
+                "CMAKE_CXX_COMPILER": "clang++-18",
+                "CMAKE_CXX_STANDARD_REQUIRED": "ON",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "1",
-                "DCMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_COLOR_DIAGNOSTICS": "ON",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_MESSAGE_LOG_LEVEL": "STATUS"
+            },
+            "environment": {
+                "VCPKG_ROOT": "${sourceDir}/extern/vcpkg"
             }
+        },
+        {
+            "name": "debug",
+            "inherits": "default",
+            "displayName": "Config Debug",
+            "description": "Debug build with no optimizations",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS_DEBUG": "-g -O0"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default"
+        },
+        {
+            "name": "debug",
+            "configurePreset": "debug"
         }
     ]
 }

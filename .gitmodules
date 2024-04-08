@@ -1,3 +1,5 @@
 [submodule "extern/vcpkg"]
+    url = https://github.com/Microsoft/vcpkg.git
 	path = extern/vcpkg
-	url = https://github.com/Microsoft/vcpkg.git
+    shallow = true
+    depth = 1
