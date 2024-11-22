@@ -14,11 +14,21 @@ Table of contents:
 
 ## About
 
-Self-sustained autograd engine written in C++ entirely from scratch with broadcasting and cross type arithmetics (Tensors can operate with plain arithmetic values). 
+Self-sustained autograd engine written in C++ entirely from scratch (no 3rd party dependencies) with broadcasting and cross type arithmetics (Tensors can operate with plain arithmetic values). Made for educational purposes.
 
 Engine adheres to data oriented design, i.e. tensor data is separated from the tensor itself and is contained within one 1D vector to facilitate data locality to improve performance.
 
-Supports auto-differentiation for both scalar and tensor values. Examples can be found at [Scalar example](#scalar-example) and [Tensor example](#tensor-example) of [Usage](#usage) section.  
+General architecture:
+- - -
+▼ User Interface, a.k.a. tensor1 * tensor2 
+▼ Thin layer of indirection ( indexing, broadcasting, viewing, e.t.c.)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+▼ Data in 1D array
+[■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] data
+[■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] grad
+- - -
+
+Supports auto-differentiation for both scalar and tensor values. Each tensor tracks history from which DAG is created for back-propagation.  Examples can be found at [Scalar example](#scalar-example) and [Tensor example](#tensor-example) of [Usage](#usage) section.  
 
 ## Justfile
 The project uses [Just](https://github.com/casey/just) for command automation and ease of access, a better alternative to Makefile. 
@@ -123,7 +133,7 @@ Tensors can be created by either providing a vector or any number of integer arg
 // creating a tensor with shape (3,3,5)
 auto tensor = Tensor(3,3,5);
 
-// sub-tensor accesss returns another tensor of according shape and size
+// sub-tensor access returns another tensor of according shape and size
 auto tensor1 = tensor[1];
 auto tensor2 = tensor[1,2];
 auto tensor3 = tensor[1,2,3];
