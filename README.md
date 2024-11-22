@@ -24,13 +24,13 @@ General architecture:
 
 ▼ Thin layer of indirection
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ indexing, broadcasting, e.t.c.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ indexing, broadcasting e.t.c.
 
 ▼ Data in 1D array
 
 
-[■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] data
-[■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] grad
+[■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] data
+[■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] grad
 - - -
 
 Supports auto-differentiation for both scalar and tensor values. Each tensor tracks history from which DAG is created for back-propagation.  Examples can be found at [Scalar example](#scalar-example) and [Tensor example](#tensor-example) of [Usage](#usage) section.  
