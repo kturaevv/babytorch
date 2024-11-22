@@ -21,9 +21,14 @@ Engine adheres to data oriented design, i.e. tensor data is separated from the t
 General architecture:
 - - -
 ▼ User Interface, a.k.a. tensor1 * tensor2 
-▼ Thin layer of indirection ( indexing, broadcasting, viewing, e.t.c.)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+▼ Thin layer of indirection
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ indexing, broadcasting, e.t.c.
+
 ▼ Data in 1D array
+
+
 [■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] data
 [■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■] grad
 - - -
